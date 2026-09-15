@@ -43,7 +43,46 @@ export default {
     }
 
     /*
+      RECENT RESULTS
+      Example:
+      /api/results?league=scotland
+    */
+    if (url.pathname === "/api/results") {
+      const league = url.searchParams.get("league") || "scotland";
+      const leagueId = leagueIds[league];
+
+      if (!leagueId) {
+        return json({
+          error: "Unknown league."
+        }, 400, corsHeaders);
+      }
+
+      const now = new Date();
+
+      const end = now.toISOString().slice(0, 10);
+
+      const past = new Date(now);
+      past.setDate(past.getDate() - 30);
+
+      const start = past.toISOString().slice(0, 10);
+
+      const sportmonksUrl =
+        "https://api.sportmonks.com/v3/football/fixtures/between/" +
+        `${start}/${end}` +
+        `?include=participants;scores;state;league;round` +
+        `&filters=fixtureLeagues:${leagueId}`;
+
+      return sportmonks(
+        sportmonksUrl,
+        env,
+        corsHeaders
+      );
+    }
+
+    /*
       UPCOMING FIXTURES
+      Example:
+      /api/upcoming?league=scotland
     */
     if (url.pathname === "/api/upcoming") {
       const league = url.searchParams.get("league") || "scotland";
