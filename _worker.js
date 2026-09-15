@@ -21,11 +21,6 @@ export default {
       }, 500, corsHeaders);
     }
 
-    /*
-      Your current Sportmonks plan gives access to:
-      Scottish Premiership = league 501
-    */
-
     const leagueIds = {
       scotland: 501,
       premier: 8,
@@ -49,8 +44,6 @@ export default {
 
     /*
       UPCOMING FIXTURES
-      Example:
-      /api/upcoming?league=scotland
     */
     if (url.pathname === "/api/upcoming") {
       const league = url.searchParams.get("league") || "scotland";
@@ -85,9 +78,8 @@ export default {
     }
 
     /*
-      LIVE LEAGUE TABLE
-      Example:
-      /api/standings?league=scotland
+      LEAGUE TABLE
+      Scottish Premiership current season = 28275
     */
     if (url.pathname === "/api/standings") {
       const league = url.searchParams.get("league") || "scotland";
@@ -100,7 +92,7 @@ export default {
       }
 
       const sportmonksUrl =
-        `https://api.sportmonks.com/v3/football/standings/live/league/${leagueId}` +
+        "https://api.sportmonks.com/v3/football/standings/seasons/28275" +
         "?include=participant;details.type;form";
 
       return sportmonks(
