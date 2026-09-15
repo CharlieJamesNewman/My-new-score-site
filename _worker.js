@@ -100,7 +100,7 @@ export default {
       }
 
       const sportmonksUrl =
-        `https://api.sportmonks.com/v3/football/standings/live/leagues/${leagueId}` +
+        `https://api.sportmonks.com/v3/football/standings/live/league/${leagueId}` +
         "?include=participant;details.type;form";
 
       return sportmonks(
