@@ -16,47 +16,91 @@ export default {
     }
 
     if (!env.footballScoresToken) {
-      return json({
-        error: "footballScoresToken is not configured."
-      }, 500, corsHeaders);
+      return json(
+        { error: "footballScoresToken is not configured." },
+        500,
+        corsHeaders
+      );
     }
 
+    // Leagues currently available on the Sportmonks Free Football plan.
     const leagueIds = {
-      scotland: 501,
-      premier: 8,
-      laliga: 564,
-      seriea: 384,
-      bundesliga: 82,
-      ligue1: 301
+      scotland: {
+        id: 501,
+        name: "Scottish Premiership",
+      },
+      denmark: {
+        id: 271,
+        name: "Danish Superliga",
+      },
+
+      // These are kept so the website can recognise the buttons,
+      // but they require a Sportmonks plan that includes those leagues.
+      premier: {
+        id: 8,
+        name: "Premier League",
+      },
+      laliga: {
+        id: 564,
+        name: "LaLiga",
+      },
+      seriea: {
+        id: 384,
+        name: "Serie A",
+      },
+      bundesliga: {
+        id: 82,
+        name: "Bundesliga",
+      },
+      ligue1: {
+        id: 301,
+        name: "Ligue 1",
+      },
     };
 
-    /*
-      LIVE SCORES
-    */
-    if (url.pathname === "/api/live-scores") {
-      return sportmonks(
-        "https://api.sportmonks.com/v3/football/livescores/inplay" +
-        "?include=participants;scores;periods;events;league.country;round",
-        env,
+    const leagueKey = url.searchParams.get("league") || "scotland";
+    const league = leagueIds[leagueKey];
+
+    if (
+      url.pathname !== "/" &&
+      url.pathname.startsWith("/api/") &&
+      !league
+    ) {
+      return json(
+        {
+          error: "Unknown league.",
+          league: leagueKey,
+        },
+        400,
         corsHeaders
       );
     }
 
     /*
-      RECENT RESULTS
-      Example:
-      /api/results?league=scotland
-    */
+     * LIVE SCORES
+     *
+     * Returns only live matches for the selected league.
+     */
+    if (url.pathname === "/api/live-scores") {
+      const sportmonksUrl =
+        "https://api.sportmonks.com/v3/football/livescores/inplay" +
+        "?include=participants;scores;periods;events;league.country;round" +
+        `&filters=fixtureLeagues:${league.id}`;
+
+      return sportmonks(
+        sportmonksUrl,
+        env,
+        corsHeaders,
+        league
+      );
+    }
+
+    /*
+     * RECENT RESULTS
+     *
+     * Gets the last 30 days of fixtures for the selected league.
+     */
     if (url.pathname === "/api/results") {
-      const league = url.searchParams.get("league") || "scotland";
-      const leagueId = leagueIds[league];
-
-      if (!leagueId) {
-        return json({
-          error: "Unknown league."
-        }, 400, corsHeaders);
-      }
-
       const now = new Date();
 
       const end = now.toISOString().slice(0, 10);
@@ -69,31 +113,23 @@ export default {
       const sportmonksUrl =
         "https://api.sportmonks.com/v3/football/fixtures/between/" +
         `${start}/${end}` +
-        `?include=participants;scores;state;league;round` +
-        `&filters=fixtureLeagues:${leagueId}`;
+        "?include=participants;scores;state;league;round" +
+        `&filters=fixtureLeagues:${league.id}`;
 
       return sportmonks(
         sportmonksUrl,
         env,
-        corsHeaders
+        corsHeaders,
+        league
       );
     }
 
     /*
-      UPCOMING FIXTURES
-      Example:
-      /api/upcoming?league=scotland
-    */
+     * UPCOMING FIXTURES
+     *
+     * Gets the next 14 days of fixtures for the selected league.
+     */
     if (url.pathname === "/api/upcoming") {
-      const league = url.searchParams.get("league") || "scotland";
-      const leagueId = leagueIds[league];
-
-      if (!leagueId) {
-        return json({
-          error: "Unknown league."
-        }, 400, corsHeaders);
-      }
-
       const now = new Date();
 
       const start = now.toISOString().slice(0, 10);
@@ -106,53 +142,94 @@ export default {
       const sportmonksUrl =
         "https://api.sportmonks.com/v3/football/fixtures/between/" +
         `${start}/${end}` +
-        `?include=participants;scores;state;league;round` +
-        `&filters=fixtureLeagues:${leagueId}`;
+        "?include=participants;scores;state;league;round" +
+        `&filters=fixtureLeagues:${league.id}`;
 
       return sportmonks(
         sportmonksUrl,
         env,
-        corsHeaders
+        corsHeaders,
+        league
       );
     }
 
     /*
-      LEAGUE TABLE
-      Scottish Premiership current season = 28275
-    */
+     * LEAGUE TABLE
+     *
+     * First finds the current season for the selected league.
+     * Then retrieves the standings for that season.
+     */
     if (url.pathname === "/api/standings") {
-      const league = url.searchParams.get("league") || "scotland";
-      const leagueId = leagueIds[league];
+      const leagueUrl =
+        `https://api.sportmonks.com/v3/football/leagues/${league.id}` +
+        "?include=currentSeason";
 
-      if (!leagueId) {
-        return json({
-          error: "Unknown league."
-        }, 400, corsHeaders);
+      const leagueResponse = await fetch(leagueUrl, {
+        method: "GET",
+        headers: {
+          "Authorization": env.footballScoresToken,
+          "Accept": "application/json",
+        },
+      });
+
+      const leagueData = await leagueResponse.json();
+
+      if (!leagueResponse.ok) {
+        return new Response(JSON.stringify(leagueData), {
+          status: leagueResponse.status,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        });
       }
 
-      const sportmonksUrl =
-        "https://api.sportmonks.com/v3/football/standings/seasons/28275" +
+      const currentSeason =
+        leagueData?.data?.currentSeason ||
+        leagueData?.data?.currentseason;
+
+      if (!currentSeason?.id) {
+        return json(
+          {
+            error: "Could not determine the current season.",
+            league: league.name,
+            sportmonks: leagueData,
+          },
+          500,
+          corsHeaders
+        );
+      }
+
+      const standingsUrl =
+        `https://api.sportmonks.com/v3/football/standings/seasons/${currentSeason.id}` +
         "?include=participant;details.type;form";
 
       return sportmonks(
-        sportmonksUrl,
+        standingsUrl,
         env,
-        corsHeaders
+        corsHeaders,
+        league
       );
     }
 
     /*
-      Everything else = website
-    */
+     * If the request isn't an API request, let Cloudflare serve
+     * the website files normally.
+     */
     return env.ASSETS.fetch(request);
-  }
+  },
 };
 
 
 /*
-  SPORTMONKS REQUEST HELPER
-*/
-async function sportmonks(url, env, corsHeaders) {
+ * Make a request to Sportmonks and return the response.
+ */
+async function sportmonks(
+  url,
+  env,
+  corsHeaders,
+  league
+) {
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -164,39 +241,66 @@ async function sportmonks(url, env, corsHeaders) {
 
     const data = await response.json();
 
-    return new Response(
-      JSON.stringify(data),
-      {
-        status: response.status,
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-store",
-          ...corsHeaders,
-        },
-      }
-    );
+    /*
+     * Add a little information that makes the response easier
+     * for our website to understand.
+     */
+    if (data && typeof data === "object") {
+      data.websiteLeague = {
+        key: findLeagueKey(league.id),
+        id: league.id,
+        name: league.name,
+      };
+    }
 
+    return new Response(JSON.stringify(data), {
+      status: response.status,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store",
+        ...corsHeaders,
+      },
+    });
   } catch (error) {
-    return json({
-      error: "Unable to contact Sportmonks.",
-      details: error.message
-    }, 500, corsHeaders);
+    return json(
+      {
+        error: "Unable to contact Sportmonks.",
+        details: error.message,
+      },
+      500,
+      corsHeaders
+    );
   }
 }
 
 
 /*
-  JSON RESPONSE HELPER
-*/
+ * Convert a Sportmonks league ID back to our website league key.
+ */
+function findLeagueKey(id) {
+  const leagues = {
+    501: "scotland",
+    271: "denmark",
+    8: "premier",
+    564: "laliga",
+    384: "seriea",
+    82: "bundesliga",
+    301: "ligue1",
+  };
+
+  return leagues[id] || null;
+}
+
+
+/*
+ * Simple JSON response helper.
+ */
 function json(data, status, corsHeaders) {
-  return new Response(
-    JSON.stringify(data),
-    {
-      status,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders,
-      }
-    }
-  );
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      ...corsHeaders,
+    },
+  });
 }
