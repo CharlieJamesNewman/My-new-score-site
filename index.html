@@ -174,6 +174,23 @@ header{
   overflow:hidden
 }
 
+/* QUIET LIVE PANEL WHEN NOTHING IS LIVE */
+.panel.no-live .panel-head{
+  padding:10px 14px;
+  border-bottom:0
+}
+
+.panel.no-live .panel-head strong{
+  color:#8e98b3;
+  font-size:11px;
+  font-weight:500
+}
+
+.panel.no-live .tag,
+.panel.no-live #matches{
+  display:none
+}
+
 .panel-head{
   display:flex;
   align-items:center;
@@ -553,7 +570,7 @@ td{
   <div class="logo-block">
 
     <div class="logo">
-      MATCH<b>DAY</b>
+      SCORE<b>DASH</b>
     </div>
 
     <div class="logo-sub">
@@ -1432,6 +1449,9 @@ async function loadLive(){
   const container =
     q("#matches");
 
+  const panel =
+    container.closest(".panel");
+
 
   try{
 
@@ -1452,6 +1472,8 @@ async function loadLive(){
 
     if(!matches.length){
 
+      panel.classList.add("no-live");
+
       container.innerHTML = `
 
         <div class="empty">
@@ -1465,6 +1487,8 @@ async function loadLive(){
       return true;
 
     }
+
+    panel.classList.remove("no-live");
 
 
     container.innerHTML =
@@ -1488,6 +1512,8 @@ async function loadLive(){
 
 
   }catch(error){
+
+    panel.classList.remove("no-live");
 
     console.error(
       "Live scores error:",
