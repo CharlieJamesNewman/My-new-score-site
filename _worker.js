@@ -5,18 +5,22 @@ const LEAGUES = {
     code: "PL",
     name: "Premier League"
   },
+
   laliga: {
     code: "PD",
     name: "La Liga"
   },
+
   seriea: {
     code: "SA",
     name: "Serie A"
   },
+
   bundesliga: {
     code: "BL1",
     name: "Bundesliga"
   },
+
   ligue1: {
     code: "FL1",
     name: "Ligue 1"
@@ -28,7 +32,9 @@ function jsonResponse(data, status = 200) {
     status,
     headers: {
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*"
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
     }
   });
 }
@@ -43,45 +49,78 @@ async function footballDataRequest(path, env) {
     );
   }
 
-  const response = await fetch(`${DATA_API}${path}`, {
-    headers: {
-      "X-Auth-Token": env.FootballDataToken
-    }
-  });
-
-  const text = await response.text();
-
-  let data;
-
   try {
-    data = JSON.parse(text);
-  } catch {
-    data = {
-      raw: text
-    };
-  }
+    const response = await fetch(`${DATA_API}${path}`, {
+      headers: {
+        "X-Auth-Token": env.FootballDataToken
+      }
+    });
 
-  if (!response.ok) {
+    const text = await response.text();
+
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = {
+        raw: text
+      };
+    }
+
+    if (!response.ok) {
+      return jsonResponse(
+        {
+          error: "football-data.org request failed.",
+          api: data
+        },
+        response.status
+      );
+    }
+
+    return jsonResponse(data);
+
+  } catch (error) {
+
     return jsonResponse(
       {
-        error: "football-data.org request failed.",
-        api: data
+        error: "Unable to contact football-data.org.",
+        details: error.message
       },
-      response.status
+      500
     );
-  }
 
-  return jsonResponse(data);
+  }
 }
 
 function getLeague(url) {
   const leagueKey = url.searchParams.get("league") || "premier";
+
   return LEAGUES[leagueKey] || null;
 }
 
 export default {
+
   async fetch(request, env) {
+
     const url = new URL(request.url);
+
+    /*
+      --------------------------------------------------
+      CORS
+      --------------------------------------------------
+    */
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type"
+        }
+      });
+    }
 
     /*
       --------------------------------------------------
@@ -90,9 +129,11 @@ export default {
     */
 
     if (url.pathname.startsWith("/api/")) {
+
       const league = getLeague(url);
 
       if (!league) {
+
         return jsonResponse(
           {
             error: "Unknown league.",
@@ -100,15 +141,20 @@ export default {
           },
           400
         );
+
       }
 
       /*
+        ------------------------------------------------
         LIVE SCORES
+        ------------------------------------------------
 
-        football-data.org supports LIVE / IN_PLAY / PAUSED
-        match statuses.
+        football-data.org's LIVE filter covers
+        IN_PLAY and PAUSED matches.
       */
+
       if (url.pathname === "/api/live-scores") {
+
         const path =
           `/competitions/${league.code}/matches` +
           `?status=LIVE`;
@@ -117,19 +163,27 @@ export default {
       }
 
       /*
+        ------------------------------------------------
         UPCOMING MATCHES
-
-        Gets upcoming matches from the current season.
+        ------------------------------------------------
       */
+
       if (url.pathname === "/api/upcoming") {
+
         const today = new Date();
 
-        const from = today.toISOString().slice(0, 10);
+        const from =
+          today.toISOString().slice(0, 10);
 
-        const futureDate = new Date(today);
-        futureDate.setDate(futureDate.getDate() + 30);
+        const futureDate =
+          new Date(today);
 
-        const to = futureDate.toISOString().slice(0, 10);
+        futureDate.setDate(
+          futureDate.getDate() + 30
+        );
+
+        const to =
+          futureDate.toISOString().slice(0, 10);
 
         const path =
           `/competitions/${league.code}/matches` +
@@ -140,19 +194,27 @@ export default {
       }
 
       /*
+        ------------------------------------------------
         RECENT RESULTS
-
-        Gets matches from the previous 30 days.
+        ------------------------------------------------
       */
+
       if (url.pathname === "/api/results") {
+
         const today = new Date();
 
-        const to = today.toISOString().slice(0, 10);
+        const to =
+          today.toISOString().slice(0, 10);
 
-        const pastDate = new Date(today);
-        pastDate.setDate(pastDate.getDate() - 30);
+        const pastDate =
+          new Date(today);
 
-        const from = pastDate.toISOString().slice(0, 10);
+        pastDate.setDate(
+          pastDate.getDate() - 30
+        );
+
+        const from =
+          pastDate.toISOString().slice(0, 10);
 
         const path =
           `/competitions/${league.code}/matches` +
@@ -164,9 +226,13 @@ export default {
       }
 
       /*
+        ------------------------------------------------
         LEAGUE TABLE
+        ------------------------------------------------
       */
+
       if (url.pathname === "/api/standings") {
+
         const path =
           `/competitions/${league.code}/standings`;
 
@@ -174,21 +240,29 @@ export default {
       }
 
       /*
+        ------------------------------------------------
         COMPETITION INFORMATION
-
-        Useful for getting the current season,
-        current matchday, league name, etc.
+        ------------------------------------------------
       */
+
       if (url.pathname === "/api/competition") {
+
         const path =
           `/competitions/${league.code}`;
 
         return footballDataRequest(path, env);
       }
 
+      /*
+        ------------------------------------------------
+        UNKNOWN API ENDPOINT
+        ------------------------------------------------
+      */
+
       return jsonResponse(
         {
           error: "Unknown API endpoint.",
+
           availableEndpoints: [
             "/api/live-scores?league=premier",
             "/api/upcoming?league=premier",
@@ -207,9 +281,11 @@ export default {
       --------------------------------------------------
 
       Anything that isn't an API request gets passed
-      through to the website's static assets.
+      through to your website's static assets.
+      --------------------------------------------------
     */
 
     return env.ASSETS.fetch(request);
   }
+
 };
