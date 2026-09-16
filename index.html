@@ -338,6 +338,158 @@ header:after{
   text-align:center
 }
 
+
+/* MATCH CENTRE */
+
+.match-centre{
+  padding:20px 18px 18px;
+  background:
+    radial-gradient(circle at 50% 0%,#26375455,transparent 48%),
+    linear-gradient(180deg,#111a2d,#0a1120);
+  border-bottom:1px solid var(--line);
+  animation:centreIn .22s ease both;
+}
+
+@keyframes centreIn{
+  from{opacity:0;transform:translateY(-5px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.centre-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  color:#7f89a4;
+  font:500 8px 'DM Mono';
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.centre-live{
+  color:var(--accent);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.centre-live:before{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 10px #c9ff4a99;
+  animation:pulseLive 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseLive{
+  0%,100%{opacity:1}
+  50%{opacity:.35}
+}
+
+.centre-score{
+  display:grid;
+  grid-template-columns:1fr 100px 1fr;
+  align-items:center;
+  gap:14px;
+  padding:20px 0 17px;
+}
+
+.centre-team{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  font-size:13px;
+  font-weight:800;
+}
+
+.centre-team.away{
+  justify-content:flex-end;
+  text-align:right;
+}
+
+.centre-team .crest,
+.centre-team .crest img{
+  width:34px;
+  height:34px;
+}
+
+.centre-main-score{
+  text-align:center;
+  color:#fff;
+  font:600 30px 'DM Mono';
+  letter-spacing:-.07em;
+}
+
+.centre-main-score span{
+  color:#69758f;
+  padding:0 3px;
+}
+
+.centre-status{
+  display:block;
+  margin-top:5px;
+  color:var(--accent);
+  font:600 8px 'DM Mono';
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+.centre-meta{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:7px 14px;
+  padding-top:12px;
+  border-top:1px solid var(--line);
+  color:#8792ad;
+  font:500 8px 'DM Mono';
+}
+
+.centre-meta b{
+  color:#dfe4ef;
+  font-weight:500;
+}
+
+.centre-half{
+  margin-top:12px;
+  text-align:center;
+  color:#65718c;
+  font:500 8px 'DM Mono';
+}
+
+.centre-half b{color:#aeb6cc}
+
+.match.active{
+  background:linear-gradient(90deg,#ffffff0a,transparent);
+}
+
+.match.active:after{
+  transform:scaleY(1);
+}
+
+.match-chevron{
+  display:inline-block;
+  margin-left:7px;
+  color:#59647f;
+  font-size:10px;
+  transition:transform .2s ease;
+}
+
+.match.active .match-chevron{
+  transform:rotate(180deg);
+}
+
+@media(max-width:760px){
+  .match-centre{padding:18px 14px 16px}
+  .centre-score{grid-template-columns:1fr 82px 1fr;gap:8px}
+  .centre-team{font-size:11px}
+  .centre-main-score{font-size:25px}
+  .centre-team .crest,.centre-team .crest img{width:30px;height:30px}
+}
+
 /* FEATURED STORY */
 
 .story{
@@ -1163,142 +1315,152 @@ function liveTime(match){
 
 function matchRow(match,type){
 
-  const home =
-    match?.homeTeam;
+  const home = match?.homeTeam;
+  const away = match?.awayTeam;
 
-  const away =
-    match?.awayTeam;
+  const homeName = teamName(home);
+  const awayName = teamName(away);
 
-
-  const homeName =
-    teamName(home);
-
-  const awayName =
-    teamName(away);
-
-
-  const homeScore =
-    score(match,"home");
-
-  const awayScore =
-    score(match,"away");
-
+  const homeScore = score(match,"home");
+  const awayScore = score(match,"away");
 
   let rightText = "";
 
-
   if(type === "live"){
-
-    rightText =
-      liveTime(match);
-
+    rightText = liveTime(match);
   }else{
-
     rightText = `
-
       ${formatDate(match.utcDate)}
-
       ·
-
       ${formatTime(match.utcDate)}
-
     `;
-
   }
 
-
-  let scoreText =
-    `${homeScore}—${awayScore}`;
-
+  let scoreText = `${homeScore}—${awayScore}`;
 
   if(type === "upcoming"){
-
     scoreText = "—";
-
   }
 
+  const statusText =
+    type === "live"
+      ? liveTime(match)
+      : type === "result"
+        ? "FULL TIME"
+        : formatTime(match.utcDate);
+
+  const halfHome = match?.score?.halfTime?.home;
+  const halfAway = match?.score?.halfTime?.away;
+
+  const halfTimeText =
+    typeof halfHome === "number" && typeof halfAway === "number"
+      ? `Half time · ${halfHome}—${halfAway}`
+      : "";
+
+  const liveClass = type === "live" ? "centre-live" : "";
 
   return `
 
     <button
       class="match"
       type="button"
+      aria-expanded="false"
     >
 
       <span class="club">
-
         ${crest(home)}
-
         ${escapeHtml(homeName)}
-
       </span>
-
 
       <span class="score">
-
         ${scoreText}
-
       </span>
-
 
       <span class="club away">
-
         ${escapeHtml(awayName)}
-
         ${crest(away)}
-
       </span>
 
-
       <span class="time">
-
         ${rightText}
-
+        <span class="match-chevron">⌄</span>
       </span>
 
     </button>
 
+    <div class="detail" hidden>
+      <div class="match-centre">
 
-    <div
-      class="detail"
-      hidden
-    >
+        <div class="centre-top">
+          <span>
+            ${escapeHtml(match?.competition?.name || "Football")}
+          </span>
 
-      <strong>
+          <span class="${liveClass}">
+            ${escapeHtml(statusText)}
+          </span>
+        </div>
 
-        ${escapeHtml(
-          match?.competition?.name || ""
-        )}
+        <div class="centre-score">
 
-      </strong>
+          <div class="centre-team">
+            ${crest(home)}
+            <span>${escapeHtml(homeName)}</span>
+          </div>
 
+          <div>
+            <div class="centre-main-score">
+              ${homeScore}<span>—</span>${awayScore}
+            </div>
 
-      <span
-        style="
-          float:right;
-          color:var(--accent)
-        "
-      >
+            <span class="centre-status">
+              ${escapeHtml(statusText)}
+            </span>
+          </div>
+
+          <div class="centre-team away">
+            <span>${escapeHtml(awayName)}</span>
+            ${crest(away)}
+          </div>
+
+        </div>
+
+        <div class="centre-meta">
+
+          <span>
+            <b>DATE</b>
+            ${escapeHtml(formatDate(match?.utcDate))}
+          </span>
+
+          <span>
+            <b>TIME</b>
+            ${escapeHtml(formatTime(match?.utcDate))}
+          </span>
+
+          ${
+            match?.matchday
+              ? `<span><b>MATCHDAY</b> ${escapeHtml(match.matchday)}</span>`
+              : ""
+          }
+
+          ${
+            match?.venue
+              ? `<span><b>VENUE</b> ${escapeHtml(match.venue)}</span>`
+              : ""
+          }
+
+        </div>
 
         ${
-          type === "live"
-
-            ? liveTime(match)
-
-            : formatDate(match.utcDate)
-              +
-              " · "
-              +
-              formatTime(match.utcDate)
-
+          halfTimeText
+            ? `<div class="centre-half"><b>${escapeHtml(halfTimeText)}</b></div>`
+            : ""
         }
 
-      </span>
-
+      </div>
     </div>
 
   `;
-
 }
 
 
@@ -1306,45 +1468,41 @@ function matchRow(match,type){
 
 function attachMatchToggle(container){
 
-  container.onclick =
-    event => {
+  container.onclick = event => {
 
-      const button =
-        event.target.closest(
-          ".match"
-        );
+    const button = event.target.closest(".match");
 
-      if(!button){
-        return;
-      }
+    if(!button){
+      return;
+    }
 
+    const detail = button.nextElementSibling;
 
-      const detail =
-        button.nextElementSibling;
+    if(!detail){
+      return;
+    }
 
-      if(!detail){
-        return;
-      }
+    const wasHidden = detail.hidden;
 
+    container
+      .querySelectorAll(".detail")
+      .forEach(item => item.hidden = true);
 
-      const wasHidden =
-        detail.hidden;
+    container
+      .querySelectorAll(".match")
+      .forEach(item => {
+        item.classList.remove("active");
+        item.setAttribute("aria-expanded","false");
+      });
 
+    detail.hidden = !wasHidden;
 
-      container
-        .querySelectorAll(
-          ".detail"
-        )
-        .forEach(
-          item =>
-            item.hidden = true
-        );
+    if(wasHidden){
+      button.classList.add("active");
+      button.setAttribute("aria-expanded","true");
+    }
 
-
-      detail.hidden =
-        !wasHidden;
-
-    };
+  };
 
 }
 
