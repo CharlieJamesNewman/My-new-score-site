@@ -94,25 +94,6 @@ header{
   gap:22px
 }
 
-.header-date{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end
-}
-
-.header-date-label{
-  color:#66718c;
-  font:500 8px 'DM Mono';
-  letter-spacing:.1em;
-  text-transform:uppercase
-}
-
-.header-date-value{
-  margin-top:3px;
-  color:#dfe4f0;
-  font:500 11px 'DM Mono'
-}
-
 .live{
   border:1px solid #ffffff26;
   border-radius:24px;
@@ -523,10 +504,6 @@ td{
     gap:9px
   }
 
-  .header-date{
-    display:none
-  }
-
   .live{
     padding:8px 10px;
     font-size:9px
@@ -587,22 +564,6 @@ td{
 
 
   <div class="header-info">
-
-    <div class="header-date">
-
-      <div class="header-date-label">
-        Today
-      </div>
-
-      <div
-        class="header-date-value"
-        id="header-date"
-      >
-        —
-      </div>
-
-    </div>
-
 
     <div class="live">
 
@@ -1069,38 +1030,6 @@ let league = "premier";
 let mode = "overall";
 
 let refreshInProgress = false;
-
-
-const q = selector =>
-  document.querySelector(selector);
-
-
-/* HEADER DATE */
-
-function updateHeaderDate(){
-
-  const date =
-    new Date();
-
-  q("#header-date").textContent =
-    date.toLocaleDateString(
-      "en-AU",
-      {
-        day:"2-digit",
-        month:"short",
-        year:"numeric"
-      }
-    ).toUpperCase();
-
-}
-
-updateHeaderDate();
-
-
-setInterval(
-  updateHeaderDate,
-  60000
-);
 
 
 /* HELPERS */
