@@ -338,158 +338,6 @@ header:after{
   text-align:center
 }
 
-
-/* MATCH CENTRE */
-
-.match-centre{
-  padding:20px 18px 18px;
-  background:
-    radial-gradient(circle at 50% 0%,#26375455,transparent 48%),
-    linear-gradient(180deg,#111a2d,#0a1120);
-  border-bottom:1px solid var(--line);
-  animation:centreIn .22s ease both;
-}
-
-@keyframes centreIn{
-  from{opacity:0;transform:translateY(-5px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-.centre-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  color:#7f89a4;
-  font:500 8px 'DM Mono';
-  letter-spacing:.08em;
-  text-transform:uppercase;
-}
-
-.centre-live{
-  color:var(--accent);
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-.centre-live:before{
-  content:"";
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:var(--accent);
-  box-shadow:0 0 10px #c9ff4a99;
-  animation:pulseLive 1.5s ease-in-out infinite;
-}
-
-@keyframes pulseLive{
-  0%,100%{opacity:1}
-  50%{opacity:.35}
-}
-
-.centre-score{
-  display:grid;
-  grid-template-columns:1fr 100px 1fr;
-  align-items:center;
-  gap:14px;
-  padding:20px 0 17px;
-}
-
-.centre-team{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
-  font-size:13px;
-  font-weight:800;
-}
-
-.centre-team.away{
-  justify-content:flex-end;
-  text-align:right;
-}
-
-.centre-team .crest,
-.centre-team .crest img{
-  width:34px;
-  height:34px;
-}
-
-.centre-main-score{
-  text-align:center;
-  color:#fff;
-  font:600 30px 'DM Mono';
-  letter-spacing:-.07em;
-}
-
-.centre-main-score span{
-  color:#69758f;
-  padding:0 3px;
-}
-
-.centre-status{
-  display:block;
-  margin-top:5px;
-  color:var(--accent);
-  font:600 8px 'DM Mono';
-  letter-spacing:.1em;
-  text-transform:uppercase;
-}
-
-.centre-meta{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:7px 14px;
-  padding-top:12px;
-  border-top:1px solid var(--line);
-  color:#8792ad;
-  font:500 8px 'DM Mono';
-}
-
-.centre-meta b{
-  color:#dfe4ef;
-  font-weight:500;
-}
-
-.centre-half{
-  margin-top:12px;
-  text-align:center;
-  color:#65718c;
-  font:500 8px 'DM Mono';
-}
-
-.centre-half b{color:#aeb6cc}
-
-.match.active{
-  background:linear-gradient(90deg,#ffffff0a,transparent);
-}
-
-.match.active:after{
-  transform:scaleY(1);
-}
-
-.match-chevron{
-  display:inline-block;
-  margin-left:7px;
-  color:#59647f;
-  font-size:10px;
-  transition:transform .2s ease;
-}
-
-.match.active .match-chevron{
-  transform:rotate(180deg);
-}
-
-@media(max-width:760px){
-  .match-centre{padding:18px 14px 16px}
-  .centre-score{grid-template-columns:1fr 82px 1fr;gap:8px}
-  .centre-team{font-size:11px}
-  .centre-main-score{font-size:25px}
-  .centre-team .crest,.centre-team .crest img{width:30px;height:30px}
-}
-
 /* FEATURED STORY */
 
 .story{
@@ -663,6 +511,47 @@ tbody tr:hover td{background:#ffffff05}
   th{padding:9px 12px 6px}
   .all-table td,.all-table th{padding-left:10px;padding-right:10px}
 }
+
+
+/* MATCH CENTRE */
+.match{position:relative;transition:background .18s ease,transform .18s ease}
+.match.active{background:linear-gradient(90deg,#c9ff4a0d,transparent 45%,#c9ff4a06)}
+.match.active:before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;background:var(--accent);border-radius:0 3px 3px 0;box-shadow:0 0 18px #c9ff4a55}
+.match-chevron{justify-self:end;color:#6f7a96;font-size:18px;line-height:1;transition:transform .2s ease,color .2s ease}
+.match.active .match-chevron{transform:rotate(180deg);color:var(--accent)}
+.detail{padding:0;background:linear-gradient(180deg,#0c1425,#0a1120);border-bottom:1px solid var(--line);overflow:hidden}
+.match-centre{padding:22px 20px 20px;animation:centreIn .22s ease both}
+@keyframes centreIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.centre-top{display:grid;grid-template-columns:1fr 150px 1fr;align-items:center;gap:18px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+.centre-team{display:flex;align-items:center;gap:11px;font-weight:700;font-size:14px;min-width:0}
+.centre-team.away{justify-content:flex-end;text-align:right}
+.centre-team .crest,.centre-team .crest img{width:42px;height:42px}
+.centre-team .crest img{filter:drop-shadow(0 8px 14px #0006)}
+.centre-score{text-align:center}
+.centre-main-score{font:700 42px 'Barlow Condensed';letter-spacing:.03em;line-height:.9}
+.centre-status{display:inline-flex;align-items:center;justify-content:center;margin-top:9px;padding:5px 9px;border:1px solid #ffffff18;border-radius:999px;color:var(--muted);font:500 8px 'DM Mono';letter-spacing:.12em;text-transform:uppercase}
+.centre-status.live{color:var(--accent);border-color:#c9ff4a30;background:#c9ff4a08}
+.centre-meta{display:flex;flex-wrap:wrap;gap:7px 14px;padding:15px 0;color:var(--muted-2);font:500 9px 'DM Mono';text-transform:uppercase;letter-spacing:.07em}
+.centre-meta span{display:inline-flex;align-items:center;gap:5px}
+.centre-half{margin-left:auto;color:#aeb6cc}
+.centre-section{margin-top:15px;border:1px solid var(--line);border-radius:11px;background:#ffffff03;overflow:hidden}
+.centre-section-head{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;border-bottom:1px solid var(--line);color:#dfe4ef;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.centre-section-head span{color:var(--muted-2);font:500 8px 'DM Mono'}
+.centre-events{padding:5px 13px}
+.centre-event{display:grid;grid-template-columns:52px 1fr 1fr;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #ffffff0b;font-size:10px}
+.centre-event:last-child{border-bottom:0}
+.centre-event-time{color:var(--accent);font:500 10px 'DM Mono'}
+.centre-event-main{font-weight:700}.centre-event-side{color:var(--muted);text-align:right}
+.centre-empty{padding:15px 13px;color:var(--muted-2);font:500 9px 'DM Mono';text-transform:uppercase;letter-spacing:.08em}
+.centre-stats{display:grid;grid-template-columns:1fr;gap:0;padding:7px 13px 11px}
+.centre-stat{display:grid;grid-template-columns:48px 1fr 48px;gap:10px;align-items:center;padding:8px 0}
+.centre-stat-value{font:600 11px 'DM Mono';color:#e9edf6}.centre-stat-value.right{text-align:right}
+.centre-stat-label{text-align:center;color:var(--muted-2);font:500 8px 'DM Mono';text-transform:uppercase;letter-spacing:.06em}
+.centre-bar{height:4px;background:#ffffff0c;border-radius:99px;overflow:hidden;position:relative}
+.centre-bar i{display:block;height:100%;width:var(--home);background:var(--accent);border-radius:99px}
+.centre-stat-bars{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:3px}.centre-stat-bars .centre-bar:last-child i{margin-left:auto;background:#ffffff70}
+.centre-loading{padding:22px;text-align:center;color:var(--muted-2);font:500 9px 'DM Mono';letter-spacing:.1em;text-transform:uppercase}
+@media(max-width:760px){.centre-top{grid-template-columns:1fr 110px 1fr;gap:8px}.centre-team{font-size:11px;gap:7px}.centre-team .crest,.centre-team .crest img{width:34px;height:34px}.centre-main-score{font-size:34px}.match-chevron{display:none}.match{grid-template-columns:1fr 54px 1fr}.centre-meta{gap:7px 10px}.match-centre{padding:18px 14px}}
 
 </style>
 
@@ -1317,195 +1206,158 @@ function matchRow(match,type){
 
   const home = match?.homeTeam;
   const away = match?.awayTeam;
-
   const homeName = teamName(home);
   const awayName = teamName(away);
-
   const homeScore = score(match,"home");
   const awayScore = score(match,"away");
+  const matchId = Number(match?.id);
 
-  let rightText = "";
-
-  if(type === "live"){
-    rightText = liveTime(match);
-  }else{
-    rightText = `
-      ${formatDate(match.utcDate)}
-      ·
-      ${formatTime(match.utcDate)}
-    `;
-  }
+  let rightText = type === "live"
+    ? liveTime(match)
+    : `${formatDate(match.utcDate)} · ${formatTime(match.utcDate)}`;
 
   let scoreText = `${homeScore}—${awayScore}`;
+  if(type === "upcoming") scoreText = "—";
 
-  if(type === "upcoming"){
-    scoreText = "—";
-  }
-
-  const statusText =
-    type === "live"
-      ? liveTime(match)
-      : type === "result"
-        ? "FULL TIME"
-        : formatTime(match.utcDate);
-
-  const halfHome = match?.score?.halfTime?.home;
-  const halfAway = match?.score?.halfTime?.away;
-
-  const halfTimeText =
-    typeof halfHome === "number" && typeof halfAway === "number"
-      ? `Half time · ${halfHome}—${halfAway}`
-      : "";
-
-  const liveClass = type === "live" ? "centre-live" : "";
+  const statusText = type === "live"
+    ? liveTime(match)
+    : type === "upcoming"
+      ? `${formatDate(match.utcDate)} · ${formatTime(match.utcDate)}`
+      : "FULL TIME";
 
   return `
-
-    <button
-      class="match"
-      type="button"
-      aria-expanded="false"
-    >
-
-      <span class="club">
-        ${crest(home)}
-        ${escapeHtml(homeName)}
-      </span>
-
-      <span class="score">
-        ${scoreText}
-      </span>
-
-      <span class="club away">
-        ${escapeHtml(awayName)}
-        ${crest(away)}
-      </span>
-
-      <span class="time">
-        ${rightText}
-        <span class="match-chevron">⌄</span>
-      </span>
-
+    <button class="match" type="button" data-match-id="${matchId}" aria-expanded="false">
+      <span class="club">${crest(home)}${escapeHtml(homeName)}</span>
+      <span class="score">${scoreText}</span>
+      <span class="club away">${escapeHtml(awayName)}${crest(away)}</span>
+      <span class="time">${rightText}</span>
+      <span class="match-chevron" aria-hidden="true">⌄</span>
     </button>
 
-    <div class="detail" hidden>
+    <div class="detail" hidden data-detail-for="${matchId}">
       <div class="match-centre">
-
-        <div class="centre-top">
-          <span>
-            ${escapeHtml(match?.competition?.name || "Football")}
-          </span>
-
-          <span class="${liveClass}">
-            ${escapeHtml(statusText)}
-          </span>
-        </div>
-
-        <div class="centre-score">
-
-          <div class="centre-team">
-            ${crest(home)}
-            <span>${escapeHtml(homeName)}</span>
-          </div>
-
-          <div>
-            <div class="centre-main-score">
-              ${homeScore}<span>—</span>${awayScore}
-            </div>
-
-            <span class="centre-status">
-              ${escapeHtml(statusText)}
-            </span>
-          </div>
-
-          <div class="centre-team away">
-            <span>${escapeHtml(awayName)}</span>
-            ${crest(away)}
-          </div>
-
-        </div>
-
-        <div class="centre-meta">
-
-          <span>
-            <b>DATE</b>
-            ${escapeHtml(formatDate(match?.utcDate))}
-          </span>
-
-          <span>
-            <b>TIME</b>
-            ${escapeHtml(formatTime(match?.utcDate))}
-          </span>
-
-          ${
-            match?.matchday
-              ? `<span><b>MATCHDAY</b> ${escapeHtml(match.matchday)}</span>`
-              : ""
-          }
-
-          ${
-            match?.venue
-              ? `<span><b>VENUE</b> ${escapeHtml(match.venue)}</span>`
-              : ""
-          }
-
-        </div>
-
-        ${
-          halfTimeText
-            ? `<div class="centre-half"><b>${escapeHtml(halfTimeText)}</b></div>`
-            : ""
-        }
-
+        <div class="centre-loading">Loading match centre…</div>
       </div>
     </div>
-
   `;
 }
 
-
-/* MATCH CLICK */
-
-function attachMatchToggle(container){
-
-  container.onclick = event => {
-
-    const button = event.target.closest(".match");
-
-    if(!button){
-      return;
-    }
-
-    const detail = button.nextElementSibling;
-
-    if(!detail){
-      return;
-    }
-
-    const wasHidden = detail.hidden;
-
-    container
-      .querySelectorAll(".detail")
-      .forEach(item => item.hidden = true);
-
-    container
-      .querySelectorAll(".match")
-      .forEach(item => {
-        item.classList.remove("active");
-        item.setAttribute("aria-expanded","false");
-      });
-
-    detail.hidden = !wasHidden;
-
-    if(wasHidden){
-      button.classList.add("active");
-      button.setAttribute("aria-expanded","true");
-    }
-
-  };
-
+function formatMinute(goal){
+  if(typeof goal?.minute !== "number") return "—";
+  return `${goal.minute}${typeof goal?.injuryTime === "number" ? `+${goal.injuryTime}` : ""}′`;
 }
 
+function eventLabel(goal,homeName,awayName){
+  const scorer = goal?.scorer?.name || "Goal";
+  const teamNameValue = goal?.team?.name || "";
+  const side = teamNameValue === homeName ? homeName : teamNameValue === awayName ? awayName : teamNameValue;
+  const assist = goal?.assist?.name ? ` · assist ${goal.assist.name}` : "";
+  const type = goal?.type === "OWN_GOAL" ? "Own goal" : goal?.type === "PENALTY" ? "Penalty" : "Goal";
+  return {scorer,side,assist,type};
+}
+
+function renderMatchCentre(data, fallback, type){
+  const match = data || fallback || {};
+  const home = match?.homeTeam || fallback?.homeTeam || {};
+  const away = match?.awayTeam || fallback?.awayTeam || {};
+  const homeName = teamName(home);
+  const awayName = teamName(away);
+  const homeScore = score(match,"home");
+  const awayScore = score(match,"away");
+  const status = match?.status || fallback?.status || "";
+  const isLive = ["LIVE","IN_PLAY","PAUSED"].includes(status);
+  const statusText = isLive ? liveTime(match) : status === "FINISHED" ? "FULL TIME" : (status || "SCHEDULED").replaceAll("_"," ");
+  const halfHome = match?.score?.halfTime?.home;
+  const halfAway = match?.score?.halfTime?.away;
+  const halfText = typeof halfHome === "number" && typeof halfAway === "number" ? `HT ${halfHome}—${halfAway}` : "";
+  const goals = Array.isArray(match?.goals) ? match.goals : [];
+  const stats = match?.statistics || {};
+  const homeStats = stats?.home || stats?.HOME || {};
+  const awayStats = stats?.away || stats?.AWAY || {};
+  const statKeys = [
+    ["ball_possession","Possession","%"],
+    ["shots","Shots",""],
+    ["shots_on_goal","Shots on target",""],
+    ["shots_off_goal","Shots off target",""],
+    ["corner_kicks","Corners",""],
+    ["offsides","Offsides",""],
+    ["fouls","Fouls",""],
+    ["yellow_cards","Yellow cards",""],
+    ["red_cards","Red cards",""]
+  ];
+
+  const eventHtml = goals.length
+    ? `<div class="centre-section"><div class="centre-section-head"><strong>Goals & events</strong><span>${goals.length} EVENT${goals.length === 1 ? "" : "S"}</span></div><div class="centre-events">${goals.map(goal=>{
+        const e=eventLabel(goal,homeName,awayName);
+        return `<div class="centre-event"><span class="centre-event-time">${formatMinute(goal)}</span><span class="centre-event-main">${escapeHtml(e.type)} · ${escapeHtml(e.scorer)}</span><span class="centre-event-side">${escapeHtml(e.side)}${escapeHtml(e.assist)}</span></div>`;
+      }).join("")}</div></div>`
+    : `<div class="centre-section"><div class="centre-section-head"><strong>Match events</strong><span>NO GOALS RECORDED</span></div><div class="centre-empty">No goal events are available for this match.</div></div>`;
+
+  const statRows = statKeys.filter(([key]) => homeStats?.[key] != null || awayStats?.[key] != null);
+  const statsHtml = statRows.length
+    ? `<div class="centre-section"><div class="centre-section-head"><strong>Match stats</strong><span>AVAILABLE DATA</span></div><div class="centre-stats">${statRows.map(([key,label,suffix])=>{
+        const hv=homeStats?.[key] ?? "—"; const av=awayStats?.[key] ?? "—";
+        const hn=Number(hv); const an=Number(av); const total=(Number.isFinite(hn)?hn:0)+(Number.isFinite(an)?an:0);
+        const pct=total>0 ? `${Math.max(0,Math.min(100,(hn/total)*100))}%` : "50%";
+        return `<div class="centre-stat"><span class="centre-stat-value">${escapeHtml(String(hv))}${suffix}</span><span><div class="centre-stat-label">${escapeHtml(label)}</div><div class="centre-stat-bars"><div class="centre-bar"><i style="--home:${pct}"></i></div><div class="centre-bar"><i style="--home:${total>0?Math.max(0,Math.min(100,(an/total)*100)):50}%"></i></div></div></span><span class="centre-stat-value right">${escapeHtml(String(av))}${suffix}</span></div>`;
+      }).join("")}</div></div>`
+    : "";
+
+  return `
+    <div class="match-centre">
+      <div class="centre-top">
+        <div class="centre-team">${crest(home)}<span>${escapeHtml(homeName)}</span></div>
+        <div class="centre-score"><div class="centre-main-score">${homeScore}—${awayScore}</div><span class="centre-status${isLive ? " live" : ""}">${escapeHtml(statusText)}</span></div>
+        <div class="centre-team away"><span>${escapeHtml(awayName)}</span>${crest(away)}</div>
+      </div>
+      <div class="centre-meta">
+        <span>${escapeHtml(match?.competition?.name || fallback?.competition?.name || "Competition")}</span>
+        <span>${formatDate(match?.utcDate || fallback?.utcDate)} · ${formatTime(match?.utcDate || fallback?.utcDate)}</span>
+        ${match?.venue ? `<span>${escapeHtml(match.venue)}</span>` : ""}
+        ${halfText ? `<span class="centre-half">${halfText}</span>` : ""}
+      </div>
+      ${eventHtml}
+      ${statsHtml}
+    </div>
+  `;
+}
+
+/* MATCH CLICK */
+function attachMatchToggle(container){
+  container.onclick = async event => {
+    const button = event.target.closest(".match");
+    if(!button) return;
+    const detail = button.nextElementSibling;
+    if(!detail) return;
+    const wasHidden = detail.hidden;
+
+    container.querySelectorAll(".detail").forEach(item => item.hidden = true);
+    container.querySelectorAll(".match").forEach(item => {
+      item.classList.remove("active");
+      item.setAttribute("aria-expanded","false");
+    });
+
+    if(!wasHidden) return;
+
+    detail.hidden = false;
+    button.classList.add("active");
+    button.setAttribute("aria-expanded","true");
+
+    const matchId = button.dataset.matchId;
+    const box = detail.querySelector(".match-centre");
+    if(!matchId || !box) return;
+
+    box.innerHTML = `<div class="centre-loading">Loading match centre…</div>`;
+
+    try{
+      const data = await fetchApi(`/api/match?matchId=${encodeURIComponent(matchId)}`);
+      box.outerHTML = renderMatchCentre(data, null, "detail");
+    }catch(error){
+      box.innerHTML = `<div class="centre-loading">Match details unavailable right now.</div>`;
+      console.error(error);
+    }
+  };
+}
 
 /* API */
 
