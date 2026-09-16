@@ -27,122 +27,426 @@ const LEAGUES = {
   }
 };
 
-function jsonResponse(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type"
+
+/*
+  How long Cloudflare should keep each type of
+  football data before asking football-data.org again.
+
+  This greatly reduces API requests.
+*/
+
+const CACHE_TTL = {
+
+  live: 60,
+
+  standings: 300,
+
+  results: 600,
+
+  upcoming: 600,
+
+  competition: 86400
+
+};
+
+
+/*
+  --------------------------------------------------
+  JSON RESPONSE
+  --------------------------------------------------
+*/
+
+function jsonResponse(
+  data,
+  status = 200,
+  extraHeaders = {}
+) {
+
+  const headers = {
+
+    "Content-Type":
+      "application/json; charset=utf-8",
+
+    "Access-Control-Allow-Origin":
+      "*",
+
+    "Access-Control-Allow-Methods":
+      "GET, OPTIONS",
+
+    "Access-Control-Allow-Headers":
+      "Content-Type",
+
+    ...extraHeaders
+
+  };
+
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+      headers
     }
-  });
+  );
+
 }
 
-async function footballDataRequest(path, env) {
+
+/*
+  --------------------------------------------------
+  FOOTBALL-DATA.ORG REQUEST
+  --------------------------------------------------
+*/
+
+async function footballDataRequest(
+  path,
+  env,
+  cacheKey,
+  ttl,
+  ctx
+) {
+
+  /*
+    Make sure the secret exists.
+  */
+
   if (!env.FootballDataToken) {
+
     return jsonResponse(
       {
-        error: "FootballDataToken secret is missing."
+        error:
+          "FootballDataToken secret is missing."
       },
       500
     );
+
   }
 
-  try {
-    const response = await fetch(`${DATA_API}${path}`, {
-      headers: {
-        "X-Auth-Token": env.FootballDataToken
-      }
-    });
 
-    const text = await response.text();
+  /*
+    ------------------------------------------------
+    CHECK CLOUDFLARE CACHE FIRST
+    ------------------------------------------------
+
+    If the data is already cached, return it
+    immediately without contacting football-data.org.
+  */
+
+  const cache =
+    caches.default;
+
+  const cached =
+    await cache.match(cacheKey);
+
+  if (cached) {
+
+    return cached;
+
+  }
+
+
+  /*
+    ------------------------------------------------
+    CONTACT FOOTBALL-DATA.ORG
+    ------------------------------------------------
+  */
+
+  try {
+
+    const response =
+      await fetch(
+        `${DATA_API}${path}`,
+        {
+          method: "GET",
+
+          cache: "no-store",
+
+          headers: {
+
+            "X-Auth-Token":
+              env.FootballDataToken,
+
+            "Accept":
+              "application/json"
+
+          }
+
+        }
+      );
+
+
+    const text =
+      await response.text();
+
 
     let data;
 
+
     try {
-      data = JSON.parse(text);
+
+      data =
+        JSON.parse(text);
+
     } catch {
+
       data = {
         raw: text
       };
+
     }
+
+
+    /*
+      ------------------------------------------------
+      API ERROR
+      ------------------------------------------------
+    */
 
     if (!response.ok) {
+
+      const headers = {};
+
+      /*
+        Tell the browser when the rate limit
+        should reset if football-data.org sends
+        that information.
+      */
+
+      const resetSeconds =
+        response.headers.get(
+          "X-RequestCounter-Reset"
+        );
+
+      if (resetSeconds) {
+
+        headers["Retry-After"] =
+          resetSeconds;
+
+      }
+
+
       return jsonResponse(
         {
-          error: "football-data.org request failed.",
-          api: data
+          error:
+            "football-data.org request failed.",
+
+          api:
+            data
+
         },
-        response.status
+        response.status,
+        headers
       );
+
     }
 
-    return jsonResponse(data);
+
+    /*
+      ------------------------------------------------
+      SUCCESSFUL RESPONSE
+      ------------------------------------------------
+
+      Store the result in Cloudflare's cache.
+    */
+
+    const result =
+      jsonResponse(
+        data,
+        200,
+        {
+          "Cache-Control":
+            `public, max-age=${ttl}`
+        }
+      );
+
+
+    /*
+      Put a copy into the Cloudflare cache.
+
+      waitUntil allows the response to be returned
+      without making the user wait for the cache
+      write to finish.
+    */
+
+    ctx.waitUntil(
+      cache.put(
+        cacheKey,
+        result.clone()
+      )
+    );
+
+
+    return result;
+
 
   } catch (error) {
 
     return jsonResponse(
       {
-        error: "Unable to contact football-data.org.",
-        details: error.message
+        error:
+          "Unable to contact football-data.org.",
+
+        details:
+          error.message
       },
       500
     );
 
   }
+
 }
+
+
+/*
+  --------------------------------------------------
+  GET LEAGUE
+  --------------------------------------------------
+*/
 
 function getLeague(url) {
-  const leagueKey = url.searchParams.get("league") || "premier";
 
-  return LEAGUES[leagueKey] || null;
+  const leagueKey =
+    url.searchParams.get("league")
+    || "premier";
+
+
+  return (
+    LEAGUES[leagueKey]
+    || null
+  );
+
 }
+
+
+/*
+  --------------------------------------------------
+  CACHE KEY
+  --------------------------------------------------
+
+  Each league and endpoint gets its own cache entry.
+
+  Example:
+
+  /api/standings?league=premier
+
+  is different from:
+
+  /api/standings?league=laliga
+  --------------------------------------------------
+*/
+
+function getCacheKey(url) {
+
+  return new Request(
+    url.toString(),
+    {
+      method: "GET"
+    }
+  );
+
+}
+
+
+/*
+  --------------------------------------------------
+  WORKER
+  --------------------------------------------------
+*/
 
 export default {
 
-  async fetch(request, env) {
+  async fetch(
+    request,
+    env,
+    ctx
+  ) {
 
-    const url = new URL(request.url);
+    const url =
+      new URL(request.url);
+
 
     /*
-      --------------------------------------------------
+      ------------------------------------------------
       CORS
-      --------------------------------------------------
+      ------------------------------------------------
     */
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, {
-        status: 204,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type"
+    if (
+      request.method ===
+      "OPTIONS"
+    ) {
+
+      return new Response(
+        null,
+        {
+          status: 204,
+
+          headers: {
+
+            "Access-Control-Allow-Origin":
+              "*",
+
+            "Access-Control-Allow-Methods":
+              "GET, OPTIONS",
+
+            "Access-Control-Allow-Headers":
+              "Content-Type"
+
+          }
+
         }
-      });
+      );
+
     }
 
+
     /*
-      --------------------------------------------------
+      ------------------------------------------------
       FOOTBALL API ROUTES
-      --------------------------------------------------
+      ------------------------------------------------
     */
 
-    if (url.pathname.startsWith("/api/")) {
+    if (
+      url.pathname.startsWith(
+        "/api/"
+      )
+    ) {
 
-      const league = getLeague(url);
+
+      const league =
+        getLeague(url);
+
+
+      /*
+        Unknown league
+      */
 
       if (!league) {
 
         return jsonResponse(
           {
-            error: "Unknown league.",
-            availableLeagues: Object.keys(LEAGUES)
+            error:
+              "Unknown league.",
+
+            availableLeagues:
+              Object.keys(
+                LEAGUES
+              )
+
           },
           400
         );
 
       }
+
+
+      /*
+        Create the cache key for
+        this exact API request.
+      */
+
+      const cacheKey =
+        getCacheKey(url);
+
 
       /*
         ------------------------------------------------
@@ -150,17 +454,31 @@ export default {
         ------------------------------------------------
 
         football-data.org's LIVE filter covers
-        IN_PLAY and PAUSED matches.
+        matches currently IN_PLAY or PAUSED.
+
+        Cached for 60 seconds.
       */
 
-      if (url.pathname === "/api/live-scores") {
+      if (
+        url.pathname ===
+        "/api/live-scores"
+      ) {
 
         const path =
           `/competitions/${league.code}/matches` +
           `?status=LIVE`;
 
-        return footballDataRequest(path, env);
+
+        return footballDataRequest(
+          path,
+          env,
+          cacheKey,
+          CACHE_TTL.live,
+          ctx
+        );
+
       }
+
 
       /*
         ------------------------------------------------
@@ -168,30 +486,53 @@ export default {
         ------------------------------------------------
       */
 
-      if (url.pathname === "/api/upcoming") {
+      if (
+        url.pathname ===
+        "/api/upcoming"
+      ) {
 
-        const today = new Date();
+
+        const today =
+          new Date();
+
 
         const from =
-          today.toISOString().slice(0, 10);
+          today
+            .toISOString()
+            .slice(0, 10);
+
 
         const futureDate =
           new Date(today);
+
 
         futureDate.setDate(
           futureDate.getDate() + 30
         );
 
+
         const to =
-          futureDate.toISOString().slice(0, 10);
+          futureDate
+            .toISOString()
+            .slice(0, 10);
+
 
         const path =
           `/competitions/${league.code}/matches` +
           `?dateFrom=${from}` +
           `&dateTo=${to}`;
 
-        return footballDataRequest(path, env);
+
+        return footballDataRequest(
+          path,
+          env,
+          cacheKey,
+          CACHE_TTL.upcoming,
+          ctx
+        );
+
       }
+
 
       /*
         ------------------------------------------------
@@ -199,22 +540,36 @@ export default {
         ------------------------------------------------
       */
 
-      if (url.pathname === "/api/results") {
+      if (
+        url.pathname ===
+        "/api/results"
+      ) {
 
-        const today = new Date();
+
+        const today =
+          new Date();
+
 
         const to =
-          today.toISOString().slice(0, 10);
+          today
+            .toISOString()
+            .slice(0, 10);
+
 
         const pastDate =
           new Date(today);
+
 
         pastDate.setDate(
           pastDate.getDate() - 30
         );
 
+
         const from =
-          pastDate.toISOString().slice(0, 10);
+          pastDate
+            .toISOString()
+            .slice(0, 10);
+
 
         const path =
           `/competitions/${league.code}/matches` +
@@ -222,22 +577,49 @@ export default {
           `&dateTo=${to}` +
           `&status=FINISHED`;
 
-        return footballDataRequest(path, env);
+
+        return footballDataRequest(
+          path,
+          env,
+          cacheKey,
+          CACHE_TTL.results,
+          ctx
+        );
+
       }
+
 
       /*
         ------------------------------------------------
         LEAGUE TABLE
         ------------------------------------------------
+
+        Cached for 5 minutes.
+
+        There is no reason to request the table
+        every 60 seconds.
       */
 
-      if (url.pathname === "/api/standings") {
+      if (
+        url.pathname ===
+        "/api/standings"
+      ) {
+
 
         const path =
           `/competitions/${league.code}/standings`;
 
-        return footballDataRequest(path, env);
+
+        return footballDataRequest(
+          path,
+          env,
+          cacheKey,
+          CACHE_TTL.standings,
+          ctx
+        );
+
       }
+
 
       /*
         ------------------------------------------------
@@ -245,13 +627,26 @@ export default {
         ------------------------------------------------
       */
 
-      if (url.pathname === "/api/competition") {
+      if (
+        url.pathname ===
+        "/api/competition"
+      ) {
+
 
         const path =
           `/competitions/${league.code}`;
 
-        return footballDataRequest(path, env);
+
+        return footballDataRequest(
+          path,
+          env,
+          cacheKey,
+          CACHE_TTL.competition,
+          ctx
+        );
+
       }
+
 
       /*
         ------------------------------------------------
@@ -261,19 +656,29 @@ export default {
 
       return jsonResponse(
         {
-          error: "Unknown API endpoint.",
+          error:
+            "Unknown API endpoint.",
 
           availableEndpoints: [
+
             "/api/live-scores?league=premier",
+
             "/api/upcoming?league=premier",
+
             "/api/results?league=premier",
+
             "/api/standings?league=premier",
+
             "/api/competition?league=premier"
+
           ]
+
         },
         404
       );
+
     }
+
 
     /*
       --------------------------------------------------
@@ -285,7 +690,10 @@ export default {
       --------------------------------------------------
     */
 
-    return env.ASSETS.fetch(request);
+    return env.ASSETS.fetch(
+      request
+    );
+
   }
 
 };
