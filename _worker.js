@@ -1,5 +1,39 @@
+const API_BASE = "https://v3.football.api-sports.io";
+const CURRENT_SEASON = 2026;
+
+const LEAGUES = {
+  premier: {
+    id: 39,
+    name: "Premier League",
+  },
+  laliga: {
+    id: 140,
+    name: "LaLiga",
+  },
+  seriea: {
+    id: 135,
+    name: "Serie A",
+  },
+  bundesliga: {
+    id: 78,
+    name: "Bundesliga",
+  },
+  ligue1: {
+    id: 61,
+    name: "Ligue 1",
+  },
+  scotland: {
+    id: 179,
+    name: "Scottish Premiership",
+  },
+  denmark: {
+    id: 119,
+    name: "Danish Superliga",
+  },
+};
+
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     const corsHeaders = {
@@ -15,54 +49,24 @@ export default {
       });
     }
 
-    if (!env.footballScoresToken) {
+    // IMPORTANT:
+    // This is the exact name of the Cloudflare secret you created.
+    const apiKey = env.FootballScoresWebsite;
+
+    if (!apiKey) {
       return json(
-        { error: "footballScoresToken is not configured." },
+        {
+          error: "FootballScoresWebsite secret is not configured.",
+        },
         500,
         corsHeaders
       );
     }
 
-    // Leagues currently available on the Sportmonks Free Football plan.
-    const leagueIds = {
-      scotland: {
-        id: 501,
-        name: "Scottish Premiership",
-      },
-      denmark: {
-        id: 271,
-        name: "Danish Superliga",
-      },
-
-      // These are kept so the website can recognise the buttons,
-      // but they require a Sportmonks plan that includes those leagues.
-      premier: {
-        id: 8,
-        name: "Premier League",
-      },
-      laliga: {
-        id: 564,
-        name: "LaLiga",
-      },
-      seriea: {
-        id: 384,
-        name: "Serie A",
-      },
-      bundesliga: {
-        id: 82,
-        name: "Bundesliga",
-      },
-      ligue1: {
-        id: 301,
-        name: "Ligue 1",
-      },
-    };
-
     const leagueKey = url.searchParams.get("league") || "scotland";
-    const league = leagueIds[leagueKey];
+    const league = LEAGUES[leagueKey];
 
     if (
-      url.pathname !== "/" &&
       url.pathname.startsWith("/api/") &&
       !league
     ) {
@@ -70,201 +74,351 @@ export default {
         {
           error: "Unknown league.",
           league: leagueKey,
+          availableLeagues: Object.keys(LEAGUES),
         },
         400,
         corsHeaders
       );
     }
 
-    /*
-     * LIVE SCORES
-     *
-     * Returns only live matches for the selected league.
-     */
-    if (url.pathname === "/api/live-scores") {
-      const sportmonksUrl =
-        "https://api.sportmonks.com/v3/football/livescores/inplay" +
-        "?include=participants;scores;periods;events;league.country;round" +
-        `&filters=fixtureLeagues:${league.id}`;
+    // ------------------------------------------------------------
+    // LIVE SCORES
+    // ------------------------------------------------------------
 
-      return sportmonks(
-        sportmonksUrl,
-        env,
+    if (url.pathname === "/api/live-scores") {
+      const apiUrl =
+        `${API_BASE}/fixtures` +
+        `?live=${league.id}`;
+
+      return cachedApiRequest(
+        apiUrl,
+        apiKey,
+        ctx,
         corsHeaders,
-        league
+        300,
+        league,
+        "live"
       );
     }
 
-    /*
-     * RECENT RESULTS
-     *
-     * Gets the last 30 days of fixtures for the selected league.
-     */
+    // ------------------------------------------------------------
+    // RECENT RESULTS
+    // ------------------------------------------------------------
+
     if (url.pathname === "/api/results") {
       const now = new Date();
 
-      const end = now.toISOString().slice(0, 10);
-
       const past = new Date(now);
-      past.setDate(past.getDate() - 30);
+      past.setUTCDate(past.getUTCDate() - 30);
 
-      const start = past.toISOString().slice(0, 10);
+      const from = past.toISOString().slice(0, 10);
+      const to = now.toISOString().slice(0, 10);
 
-      const sportmonksUrl =
-        "https://api.sportmonks.com/v3/football/fixtures/between/" +
-        `${start}/${end}` +
-        "?include=participants;scores;state;league;round" +
-        `&filters=fixtureLeagues:${league.id}`;
+      const apiUrl =
+        `${API_BASE}/fixtures` +
+        `?league=${league.id}` +
+        `&season=${CURRENT_SEASON}` +
+        `&from=${from}` +
+        `&to=${to}`;
 
-      return sportmonks(
-        sportmonksUrl,
-        env,
+      return cachedApiRequest(
+        apiUrl,
+        apiKey,
+        ctx,
         corsHeaders,
-        league
+        21600,
+        league,
+        "results"
       );
     }
 
-    /*
-     * UPCOMING FIXTURES
-     *
-     * Gets the next 14 days of fixtures for the selected league.
-     */
+    // ------------------------------------------------------------
+    // UPCOMING FIXTURES
+    // ------------------------------------------------------------
+
     if (url.pathname === "/api/upcoming") {
       const now = new Date();
 
-      const start = now.toISOString().slice(0, 10);
-
       const future = new Date(now);
-      future.setDate(future.getDate() + 14);
+      future.setUTCDate(future.getUTCDate() + 14);
 
-      const end = future.toISOString().slice(0, 10);
+      const from = now.toISOString().slice(0, 10);
+      const to = future.toISOString().slice(0, 10);
 
-      const sportmonksUrl =
-        "https://api.sportmonks.com/v3/football/fixtures/between/" +
-        `${start}/${end}` +
-        "?include=participants;scores;state;league;round" +
-        `&filters=fixtureLeagues:${league.id}`;
+      const apiUrl =
+        `${API_BASE}/fixtures` +
+        `?league=${league.id}` +
+        `&season=${CURRENT_SEASON}` +
+        `&from=${from}` +
+        `&to=${to}`;
 
-      return sportmonks(
-        sportmonksUrl,
-        env,
+      return cachedApiRequest(
+        apiUrl,
+        apiKey,
+        ctx,
         corsHeaders,
-        league
+        21600,
+        league,
+        "upcoming"
       );
     }
 
-    /*
-     * LEAGUE TABLE
-     *
-     * First finds the current season for the selected league.
-     * Then retrieves the standings for that season.
-     */
+    // ------------------------------------------------------------
+    // LEAGUE STANDINGS
+    // ------------------------------------------------------------
+
     if (url.pathname === "/api/standings") {
-      const leagueUrl =
-        `https://api.sportmonks.com/v3/football/leagues/${league.id}` +
-        "?include=currentSeason";
+      const apiUrl =
+        `${API_BASE}/standings` +
+        `?league=${league.id}` +
+        `&season=${CURRENT_SEASON}`;
 
-      const leagueResponse = await fetch(leagueUrl, {
-        method: "GET",
-        headers: {
-          "Authorization": env.footballScoresToken,
-          "Accept": "application/json",
-        },
-      });
-
-      const leagueData = await leagueResponse.json();
-
-      if (!leagueResponse.ok) {
-        return new Response(JSON.stringify(leagueData), {
-          status: leagueResponse.status,
-          headers: {
-            "Content-Type": "application/json",
-            ...corsHeaders,
-          },
-        });
-      }
-
-      const currentSeason =
-        leagueData?.data?.currentSeason ||
-        leagueData?.data?.currentseason;
-
-      if (!currentSeason?.id) {
-        return json(
-          {
-            error: "Could not determine the current season.",
-            league: league.name,
-            sportmonks: leagueData,
-          },
-          500,
-          corsHeaders
-        );
-      }
-
-      const standingsUrl =
-        `https://api.sportmonks.com/v3/football/standings/seasons/${currentSeason.id}` +
-        "?include=participant;details.type;form";
-
-      return sportmonks(
-        standingsUrl,
-        env,
+      return cachedStandingsRequest(
+        apiUrl,
+        apiKey,
+        ctx,
         corsHeaders,
+        3600,
         league
       );
     }
 
-    /*
-     * If the request isn't an API request, let Cloudflare serve
-     * the website files normally.
-     */
+    // ------------------------------------------------------------
+    // WEBSITE FILES
+    // ------------------------------------------------------------
+
     return env.ASSETS.fetch(request);
   },
 };
 
 
-/*
- * Make a request to Sportmonks and return the response.
- */
-async function sportmonks(
-  url,
-  env,
+// ============================================================
+// API REQUEST + CACHE
+// ============================================================
+
+async function cachedApiRequest(
+  apiUrl,
+  apiKey,
+  ctx,
   corsHeaders,
-  league
+  cacheSeconds,
+  league,
+  type
 ) {
   try {
-    const response = await fetch(url, {
+    const cacheKey = new Request(apiUrl, {
+      method: "GET",
+    });
+
+    const cache = caches.default;
+
+    let cachedResponse = await cache.match(cacheKey);
+
+    if (cachedResponse) {
+      return addCorsHeaders(cachedResponse, corsHeaders);
+    }
+
+    const response = await fetch(apiUrl, {
       method: "GET",
       headers: {
-        "Authorization": env.footballScoresToken,
+        "x-apisports-key": apiKey,
         "Accept": "application/json",
       },
     });
 
-    const data = await response.json();
+    const apiData = await response.json();
 
-    /*
-     * Add a little information that makes the response easier
-     * for our website to understand.
-     */
-    if (data && typeof data === "object") {
-      data.websiteLeague = {
+    if (!response.ok || (apiData.errors && Object.keys(apiData.errors).length > 0)) {
+      return json(
+        {
+          error: "API-Football request failed.",
+          api: apiData,
+        },
+        response.ok ? 502 : response.status,
+        corsHeaders
+      );
+    }
+
+    const fixtures = Array.isArray(apiData.response)
+      ? apiData.response
+      : [];
+
+    const normalized = fixtures.map(normalizeFixture);
+
+    const output = {
+      data: normalized,
+      websiteLeague: {
         key: findLeagueKey(league.id),
         id: league.id,
         name: league.name,
-      };
-    }
-
-    return new Response(JSON.stringify(data), {
-      status: response.status,
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store",
-        ...corsHeaders,
       },
-    });
+      api: {
+        results: apiData.results || normalized.length,
+      },
+    };
+
+    const result = new Response(
+      JSON.stringify(output),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": `public, s-maxage=${cacheSeconds}`,
+          ...corsHeaders,
+        },
+      }
+    );
+
+    ctx.waitUntil(
+      cache.put(cacheKey, result.clone())
+    );
+
+    return result;
+
   } catch (error) {
     return json(
       {
-        error: "Unable to contact Sportmonks.",
+        error: "Unable to contact API-Football.",
+        details: error.message,
+        type,
+      },
+      500,
+      corsHeaders
+    );
+  }
+}
+
+
+// ============================================================
+// STANDINGS REQUEST + CACHE
+// ============================================================
+
+async function cachedStandingsRequest(
+  apiUrl,
+  apiKey,
+  ctx,
+  corsHeaders,
+  cacheSeconds,
+  league
+) {
+  try {
+    const cacheKey = new Request(apiUrl, {
+      method: "GET",
+    });
+
+    const cache = caches.default;
+
+    let cachedResponse = await cache.match(cacheKey);
+
+    if (cachedResponse) {
+      return addCorsHeaders(cachedResponse, corsHeaders);
+    }
+
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        "x-apisports-key": apiKey,
+        "Accept": "application/json",
+      },
+    });
+
+    const apiData = await response.json();
+
+    if (!response.ok || (apiData.errors && Object.keys(apiData.errors).length > 0)) {
+      return json(
+        {
+          error: "API-Football standings request failed.",
+          api: apiData,
+        },
+        response.ok ? 502 : response.status,
+        corsHeaders
+      );
+    }
+
+    const rows =
+      apiData?.response?.[0]?.league?.standings?.[0] || [];
+
+    const normalized = rows.map((row) => ({
+      participant: {
+        id: row.team?.id,
+        name: row.team?.name || "Unknown",
+        image_path: row.team?.logo || null,
+      },
+
+      details: [
+        {
+          type: { code: "overall-matches-played" },
+          value: row.all?.played ?? 0,
+        },
+        {
+          type: { code: "overall-won" },
+          value: row.all?.win ?? 0,
+        },
+        {
+          type: { code: "overall-draw" },
+          value: row.all?.draw ?? 0,
+        },
+        {
+          type: { code: "overall-lost" },
+          value: row.all?.lose ?? 0,
+        },
+        {
+          type: { code: "goals-for" },
+          value: row.all?.goals?.for ?? 0,
+        },
+        {
+          type: { code: "goals-against" },
+          value: row.all?.goals?.against ?? 0,
+        },
+        {
+          type: { code: "goal-difference" },
+          value: row.goalsDiff ?? 0,
+        },
+        {
+          type: { code: "points" },
+          value: row.points ?? 0,
+        },
+      ],
+
+      form: (row.form || "")
+        .split("")
+        .map((letter, index) => ({
+          form: letter,
+          sort_order: index,
+        })),
+    }));
+
+    const output = {
+      data: normalized,
+      websiteLeague: {
+        key: findLeagueKey(league.id),
+        id: league.id,
+        name: league.name,
+      },
+    };
+
+    const result = new Response(
+      JSON.stringify(output),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": `public, s-maxage=${cacheSeconds}`,
+          ...corsHeaders,
+        },
+      }
+    );
+
+    ctx.waitUntil(
+      cache.put(cacheKey, result.clone())
+    );
+
+    return result;
+
+  } catch (error) {
+    return json(
+      {
+        error: "Unable to contact API-Football standings.",
         details: error.message,
       },
       500,
@@ -274,33 +428,123 @@ async function sportmonks(
 }
 
 
-/*
- * Convert a Sportmonks league ID back to our website league key.
- */
-function findLeagueKey(id) {
-  const leagues = {
-    501: "scotland",
-    271: "denmark",
-    8: "premier",
-    564: "laliga",
-    384: "seriea",
-    82: "bundesliga",
-    301: "ligue1",
-  };
+// ============================================================
+// CONVERT API-FOOTBALL FIXTURE TO OUR WEBSITE FORMAT
+// ============================================================
 
-  return leagues[id] || null;
+function normalizeFixture(item) {
+  const fixture = item.fixture || {};
+  const teams = item.teams || {};
+  const goals = item.goals || {};
+
+  const home = teams.home || {};
+  const away = teams.away || {};
+
+  let startingAt = null;
+
+  if (fixture.date) {
+    startingAt = new Date(fixture.date)
+      .toISOString()
+      .replace(".000Z", "");
+  }
+
+  return {
+    id: fixture.id,
+
+    participants: [
+      {
+        id: home.id,
+        name: home.name || "Home",
+        image_path: home.logo || null,
+        meta: {
+          location: "home",
+        },
+      },
+      {
+        id: away.id,
+        name: away.name || "Away",
+        image_path: away.logo || null,
+        meta: {
+          location: "away",
+        },
+      },
+    ],
+
+    starting_at: startingAt,
+
+    state: {
+      short_name: fixture.status?.short || "",
+      name: fixture.status?.long || "",
+    },
+
+    scores: [
+      {
+        participant_id: home.id,
+        description: "CURRENT",
+        score: {
+          goals: goals.home,
+        },
+      },
+      {
+        participant_id: away.id,
+        description: "CURRENT",
+        score: {
+          goals: goals.away,
+        },
+      },
+    ],
+
+    league: {
+      id: item.league?.id,
+      name: item.league?.name || "",
+    },
+
+    round: {
+      name: item.league?.round || "",
+    },
+  };
 }
 
 
-/*
- * Simple JSON response helper.
- */
-function json(data, status, corsHeaders) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      ...corsHeaders,
-    },
+// ============================================================
+// HELPERS
+// ============================================================
+
+function findLeagueKey(id) {
+  for (const [key, league] of Object.entries(LEAGUES)) {
+    if (league.id === id) {
+      return key;
+    }
+  }
+
+  return null;
+}
+
+
+function addCorsHeaders(response, corsHeaders) {
+  const headers = new Headers(response.headers);
+
+  for (const [key, value] of Object.entries(corsHeaders)) {
+    headers.set(key, value);
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
   });
+}
+
+
+function json(data, status, corsHeaders) {
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+      headers: {
+        "Content-Type": "application/json",
+        ...corsHeaders,
+      },
+    }
+  );
 }
