@@ -523,6 +523,7 @@ td{
 }
 
 @media(max-width:760px){
+
   .wrap{
     padding:0 16px
   }
@@ -573,6 +574,7 @@ td{
     padding-left:12px;
     padding-right:12px
   }
+
 }
 </style>
 </head>
@@ -582,37 +584,81 @@ td{
 <div class="stripe"></div>
 
 <header class="wrap">
-  <div class="logo">MATCH<b>DAY</b></div>
+
+  <div class="logo">
+    MATCH<b>DAY</b>
+  </div>
 
   <nav>
-    <button class="active" data-go="scores">Match centre</button>
-    <button data-go="fixtures">Fixtures</button>
-    <button data-go="table">Table</button>
-    <button data-go="stats">Stats</button>
+
+    <button class="active" data-go="scores">
+      Match centre
+    </button>
+
+    <button data-go="fixtures">
+      Fixtures
+    </button>
+
+    <button data-go="table">
+      Table
+    </button>
+
+    <button data-go="stats">
+      Stats
+    </button>
+
   </nav>
 
   <div class="live">
+
     <i></i>
-    <span id="live-count">0 LIVE NOW</span>
+
+    <span id="live-count">
+      0 LIVE NOW
+    </span>
+
   </div>
+
 </header>
 
 <main class="wrap">
 
   <section class="chooser">
-    <div class="caption">Choose a competition</div>
+
+    <div class="caption">
+      Choose a competition
+    </div>
 
     <div class="league-list">
-      <button class="active" data-league="premier">Premier League</button>
-      <button data-league="laliga">LaLiga</button>
-      <button data-league="seriea">Serie A</button>
-      <button data-league="bundesliga">Bundesliga</button>
-      <button data-league="ligue1">Ligue 1</button>
+
+      <button class="active" data-league="premier">
+        Premier League
+      </button>
+
+      <button data-league="laliga">
+        LaLiga
+      </button>
+
+      <button data-league="seriea">
+        Serie A
+      </button>
+
+      <button data-league="bundesliga">
+        Bundesliga
+      </button>
+
+      <button data-league="ligue1">
+        Ligue 1
+      </button>
+
     </div>
+
   </section>
 
   <section class="hero">
+
     <div>
+
       <div class="league-name" id="league-name">
         ENGLAND · PREMIER LEAGUE
       </div>
@@ -621,148 +667,268 @@ td{
         Every match.<br>
         <em>Right now.</em>
       </h1>
+
     </div>
 
     <p>
       Live scores, recent results, upcoming fixtures,
       and the table as it changes.
     </p>
+
   </section>
 
   <section class="sponsor">
+
     <span>
+
       <i>CFC</i>
-      <b>Chelsea FC</b> · partner showcase <small>(demo)</small>
+
+      <b>Chelsea FC</b>
+      · partner showcase
+      <small>(demo)</small>
+
     </span>
 
-    <button>EXPLORE CHELSEA ↗</button>
+    <button>
+      EXPLORE CHELSEA ↗
+    </button>
+
   </section>
 
   <div class="grid">
 
     <section id="scores">
 
-      <!-- LIVE -->
-
       <div class="panel">
+
         <div class="panel-head">
-          <strong>Live matches</strong>
-          <span class="tag" id="live-tag">LIVE FEED</span>
+
+          <strong>
+            Live matches
+          </strong>
+
+          <span class="tag" id="live-tag">
+            LIVE FEED
+          </span>
+
         </div>
 
         <div id="matches">
-          <div class="empty">Loading live matches...</div>
+
+          <div class="empty">
+            Loading live matches...
+          </div>
+
         </div>
+
       </div>
 
-      <!-- RECENT RESULTS -->
+      <div
+        class="panel"
+        id="results"
+        style="margin-top:18px"
+      >
 
-      <div class="panel" id="results" style="margin-top:18px">
         <div class="panel-head">
-          <strong>Recent results</strong>
-          <span class="tag">LAST 10</span>
+
+          <strong>
+            Recent results
+          </strong>
+
+          <span class="tag">
+            LAST 10
+          </span>
+
         </div>
 
         <div id="results-list">
-          <div class="empty">Loading results...</div>
+
+          <div class="empty">
+            Loading results...
+          </div>
+
         </div>
+
       </div>
 
-      <!-- UPCOMING -->
+      <div
+        class="panel"
+        id="fixtures"
+        style="margin-top:18px"
+      >
 
-      <div class="panel" id="fixtures" style="margin-top:18px">
         <div class="panel-head">
-          <strong>Upcoming fixtures</strong>
-          <span class="tag">NEXT 10</span>
+
+          <strong>
+            Upcoming fixtures
+          </strong>
+
+          <span class="tag">
+            NEXT 10
+          </span>
+
         </div>
 
         <div id="upcoming-list">
-          <div class="empty">Loading fixtures...</div>
+
+          <div class="empty">
+            Loading fixtures...
+          </div>
+
         </div>
+
       </div>
 
       <article class="story">
-        <small>FEATURED ANALYSIS</small>
+
+        <small>
+          FEATURED ANALYSIS
+        </small>
 
         <strong id="story">
           Follow the latest league action.
         </strong>
 
-        <button>READ THE STORY →</button>
+        <button>
+          READ THE STORY →
+        </button>
+
       </article>
 
     </section>
 
     <aside class="right">
 
-      <!-- TABLE -->
-
-      <section class="panel" id="table">
+      <section
+        class="panel"
+        id="table"
+      >
 
         <div class="panel-head">
-          <strong>League table</strong>
+
+          <strong>
+            League table
+          </strong>
 
           <div class="tabs">
-            <button class="active" data-mode="overall">Overall</button>
-            <button data-mode="home">Home</button>
-            <button data-mode="away">Away</button>
+
+            <button
+              class="active"
+              data-mode="overall"
+            >
+              Overall
+            </button>
+
+            <button data-mode="home">
+              Home
+            </button>
+
+            <button data-mode="away">
+              Away
+            </button>
+
           </div>
+
         </div>
 
         <table>
+
           <thead>
+
             <tr>
+
               <th>#</th>
               <th>Club</th>
               <th>P</th>
               <th>GD</th>
               <th>Pts</th>
+
             </tr>
+
           </thead>
 
           <tbody id="short">
+
             <tr>
-              <td colspan="5" style="text-align:center;color:#8e98b3">
+
+              <td
+                colspan="5"
+                style="text-align:center;color:#8e98b3"
+              >
                 Loading...
+
               </td>
+
             </tr>
+
           </tbody>
+
         </table>
 
-        <button class="show-table" id="open-table">
+        <button
+          class="show-table"
+          id="open-table"
+        >
           FULL TABLE →
         </button>
 
       </section>
 
-      <!-- PLAYER AREA -->
-
-      <section class="panel stats" id="stats">
+      <section
+        class="panel stats"
+        id="stats"
+      >
 
         <div class="panel-head">
-          <strong>Player statistics</strong>
+
+          <strong>
+            Player statistics
+          </strong>
+
         </div>
 
         <div class="leader">
-          <span class="rank">—</span>
+
+          <span class="rank">
+            —
+          </span>
 
           <div>
-            <div class="player">Player statistics</div>
+
+            <div class="player">
+              Player statistics
+            </div>
 
             <div class="team">
               Not connected yet
             </div>
+
           </div>
 
           <div class="number">
+
             —
-            <span>COMING SOON</span>
+
+            <span>
+              COMING SOON
+            </span>
+
           </div>
+
         </div>
 
-        <div style="padding:12px 18px;color:#66718c;font-size:10px;line-height:1.5">
+        <div
+          style="
+            padding:12px 18px;
+            color:#66718c;
+            font-size:10px;
+            line-height:1.5
+          "
+        >
+
           League match data and tables are connected.
           Player statistics can be added separately.
+
         </div>
 
       </section>
@@ -771,32 +937,44 @@ td{
 
   </div>
 
-  <!-- FULL TABLE -->
-
-  <section class="panel all-table" id="full">
+  <section
+    class="panel all-table"
+    id="full"
+  >
 
     <div class="panel-head">
+
       <strong id="full-title">
         PREMIER LEAGUE · FULL TABLE
       </strong>
 
-      <button class="show-table" id="close-table">
+      <button
+        class="show-table"
+        id="close-table"
+      >
         CLOSE
       </button>
+
     </div>
 
     <table>
+
       <thead>
+
         <tr>
+
           <th>#</th>
           <th>Club</th>
           <th>Played</th>
           <th>GD</th>
           <th>Pts</th>
+
         </tr>
+
       </thead>
 
       <tbody id="all"></tbody>
+
     </table>
 
   </section>
@@ -848,7 +1026,10 @@ const leagues = {
 let league = "premier";
 let mode = "overall";
 
-const q = selector => document.querySelector(selector);
+let refreshInProgress = false;
+
+const q = selector =>
+  document.querySelector(selector);
 
 function escapeHtml(value){
 
@@ -883,60 +1064,72 @@ function crest(team){
 
 function teamName(team){
 
-  if(!team) return "Unknown";
+  if(!team){
+    return "Unknown";
+  }
 
-  return team.shortName || team.name || "Unknown";
+  return team.shortName ||
+    team.name ||
+    "Unknown";
 
 }
 
 function formatDate(dateString){
 
-  if(!dateString) return "";
+  if(!dateString){
+    return "";
+  }
 
   const date = new Date(dateString);
 
-  if(Number.isNaN(date.getTime())) return "";
+  if(Number.isNaN(date.getTime())){
+    return "";
+  }
 
-  return date.toLocaleDateString("en-AU",{
-    day:"numeric",
-    month:"short"
-  });
+  return date.toLocaleDateString(
+    "en-AU",
+    {
+      day:"numeric",
+      month:"short"
+    }
+  );
 
 }
 
 function formatTime(dateString){
 
-  if(!dateString) return "";
+  if(!dateString){
+    return "";
+  }
 
   const date = new Date(dateString);
 
-  if(Number.isNaN(date.getTime())) return "";
+  if(Number.isNaN(date.getTime())){
+    return "";
+  }
 
-  return date.toLocaleTimeString("en-AU",{
-    hour:"2-digit",
-    minute:"2-digit",
-    hour12:false
-  });
+  return date.toLocaleTimeString(
+    "en-AU",
+    {
+      hour:"2-digit",
+      minute:"2-digit",
+      hour12:false
+    }
+  );
 
 }
 
 function score(match,side){
 
-  const fullTime = match?.score?.fullTime || {};
+  const fullTime =
+    match?.score?.fullTime || {};
 
-  const value = fullTime[side];
+  const value =
+    fullTime[side];
 
-  return typeof value === "number" ? value : "-";
-
-}
-
-function isLive(match){
-
-  return (
-    match?.status === "IN_PLAY" ||
-    match?.status === "PAUSED" ||
-    match?.status === "LIVE"
-  );
+  return typeof value === "number"
+    ? value
+    : "-";
 
 }
 
@@ -946,7 +1139,9 @@ function liveTime(match){
     return "HT";
   }
 
-  if(typeof match?.minute === "number"){
+  if(
+    typeof match?.minute === "number"
+  ){
     return `${match.minute}′`;
   }
 
@@ -954,22 +1149,32 @@ function liveTime(match){
 
 }
 
-function matchRow(match, type){
+function matchRow(match,type){
 
-  const home = match?.homeTeam;
-  const away = match?.awayTeam;
+  const home =
+    match?.homeTeam;
 
-  const homeName = teamName(home);
-  const awayName = teamName(away);
+  const away =
+    match?.awayTeam;
 
-  const homeScore = score(match,"home");
-  const awayScore = score(match,"away");
+  const homeName =
+    teamName(home);
+
+  const awayName =
+    teamName(away);
+
+  const homeScore =
+    score(match,"home");
+
+  const awayScore =
+    score(match,"away");
 
   let rightText = "";
 
   if(type === "live"){
 
-    rightText = liveTime(match);
+    rightText =
+      liveTime(match);
 
   }else{
 
@@ -981,95 +1186,147 @@ function matchRow(match, type){
 
   }
 
-  let scoreText = `${homeScore}—${awayScore}`;
+  let scoreText =
+    `${homeScore}—${awayScore}`;
 
   if(type === "upcoming"){
     scoreText = "—";
   }
 
   return `
-    <button class="match" type="button">
+
+    <button
+      class="match"
+      type="button"
+    >
 
       <span class="club">
+
         ${crest(home)}
+
         ${escapeHtml(homeName)}
+
       </span>
 
       <span class="score">
+
         ${scoreText}
+
       </span>
 
       <span class="club away">
+
         ${escapeHtml(awayName)}
+
         ${crest(away)}
+
       </span>
 
       <span class="time">
+
         ${rightText}
+
       </span>
 
     </button>
 
-    <div class="detail" hidden>
+    <div
+      class="detail"
+      hidden
+    >
 
       <strong>
-        ${escapeHtml(match?.competition?.name || "")}
+
+        ${escapeHtml(
+          match?.competition?.name || ""
+        )}
+
       </strong>
 
-      <span style="float:right;color:var(--accent)">
+      <span
+        style="
+          float:right;
+          color:var(--accent)
+        "
+      >
+
         ${
           type === "live"
             ? liveTime(match)
-            : formatDate(match.utcDate) + " · " + formatTime(match.utcDate)
+            : formatDate(match.utcDate) +
+              " · " +
+              formatTime(match.utcDate)
         }
+
       </span>
 
     </div>
+
   `;
 
 }
 
 function attachMatchToggle(container){
 
-  container.onclick = event => {
+  container.onclick =
+    event => {
 
-    const button = event.target.closest(".match");
+      const button =
+        event.target.closest(".match");
 
-    if(!button) return;
+      if(!button){
+        return;
+      }
 
-    const detail = button.nextElementSibling;
+      const detail =
+        button.nextElementSibling;
 
-    if(!detail) return;
+      if(!detail){
+        return;
+      }
 
-    const wasHidden = detail.hidden;
+      const wasHidden =
+        detail.hidden;
 
-    container
-      .querySelectorAll(".detail")
-      .forEach(item => item.hidden = true);
+      container
+        .querySelectorAll(".detail")
+        .forEach(
+          item => item.hidden = true
+        );
 
-    detail.hidden = !wasHidden;
+      detail.hidden =
+        !wasHidden;
 
-  };
+    };
 
 }
 
 async function fetchApi(endpoint){
 
-  const response = await fetch(
-    `${API_BASE}${endpoint}`,
-    {
-      cache:"no-store"
-    }
-  );
+  const response =
+    await fetch(
+      `${API_BASE}${endpoint}`,
+      {
+        cache:"no-store"
+      }
+    );
 
-  const text = await response.text();
+  const text =
+    await response.text();
 
   let json;
 
   try{
-    json = JSON.parse(text);
+
+    json =
+      JSON.parse(text);
+
   }catch{
-    throw new Error("The server returned invalid data.");
+
+    throw new Error(
+      "The server returned invalid data."
+    );
+
   }
 
   if(!response.ok){
@@ -1087,19 +1344,27 @@ async function fetchApi(endpoint){
 
 }
 
+
+/* ---------------------------------------------
+   LIVE MATCHES
+   --------------------------------------------- */
+
 async function loadLive(){
 
-  const container = q("#matches");
+  const container =
+    q("#matches");
 
   try{
 
-    const json = await fetchApi(
-      `/api/live-scores?league=${encodeURIComponent(league)}`
-    );
+    const json =
+      await fetchApi(
+        `/api/live-scores?league=${encodeURIComponent(league)}`
+      );
 
-    const matches = Array.isArray(json?.matches)
-      ? json.matches
-      : [];
+    const matches =
+      Array.isArray(json?.matches)
+        ? json.matches
+        : [];
 
     q("#live-count").textContent =
       `${matches.length} LIVE NOW`;
@@ -1112,56 +1377,84 @@ async function loadLive(){
         </div>
       `;
 
-      return;
+      return true;
 
     }
 
     container.innerHTML =
-      matches.map(match => matchRow(match,"live")).join("");
+      matches
+        .map(
+          match =>
+            matchRow(match,"live")
+        )
+        .join("");
 
     attachMatchToggle(container);
 
+    return true;
+
   }catch(error){
 
-    console.error("Live scores error:",error);
+    console.error(
+      "Live scores error:",
+      error
+    );
 
-    q("#live-count").textContent =
-      "LIVE UNAVAILABLE";
+    /*
+      IMPORTANT:
+      We deliberately do NOT replace the
+      existing live matches with an error.
 
-    container.innerHTML = `
-      <div class="error">
-        Live scores are temporarily unavailable.
-        <br>
-        <small style="display:block;margin-top:7px;color:#66718c">
-          ${escapeHtml(error.message)}
-        </small>
-      </div>
-    `;
+      This prevents the page from disappearing
+      during an automatic refresh.
+    */
+
+    if(!container.innerHTML.trim()){
+
+      container.innerHTML = `
+        <div class="error">
+          Live scores are temporarily unavailable.
+        </div>
+      `;
+
+    }
+
+    return false;
 
   }
 
 }
 
+
+/* ---------------------------------------------
+   RESULTS
+   --------------------------------------------- */
+
 async function loadResults(){
 
-  const container = q("#results-list");
+  const container =
+    q("#results-list");
 
   try{
 
-    const json = await fetchApi(
-      `/api/results?league=${encodeURIComponent(league)}`
-    );
+    const json =
+      await fetchApi(
+        `/api/results?league=${encodeURIComponent(league)}`
+      );
 
-    const matches = Array.isArray(json?.matches)
-      ? json.matches
-      : [];
+    const matches =
+      Array.isArray(json?.matches)
+        ? json.matches
+        : [];
 
     matches.sort(
       (a,b) =>
-        new Date(b.utcDate) - new Date(a.utcDate)
+        new Date(b.utcDate) -
+        new Date(a.utcDate)
     );
 
-    const recent = matches.slice(0,10);
+    const recent =
+      matches.slice(0,10);
 
     if(!recent.length){
 
@@ -1171,69 +1464,102 @@ async function loadResults(){
         </div>
       `;
 
-      return;
+      return true;
 
     }
 
     container.innerHTML =
-      recent.map(match => matchRow(match,"result")).join("");
+      recent
+        .map(
+          match =>
+            matchRow(match,"result")
+        )
+        .join("");
 
     attachMatchToggle(container);
 
+    return true;
+
   }catch(error){
 
-    console.error("Results error:",error);
+    console.error(
+      "Results error:",
+      error
+    );
 
-    container.innerHTML = `
-      <div class="error">
-        Results are temporarily unavailable.
-        <br>
-        <small style="display:block;margin-top:7px;color:#66718c">
-          ${escapeHtml(error.message)}
-        </small>
-      </div>
-    `;
+    /*
+      Keep the old results on refresh failure.
+    */
+
+    if(!container.innerHTML.trim()){
+
+      container.innerHTML = `
+        <div class="error">
+          Results are temporarily unavailable.
+        </div>
+      `;
+
+    }
+
+    return false;
 
   }
 
 }
 
+
+/* ---------------------------------------------
+   UPCOMING
+   --------------------------------------------- */
+
 async function loadUpcoming(){
 
-  const container = q("#upcoming-list");
+  const container =
+    q("#upcoming-list");
 
   try{
 
-    const json = await fetchApi(
-      `/api/upcoming?league=${encodeURIComponent(league)}`
-    );
-
-    let matches = Array.isArray(json?.matches)
-      ? json.matches
-      : [];
-
-    const now = Date.now();
-
-    matches = matches.filter(match => {
-
-      const time = new Date(match.utcDate).getTime();
-
-      return (
-        time >= now &&
-        (
-          match.status === "TIMED" ||
-          match.status === "SCHEDULED"
-        )
+    const json =
+      await fetchApi(
+        `/api/upcoming?league=${encodeURIComponent(league)}`
       );
 
-    });
+    let matches =
+      Array.isArray(json?.matches)
+        ? json.matches
+        : [];
+
+    const now =
+      Date.now();
+
+    matches =
+      matches.filter(
+        match => {
+
+          const time =
+            new Date(
+              match.utcDate
+            ).getTime();
+
+          return (
+            time >= now &&
+            (
+              match.status === "TIMED" ||
+              match.status === "SCHEDULED"
+            )
+          );
+
+        }
+      );
 
     matches.sort(
       (a,b) =>
-        new Date(a.utcDate) - new Date(b.utcDate)
+        new Date(a.utcDate) -
+        new Date(b.utcDate)
     );
 
-    const upcoming = matches.slice(0,10);
+    const upcoming =
+      matches.slice(0,10);
 
     if(!upcoming.length){
 
@@ -1243,32 +1569,53 @@ async function loadUpcoming(){
         </div>
       `;
 
-      return;
+      return true;
 
     }
 
     container.innerHTML =
-      upcoming.map(match => matchRow(match,"upcoming")).join("");
+      upcoming
+        .map(
+          match =>
+            matchRow(match,"upcoming")
+        )
+        .join("");
 
     attachMatchToggle(container);
 
+    return true;
+
   }catch(error){
 
-    console.error("Upcoming error:",error);
+    console.error(
+      "Upcoming error:",
+      error
+    );
 
-    container.innerHTML = `
-      <div class="error">
-        Upcoming fixtures are temporarily unavailable.
-        <br>
-        <small style="display:block;margin-top:7px;color:#66718c">
-          ${escapeHtml(error.message)}
-        </small>
-      </div>
-    `;
+    /*
+      Keep old fixtures on refresh failure.
+    */
+
+    if(!container.innerHTML.trim()){
+
+      container.innerHTML = `
+        <div class="error">
+          Upcoming fixtures are temporarily unavailable.
+        </div>
+      `;
+
+    }
+
+    return false;
 
   }
 
 }
+
+
+/* ---------------------------------------------
+   STANDINGS
+   --------------------------------------------- */
 
 function getStandingsTable(json){
 
@@ -1286,15 +1633,24 @@ function getStandingsTable(json){
 
   const selected =
     standings.find(
-      item => item.type === requestedType
+      item =>
+        item.type === requestedType
     );
 
-  if(selected?.table){
+  if(
+    selected?.table &&
+    Array.isArray(selected.table)
+  ){
+
     return selected.table;
+
   }
 
   const fallback =
-    standings.find(item => Array.isArray(item.table));
+    standings.find(
+      item =>
+        Array.isArray(item.table)
+    );
 
   return fallback?.table || [];
 
@@ -1302,104 +1658,180 @@ function getStandingsTable(json){
 
 function standingRow(row){
 
-  const team = row?.team;
+  const team =
+    row?.team;
+
+  const goalDifference =
+    Number(row?.goalDifference ?? 0);
 
   return `
+
     <tr>
 
       <td>
-        ${escapeHtml(row?.position ?? "")}
+        ${escapeHtml(
+          row?.position ?? ""
+        )}
       </td>
 
       <td>
+
         <span class="tc">
+
           ${crest(team)}
-          ${escapeHtml(teamName(team))}
+
+          ${escapeHtml(
+            teamName(team)
+          )}
+
         </span>
+
       </td>
 
       <td>
-        ${escapeHtml(row?.playedGames ?? 0)}
+        ${escapeHtml(
+          row?.playedGames ?? 0
+        )}
       </td>
 
       <td>
+
         ${
-          Number(row?.goalDifference) > 0
-            ? "+" + row.goalDifference
-            : row?.goalDifference ?? 0
+          goalDifference > 0
+            ? "+" + goalDifference
+            : goalDifference
         }
+
       </td>
 
       <td class="pts">
-        ${escapeHtml(row?.points ?? 0)}
+
+        ${escapeHtml(
+          row?.points ?? 0
+        )}
+
       </td>
 
     </tr>
+
   `;
 
 }
 
 async function loadStandings(){
 
-  const shortTable = q("#short");
-  const fullTable = q("#all");
+  const shortTable =
+    q("#short");
+
+  const fullTable =
+    q("#all");
 
   try{
 
-    const json = await fetchApi(
-      `/api/standings?league=${encodeURIComponent(league)}`
-    );
+    const json =
+      await fetchApi(
+        `/api/standings?league=${encodeURIComponent(league)}`
+      );
 
-    const table = getStandingsTable(json);
+    const table =
+      getStandingsTable(json);
 
     if(!table.length){
 
+      /*
+        If there was already valid table data,
+        don't destroy it just because a refresh
+        returned an empty response.
+      */
+
+      if(
+        fullTable.innerHTML.trim()
+      ){
+        return true;
+      }
+
       shortTable.innerHTML = `
         <tr>
-          <td colspan="5" style="text-align:center;color:#8e98b3">
+          <td
+            colspan="5"
+            style="
+              text-align:center;
+              color:#8e98b3
+            "
+          >
             No table data available.
           </td>
         </tr>
       `;
 
-      fullTable.innerHTML = "";
-
-      return;
+      return true;
 
     }
 
     shortTable.innerHTML =
-      table.slice(0,6).map(standingRow).join("");
+      table
+        .slice(0,6)
+        .map(standingRow)
+        .join("");
 
     fullTable.innerHTML =
-      table.map(standingRow).join("");
+      table
+        .map(standingRow)
+        .join("");
+
+    return true;
 
   }catch(error){
 
-    console.error("Standings error:",error);
+    console.error(
+      "Standings error:",
+      error
+    );
 
-    shortTable.innerHTML = `
-      <tr>
-        <td colspan="5" style="text-align:center;color:#ff8b99">
-          Table unavailable
-        </td>
-      </tr>
-    `;
+    /*
+      Keep the existing table visible.
+    */
 
-    fullTable.innerHTML = "";
+    if(!fullTable.innerHTML.trim()){
+
+      shortTable.innerHTML = `
+        <tr>
+          <td
+            colspan="5"
+            style="
+              text-align:center;
+              color:#ff8b99
+            "
+          >
+            Table unavailable
+          </td>
+        </tr>
+      `;
+
+    }
+
+    return false;
 
   }
 
 }
 
+
+/* ---------------------------------------------
+   LEAGUE DISPLAY
+   --------------------------------------------- */
+
 function renderLeague(){
 
-  const data = leagues[league];
+  const data =
+    leagues[league];
 
-  document.documentElement.style.setProperty(
-    "--accent",
-    data.accent
-  );
+  document.documentElement
+    .style
+    .setProperty(
+      "--accent",
+      data.accent
+    );
 
   q("#league-name").textContent =
     data.title;
@@ -1410,7 +1842,8 @@ function renderLeague(){
   q("#full-title").textContent =
     `${data.title} · FULL TABLE`;
 
-  document.querySelectorAll("[data-league]")
+  document
+    .querySelectorAll("[data-league]")
     .forEach(button => {
 
       button.classList.toggle(
@@ -1422,38 +1855,114 @@ function renderLeague(){
 
 }
 
-async function loadAll(){
 
-  renderLeague();
+/* ---------------------------------------------
+   INITIAL LOADING
+   --------------------------------------------- */
 
-  q("#matches").innerHTML =
-    `<div class="empty">Loading live matches...</div>`;
+function showInitialLoading(){
 
-  q("#results-list").innerHTML =
-    `<div class="empty">Loading results...</div>`;
+  q("#matches").innerHTML = `
+    <div class="empty">
+      Loading live matches...
+    </div>
+  `;
 
-  q("#upcoming-list").innerHTML =
-    `<div class="empty">Loading fixtures...</div>`;
+  q("#results-list").innerHTML = `
+    <div class="empty">
+      Loading results...
+    </div>
+  `;
 
-  await Promise.all([
-    loadLive(),
-    loadResults(),
-    loadUpcoming(),
-    loadStandings()
-  ]);
+  q("#upcoming-list").innerHTML = `
+    <div class="empty">
+      Loading fixtures...
+    </div>
+  `;
+
+  q("#short").innerHTML = `
+    <tr>
+      <td
+        colspan="5"
+        style="
+          text-align:center;
+          color:#8e98b3
+        "
+      >
+        Loading...
+      </td>
+    </tr>
+  `;
 
 }
 
-document.querySelectorAll("[data-league]")
+
+/* ---------------------------------------------
+   LOAD EVERYTHING
+   --------------------------------------------- */
+
+async function loadAll(initialLoad = false){
+
+  /*
+    Prevent two automatic refreshes from running
+    over the top of each other.
+  */
+
+  if(refreshInProgress){
+    return;
+  }
+
+  refreshInProgress = true;
+
+  renderLeague();
+
+  /*
+    ONLY show loading messages on the very
+    first page load or when changing leagues.
+
+    Automatic refreshes leave the existing
+    information visible.
+  */
+
+  if(initialLoad){
+    showInitialLoading();
+  }
+
+  try{
+
+    await Promise.all([
+      loadLive(),
+      loadResults(),
+      loadUpcoming(),
+      loadStandings()
+    ]);
+
+  }finally{
+
+    refreshInProgress = false;
+
+  }
+
+}
+
+
+/* ---------------------------------------------
+   LEAGUE BUTTONS
+   --------------------------------------------- */
+
+document
+  .querySelectorAll("[data-league]")
   .forEach(button => {
 
     button.onclick = () => {
 
-      league = button.dataset.league;
+      league =
+        button.dataset.league;
 
       mode = "overall";
 
-      document.querySelectorAll("[data-mode]")
+      document
+        .querySelectorAll("[data-mode]")
         .forEach(item => {
 
           item.classList.toggle(
@@ -1463,20 +1972,33 @@ document.querySelectorAll("[data-league]")
 
         });
 
-      loadAll();
+      /*
+        A league change is a genuine new page
+        of data, so show loading states.
+      */
+
+      loadAll(true);
 
     };
 
   });
 
-document.querySelectorAll("[data-mode]")
+
+/* ---------------------------------------------
+   HOME / AWAY / OVERALL
+   --------------------------------------------- */
+
+document
+  .querySelectorAll("[data-mode]")
   .forEach(button => {
 
     button.onclick = () => {
 
-      mode = button.dataset.mode;
+      mode =
+        button.dataset.mode;
 
-      document.querySelectorAll("[data-mode]")
+      document
+        .querySelectorAll("[data-mode]")
         .forEach(item => {
 
           item.classList.toggle(
@@ -1486,34 +2008,55 @@ document.querySelectorAll("[data-mode]")
 
         });
 
+      /*
+        Only the table needs to reload.
+      */
+
       loadStandings();
 
     };
 
   });
 
+
+/* ---------------------------------------------
+   FULL TABLE
+   --------------------------------------------- */
+
 q("#open-table").onclick = () => {
 
-  q("#full").classList.add("open");
+  q("#full")
+    .classList
+    .add("open");
 
-  q("#full").scrollIntoView({
-    behavior:"smooth"
-  });
+  q("#full")
+    .scrollIntoView({
+      behavior:"smooth"
+    });
 
 };
 
 q("#close-table").onclick = () => {
 
-  q("#full").classList.remove("open");
+  q("#full")
+    .classList
+    .remove("open");
 
 };
 
-document.querySelectorAll("[data-go]")
+
+/* ---------------------------------------------
+   TOP NAVIGATION
+   --------------------------------------------- */
+
+document
+  .querySelectorAll("[data-go]")
   .forEach(button => {
 
     button.onclick = () => {
 
-      document.querySelectorAll("[data-go]")
+      document
+        .querySelectorAll("[data-go]")
         .forEach(item => {
 
           item.classList.toggle(
@@ -1528,7 +2071,8 @@ document.querySelectorAll("[data-go]")
           ? "fixtures"
           : button.dataset.go;
 
-      const element = q("#" + target);
+      const element =
+        q("#" + target);
 
       if(element){
 
@@ -1543,9 +2087,26 @@ document.querySelectorAll("[data-go]")
 
   });
 
-loadAll();
 
-setInterval(loadAll,60000);
+/* ---------------------------------------------
+   FIRST LOAD
+   --------------------------------------------- */
+
+loadAll(true);
+
+
+/* ---------------------------------------------
+   AUTOMATIC REFRESH
+   ---------------------------------------------
+
+   Refreshes every 60 seconds WITHOUT clearing
+   the existing information first.
+   --------------------------------------------- */
+
+setInterval(
+  () => loadAll(false),
+  60000
+);
 
 </script>
 
