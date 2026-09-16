@@ -563,19 +563,6 @@ td{
   </div>
 
 
-  <div class="header-info">
-
-    <div class="live">
-
-      <i></i>
-
-      <span id="live-count">
-        0 LIVE NOW
-      </span>
-
-    </div>
-
-  </div>
 
 </header>
 
@@ -1461,9 +1448,6 @@ async function loadLive(){
         ? json.matches
         : [];
 
-
-    q("#live-count").textContent =
-      `${matches.length} LIVE NOW`;
 
 
     if(!matches.length){
