@@ -3,11 +3,18 @@
   "name": "my-new-score-site",
   "main": "./_worker.js",
   "compatibility_date": "2026-09-15",
+
+  "cache": {
+    "enabled": true
+  },
+
   "secrets": {
     "required": [
-      "FootballScoresWebsite"
+      "FootballScoresWebsite",
+      "FootballDataToken"
     ]
   },
+
   "assets": {
     "directory": ".",
     "binding": "ASSETS",
