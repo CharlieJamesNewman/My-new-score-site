@@ -1,15 +1,27 @@
 <!doctype html>
 <html lang="en">
+
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
 <title>Matchday — Live Football</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+>
 
 <style>
+
 :root{
   --accent:#c9ff4a;
   --bg:#0b1020;
@@ -40,6 +52,9 @@ body{
   height:5px;
   background:var(--accent)
 }
+
+
+/* HEADER */
 
 header{
   height:82px;
@@ -117,6 +132,9 @@ header{
   box-shadow:0 0 0 3px #ff4d6218
 }
 
+
+/* LEAGUE SELECTOR */
+
 .chooser{
   padding:17px 0;
   border-bottom:1px solid var(--line)
@@ -157,43 +175,14 @@ header{
   border-color:var(--accent)
 }
 
-.hero{
-  padding:48px 0 27px;
-  display:flex;
-  justify-content:space-between;
-  align-items:end
-}
 
-.league-name{
-  color:var(--accent);
-  font:500 10px 'DM Mono';
-  letter-spacing:.13em
-}
-
-.hero h1{
-  margin:9px 0 0;
-  font:600 clamp(52px,7vw,86px)/.85 'Barlow Condensed';
-  letter-spacing:-.02em;
-  text-transform:uppercase
-}
-
-.hero h1 em{
-  font-style:normal;
-  color:var(--accent)
-}
-
-.hero p{
-  width:260px;
-  margin:0;
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.55
-}
+/* MAIN GRID */
 
 .grid{
   display:grid;
   grid-template-columns:1.25fr .75fr;
   gap:18px;
+  padding-top:20px;
   padding-bottom:38px
 }
 
@@ -220,6 +209,9 @@ header{
   color:#8e98b3;
   font:500 10px 'DM Mono'
 }
+
+
+/* MATCHES */
 
 .match{
   display:grid;
@@ -258,8 +250,7 @@ header{
   place-items:center;
   width:25px;
   height:25px;
-  flex:none;
-  background:transparent
+  flex:none
 }
 
 .crest img{
@@ -293,12 +284,6 @@ header{
   color:#fff
 }
 
-.detail a{
-  float:right;
-  color:var(--accent);
-  font-weight:700
-}
-
 .empty{
   padding:30px 18px;
   color:#8e98b3;
@@ -312,6 +297,9 @@ header{
   font-size:12px;
   text-align:center
 }
+
+
+/* FEATURED STORY */
 
 .story{
   margin-top:18px;
@@ -359,6 +347,9 @@ header{
   font-size:10px;
   cursor:pointer
 }
+
+
+/* TABLE */
 
 .tabs{
   display:flex;
@@ -424,6 +415,9 @@ td{
   color:var(--accent)
 }
 
+
+/* PLAYER STATS */
+
 .stats{
   margin-top:18px
 }
@@ -478,6 +472,9 @@ td{
   text-align:right
 }
 
+
+/* FULL TABLE */
+
 .all-table{
   display:none;
   margin:0 0 40px
@@ -491,8 +488,12 @@ td{
   padding:7px 18px
 }
 
+
+/* SPONSOR */
+
 .sponsor{
-  margin-bottom:20px;
+  margin-top:20px;
+  margin-bottom:0;
   padding:10px 14px;
   border:1px solid #ffffff16;
   border-radius:8px;
@@ -526,12 +527,18 @@ td{
   cursor:pointer
 }
 
+
+/* FOOTER */
+
 .attribution{
   padding:0 0 35px;
   color:#66718c;
   text-align:center;
   font:500 9px 'DM Mono'
 }
+
+
+/* MOBILE */
 
 @media(max-width:760px){
 
@@ -562,15 +569,6 @@ td{
   .live{
     padding:8px 10px;
     font-size:9px
-  }
-
-  .hero{
-    display:block;
-    padding:34px 0 24px
-  }
-
-  .hero p{
-    margin-top:18px
   }
 
   .grid{
@@ -604,12 +602,17 @@ td{
   }
 
 }
+
 </style>
+
 </head>
+
 
 <body>
 
+
 <div class="stripe"></div>
+
 
 <header class="wrap">
 
@@ -624,6 +627,7 @@ td{
     </div>
 
   </div>
+
 
   <div class="header-info">
 
@@ -642,6 +646,7 @@ td{
 
     </div>
 
+
     <div class="live">
 
       <i></i>
@@ -656,7 +661,11 @@ td{
 
 </header>
 
+
 <main class="wrap">
+
+
+  <!-- COMPETITION SELECTOR -->
 
   <section class="chooser">
 
@@ -666,7 +675,10 @@ td{
 
     <div class="league-list">
 
-      <button class="active" data-league="premier">
+      <button
+        class="active"
+        data-league="premier"
+      >
         Premier League
       </button>
 
@@ -690,27 +702,8 @@ td{
 
   </section>
 
-  <section class="hero">
 
-    <div>
-
-      <div class="league-name" id="league-name">
-        ENGLAND · PREMIER LEAGUE
-      </div>
-
-      <h1>
-        Every match.<br>
-        <em>Right now.</em>
-      </h1>
-
-    </div>
-
-    <p>
-      Live scores, recent results, upcoming fixtures,
-      and the table as it changes.
-    </p>
-
-  </section>
+  <!-- SPONSOR -->
 
   <section class="sponsor">
 
@@ -719,7 +712,9 @@ td{
       <i>CFC</i>
 
       <b>Chelsea FC</b>
+
       · partner showcase
+
       <small>(demo)</small>
 
     </span>
@@ -730,9 +725,18 @@ td{
 
   </section>
 
+
+  <!-- MAIN CONTENT -->
+
   <div class="grid">
 
+
+    <!-- LEFT COLUMN -->
+
     <section id="scores">
+
+
+      <!-- LIVE MATCHES -->
 
       <div class="panel">
 
@@ -742,11 +746,15 @@ td{
             Live matches
           </strong>
 
-          <span class="tag" id="live-tag">
+          <span
+            class="tag"
+            id="live-tag"
+          >
             LIVE FEED
           </span>
 
         </div>
+
 
         <div id="matches">
 
@@ -757,6 +765,9 @@ td{
         </div>
 
       </div>
+
+
+      <!-- RECENT RESULTS -->
 
       <div
         class="panel"
@@ -776,6 +787,7 @@ td{
 
         </div>
 
+
         <div id="results-list">
 
           <div class="empty">
@@ -785,6 +797,9 @@ td{
         </div>
 
       </div>
+
+
+      <!-- UPCOMING FIXTURES -->
 
       <div
         class="panel"
@@ -804,6 +819,7 @@ td{
 
         </div>
 
+
         <div id="upcoming-list">
 
           <div class="empty">
@@ -813,6 +829,9 @@ td{
         </div>
 
       </div>
+
+
+      <!-- FEATURED STORY -->
 
       <article class="story">
 
@@ -830,9 +849,16 @@ td{
 
       </article>
 
+
     </section>
 
+
+    <!-- RIGHT COLUMN -->
+
     <aside class="right">
+
+
+      <!-- LEAGUE TABLE -->
 
       <section
         class="panel"
@@ -866,6 +892,7 @@ td{
 
         </div>
 
+
         <table>
 
           <thead>
@@ -873,14 +900,27 @@ td{
             <tr>
 
               <th>#</th>
-              <th>Club</th>
-              <th>P</th>
-              <th>GD</th>
-              <th>Pts</th>
+
+              <th>
+                Club
+              </th>
+
+              <th>
+                P
+              </th>
+
+              <th>
+                GD
+              </th>
+
+              <th>
+                Pts
+              </th>
 
             </tr>
 
           </thead>
+
 
           <tbody id="short">
 
@@ -891,7 +931,6 @@ td{
                 style="text-align:center;color:#8e98b3"
               >
                 Loading...
-
               </td>
 
             </tr>
@@ -899,6 +938,7 @@ td{
           </tbody>
 
         </table>
+
 
         <button
           class="show-table"
@@ -908,6 +948,9 @@ td{
         </button>
 
       </section>
+
+
+      <!-- PLAYER STATISTICS -->
 
       <section
         class="panel stats"
@@ -922,11 +965,13 @@ td{
 
         </div>
 
+
         <div class="leader">
 
           <span class="rank">
             —
           </span>
+
 
           <div>
 
@@ -940,6 +985,7 @@ td{
 
           </div>
 
+
           <div class="number">
 
             —
@@ -951,6 +997,7 @@ td{
           </div>
 
         </div>
+
 
         <div
           style="
@@ -968,9 +1015,14 @@ td{
 
       </section>
 
+
     </aside>
 
+
   </div>
+
+
+  <!-- FULL TABLE -->
 
   <section
     class="panel all-table"
@@ -992,6 +1044,7 @@ td{
 
     </div>
 
+
     <table>
 
       <thead>
@@ -999,14 +1052,27 @@ td{
         <tr>
 
           <th>#</th>
-          <th>Club</th>
-          <th>Played</th>
-          <th>GD</th>
-          <th>Pts</th>
+
+          <th>
+            Club
+          </th>
+
+          <th>
+            Played
+          </th>
+
+          <th>
+            GD
+          </th>
+
+          <th>
+            Pts
+          </th>
 
         </tr>
 
       </thead>
+
 
       <tbody id="all"></tbody>
 
@@ -1014,62 +1080,68 @@ td{
 
   </section>
 
+
   <div class="attribution">
     Data provided by football-data.org
   </div>
 
+
 </main>
+
 
 <script>
 
+
 const API_BASE = "";
+
 
 const leagues = {
 
-  premier: {
-    title: "ENGLAND · PREMIER LEAGUE",
-    accent: "#c9ff4a",
-    story: "Follow the latest Premier League action."
+  premier:{
+    title:"ENGLAND · PREMIER LEAGUE",
+    accent:"#c9ff4a",
+    story:"Follow the latest Premier League action."
   },
 
-  laliga: {
-    title: "SPAIN · LALIGA",
-    accent: "#ff5349",
-    story: "Follow the latest LaLiga action."
+  laliga:{
+    title:"SPAIN · LALIGA",
+    accent:"#ff5349",
+    story:"Follow the latest LaLiga action."
   },
 
-  seriea: {
-    title: "ITALY · SERIE A",
-    accent: "#21b8ff",
-    story: "Follow the latest Serie A action."
+  seriea:{
+    title:"ITALY · SERIE A",
+    accent:"#21b8ff",
+    story:"Follow the latest Serie A action."
   },
 
-  bundesliga: {
-    title: "GERMANY · BUNDESLIGA",
-    accent: "#ff3c47",
-    story: "Follow the latest Bundesliga action."
+  bundesliga:{
+    title:"GERMANY · BUNDESLIGA",
+    accent:"#ff3c47",
+    story:"Follow the latest Bundesliga action."
   },
 
-  ligue1: {
-    title: "FRANCE · LIGUE 1",
-    accent: "#ffd942",
-    story: "Follow the latest Ligue 1 action."
+  ligue1:{
+    title:"FRANCE · LIGUE 1",
+    accent:"#ffd942",
+    story:"Follow the latest Ligue 1 action."
   }
 
 };
 
+
 let league = "premier";
+
 let mode = "overall";
 
 let refreshInProgress = false;
+
 
 const q = selector =>
   document.querySelector(selector);
 
 
-/* ---------------------------------------------
-   HEADER DATE
-   --------------------------------------------- */
+/* HEADER DATE */
 
 function updateHeaderDate(){
 
@@ -1090,11 +1162,14 @@ function updateHeaderDate(){
 
 updateHeaderDate();
 
+
 setInterval(
   updateHeaderDate,
   60000
 );
 
+
+/* HELPERS */
 
 function escapeHtml(value){
 
@@ -1107,25 +1182,36 @@ function escapeHtml(value){
 
 }
 
+
 function crest(team){
 
-  const url = team?.crest;
+  const url =
+    team?.crest;
 
   if(!url){
-    return `<span class="crest"></span>`;
+
+    return `
+      <span class="crest"></span>
+    `;
+
   }
 
   return `
+
     <span class="crest">
+
       <img
         src="${escapeHtml(url)}"
         alt=""
         loading="lazy"
       >
+
     </span>
+
   `;
 
 }
+
 
 function teamName(team){
 
@@ -1133,11 +1219,14 @@ function teamName(team){
     return "Unknown";
   }
 
-  return team.shortName ||
+  return (
+    team.shortName ||
     team.name ||
-    "Unknown";
+    "Unknown"
+  );
 
 }
+
 
 function formatDate(dateString){
 
@@ -1145,10 +1234,17 @@ function formatDate(dateString){
     return "";
   }
 
-  const date = new Date(dateString);
+  const date =
+    new Date(dateString);
 
-  if(Number.isNaN(date.getTime())){
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+
     return "";
+
   }
 
   return date.toLocaleDateString(
@@ -1161,16 +1257,24 @@ function formatDate(dateString){
 
 }
 
+
 function formatTime(dateString){
 
   if(!dateString){
     return "";
   }
 
-  const date = new Date(dateString);
+  const date =
+    new Date(dateString);
 
-  if(Number.isNaN(date.getTime())){
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+
     return "";
+
   }
 
   return date.toLocaleTimeString(
@@ -1183,6 +1287,7 @@ function formatTime(dateString){
   );
 
 }
+
 
 function score(match,side){
 
@@ -1198,21 +1303,31 @@ function score(match,side){
 
 }
 
+
 function liveTime(match){
 
-  if(match?.status === "PAUSED"){
+  if(
+    match?.status === "PAUSED"
+  ){
+
     return "HT";
+
   }
 
   if(
     typeof match?.minute === "number"
   ){
+
     return `${match.minute}′`;
+
   }
 
   return "LIVE";
 
 }
+
+
+/* MATCH ROW */
 
 function matchRow(match,type){
 
@@ -1222,11 +1337,13 @@ function matchRow(match,type){
   const away =
     match?.awayTeam;
 
+
   const homeName =
     teamName(home);
 
   const awayName =
     teamName(away);
+
 
   const homeScore =
     score(match,"home");
@@ -1234,7 +1351,9 @@ function matchRow(match,type){
   const awayScore =
     score(match,"away");
 
+
   let rightText = "";
+
 
   if(type === "live"){
 
@@ -1244,19 +1363,28 @@ function matchRow(match,type){
   }else{
 
     rightText = `
+
       ${formatDate(match.utcDate)}
+
       ·
+
       ${formatTime(match.utcDate)}
+
     `;
 
   }
 
+
   let scoreText =
     `${homeScore}—${awayScore}`;
 
+
   if(type === "upcoming"){
+
     scoreText = "—";
+
   }
+
 
   return `
 
@@ -1273,11 +1401,13 @@ function matchRow(match,type){
 
       </span>
 
+
       <span class="score">
 
         ${scoreText}
 
       </span>
+
 
       <span class="club away">
 
@@ -1287,6 +1417,7 @@ function matchRow(match,type){
 
       </span>
 
+
       <span class="time">
 
         ${rightText}
@@ -1294,6 +1425,7 @@ function matchRow(match,type){
       </span>
 
     </button>
+
 
     <div
       class="detail"
@@ -1308,6 +1440,7 @@ function matchRow(match,type){
 
       </strong>
 
+
       <span
         style="
           float:right;
@@ -1317,10 +1450,15 @@ function matchRow(match,type){
 
         ${
           type === "live"
+
             ? liveTime(match)
-            : formatDate(match.utcDate) +
-              " · " +
+
+            : formatDate(match.utcDate)
+              +
+              " · "
+              +
               formatTime(match.utcDate)
+
         }
 
       </span>
@@ -1331,17 +1469,23 @@ function matchRow(match,type){
 
 }
 
+
+/* MATCH CLICK */
+
 function attachMatchToggle(container){
 
   container.onclick =
     event => {
 
       const button =
-        event.target.closest(".match");
+        event.target.closest(
+          ".match"
+        );
 
       if(!button){
         return;
       }
+
 
       const detail =
         button.nextElementSibling;
@@ -1350,14 +1494,20 @@ function attachMatchToggle(container){
         return;
       }
 
+
       const wasHidden =
         detail.hidden;
 
+
       container
-        .querySelectorAll(".detail")
+        .querySelectorAll(
+          ".detail"
+        )
         .forEach(
-          item => item.hidden = true
+          item =>
+            item.hidden = true
         );
+
 
       detail.hidden =
         !wasHidden;
@@ -1365,6 +1515,9 @@ function attachMatchToggle(container){
     };
 
 }
+
+
+/* API */
 
 async function fetchApi(endpoint){
 
@@ -1376,10 +1529,13 @@ async function fetchApi(endpoint){
       }
     );
 
+
   const text =
     await response.text();
 
+
   let json;
+
 
   try{
 
@@ -1394,6 +1550,7 @@ async function fetchApi(endpoint){
 
   }
 
+
   if(!response.ok){
 
     const message =
@@ -1405,19 +1562,19 @@ async function fetchApi(endpoint){
 
   }
 
+
   return json;
 
 }
 
 
-/* ---------------------------------------------
-   LIVE MATCHES
-   --------------------------------------------- */
+/* LIVE */
 
 async function loadLive(){
 
   const container =
     q("#matches");
+
 
   try{
 
@@ -1426,37 +1583,55 @@ async function loadLive(){
         `/api/live-scores?league=${encodeURIComponent(league)}`
       );
 
+
     const matches =
-      Array.isArray(json?.matches)
+      Array.isArray(
+        json?.matches
+      )
         ? json.matches
         : [];
+
 
     q("#live-count").textContent =
       `${matches.length} LIVE NOW`;
 
+
     if(!matches.length){
 
       container.innerHTML = `
+
         <div class="empty">
+
           No live matches right now.
+
         </div>
+
       `;
 
       return true;
 
     }
 
+
     container.innerHTML =
       matches
         .map(
           match =>
-            matchRow(match,"live")
+            matchRow(
+              match,
+              "live"
+            )
         )
         .join("");
 
-    attachMatchToggle(container);
+
+    attachMatchToggle(
+      container
+    );
+
 
     return true;
+
 
   }catch(error){
 
@@ -1465,15 +1640,17 @@ async function loadLive(){
       error
     );
 
-    if(!container.innerHTML.trim()){
 
-      container.innerHTML = `
-        <div class="error">
-          Live scores are temporarily unavailable.
-        </div>
-      `;
+    container.innerHTML = `
 
-    }
+      <div class="error">
+
+        Live scores are temporarily unavailable.
+
+      </div>
+
+    `;
+
 
     return false;
 
@@ -1482,14 +1659,13 @@ async function loadLive(){
 }
 
 
-/* ---------------------------------------------
-   RESULTS
-   --------------------------------------------- */
+/* RESULTS */
 
 async function loadResults(){
 
   const container =
     q("#results-list");
+
 
   try{
 
@@ -1498,10 +1674,14 @@ async function loadResults(){
         `/api/results?league=${encodeURIComponent(league)}`
       );
 
+
     const matches =
-      Array.isArray(json?.matches)
+      Array.isArray(
+        json?.matches
+      )
         ? json.matches
         : [];
+
 
     matches.sort(
       (a,b) =>
@@ -1509,32 +1689,47 @@ async function loadResults(){
         new Date(a.utcDate)
     );
 
+
     const recent =
       matches.slice(0,10);
+
 
     if(!recent.length){
 
       container.innerHTML = `
+
         <div class="empty">
+
           No recent results available.
+
         </div>
+
       `;
 
       return true;
 
     }
 
+
     container.innerHTML =
       recent
         .map(
           match =>
-            matchRow(match,"result")
+            matchRow(
+              match,
+              "result"
+            )
         )
         .join("");
 
-    attachMatchToggle(container);
+
+    attachMatchToggle(
+      container
+    );
+
 
     return true;
+
 
   }catch(error){
 
@@ -1543,15 +1738,17 @@ async function loadResults(){
       error
     );
 
-    if(!container.innerHTML.trim()){
 
-      container.innerHTML = `
-        <div class="error">
-          Results are temporarily unavailable.
-        </div>
-      `;
+    container.innerHTML = `
 
-    }
+      <div class="error">
+
+        Results are temporarily unavailable.
+
+      </div>
+
+    `;
+
 
     return false;
 
@@ -1560,14 +1757,13 @@ async function loadResults(){
 }
 
 
-/* ---------------------------------------------
-   UPCOMING
-   --------------------------------------------- */
+/* UPCOMING */
 
 async function loadUpcoming(){
 
   const container =
     q("#upcoming-list");
+
 
   try{
 
@@ -1576,13 +1772,18 @@ async function loadUpcoming(){
         `/api/upcoming?league=${encodeURIComponent(league)}`
       );
 
+
     let matches =
-      Array.isArray(json?.matches)
+      Array.isArray(
+        json?.matches
+      )
         ? json.matches
         : [];
 
+
     const now =
       Date.now();
+
 
     matches =
       matches.filter(
@@ -1592,6 +1793,7 @@ async function loadUpcoming(){
             new Date(
               match.utcDate
             ).getTime();
+
 
           return (
             time >= now &&
@@ -1604,38 +1806,54 @@ async function loadUpcoming(){
         }
       );
 
+
     matches.sort(
       (a,b) =>
         new Date(a.utcDate) -
         new Date(b.utcDate)
     );
 
+
     const upcoming =
       matches.slice(0,10);
+
 
     if(!upcoming.length){
 
       container.innerHTML = `
+
         <div class="empty">
+
           No upcoming fixtures available.
+
         </div>
+
       `;
 
       return true;
 
     }
 
+
     container.innerHTML =
       upcoming
         .map(
           match =>
-            matchRow(match,"upcoming")
+            matchRow(
+              match,
+              "upcoming"
+            )
         )
         .join("");
 
-    attachMatchToggle(container);
+
+    attachMatchToggle(
+      container
+    );
+
 
     return true;
+
 
   }catch(error){
 
@@ -1644,15 +1862,17 @@ async function loadUpcoming(){
       error
     );
 
-    if(!container.innerHTML.trim()){
 
-      container.innerHTML = `
-        <div class="error">
-          Upcoming fixtures are temporarily unavailable.
-        </div>
-      `;
+    container.innerHTML = `
 
-    }
+      <div class="error">
+
+        Upcoming fixtures are temporarily unavailable.
+
+      </div>
+
+    `;
+
 
     return false;
 
@@ -1661,16 +1881,17 @@ async function loadUpcoming(){
 }
 
 
-/* ---------------------------------------------
-   STANDINGS
-   --------------------------------------------- */
+/* STANDINGS */
 
 function getStandingsTable(json){
 
   const standings =
-    Array.isArray(json?.standings)
+    Array.isArray(
+      json?.standings
+    )
       ? json.standings
       : [];
+
 
   const requestedType =
     mode === "home"
@@ -1679,48 +1900,65 @@ function getStandingsTable(json){
         ? "AWAY"
         : "TOTAL";
 
+
   const selected =
     standings.find(
       item =>
-        item.type === requestedType
+        item.type ===
+        requestedType
     );
+
 
   if(
     selected?.table &&
-    Array.isArray(selected.table)
+    Array.isArray(
+      selected.table
+    )
   ){
 
     return selected.table;
 
   }
 
+
   const fallback =
     standings.find(
       item =>
-        Array.isArray(item.table)
+        Array.isArray(
+          item.table
+        )
     );
+
 
   return fallback?.table || [];
 
 }
+
 
 function standingRow(row){
 
   const team =
     row?.team;
 
+
   const goalDifference =
-    Number(row?.goalDifference ?? 0);
+    Number(
+      row?.goalDifference ?? 0
+    );
+
 
   return `
 
     <tr>
 
       <td>
+
         ${escapeHtml(
           row?.position ?? ""
         )}
+
       </td>
+
 
       <td>
 
@@ -1736,11 +1974,15 @@ function standingRow(row){
 
       </td>
 
+
       <td>
+
         ${escapeHtml(
           row?.playedGames ?? 0
         )}
+
       </td>
+
 
       <td>
 
@@ -1751,6 +1993,7 @@ function standingRow(row){
         }
 
       </td>
+
 
       <td class="pts">
 
@@ -1766,6 +2009,7 @@ function standingRow(row){
 
 }
 
+
 async function loadStandings(){
 
   const shortTable =
@@ -1774,6 +2018,7 @@ async function loadStandings(){
   const fullTable =
     q("#all");
 
+
   try{
 
     const json =
@@ -1781,19 +2026,17 @@ async function loadStandings(){
         `/api/standings?league=${encodeURIComponent(league)}`
       );
 
+
     const table =
       getStandingsTable(json);
 
+
     if(!table.length){
 
-      if(
-        fullTable.innerHTML.trim()
-      ){
-        return true;
-      }
-
       shortTable.innerHTML = `
+
         <tr>
+
           <td
             colspan="5"
             style="
@@ -1801,14 +2044,19 @@ async function loadStandings(){
               color:#8e98b3
             "
           >
+
             No table data available.
+
           </td>
+
         </tr>
+
       `;
 
       return true;
 
     }
+
 
     shortTable.innerHTML =
       table
@@ -1816,12 +2064,15 @@ async function loadStandings(){
         .map(standingRow)
         .join("");
 
+
     fullTable.innerHTML =
       table
         .map(standingRow)
         .join("");
 
+
     return true;
+
 
   }catch(error){
 
@@ -1830,23 +2081,27 @@ async function loadStandings(){
       error
     );
 
-    if(!fullTable.innerHTML.trim()){
 
-      shortTable.innerHTML = `
-        <tr>
-          <td
-            colspan="5"
-            style="
-              text-align:center;
-              color:#ff8b99
-            "
-          >
-            Table unavailable
-          </td>
-        </tr>
-      `;
+    shortTable.innerHTML = `
 
-    }
+      <tr>
+
+        <td
+          colspan="5"
+          style="
+            text-align:center;
+            color:#ff8b99
+          "
+        >
+
+          Table unavailable
+
+        </td>
+
+      </tr>
+
+    `;
+
 
     return false;
 
@@ -1855,14 +2110,13 @@ async function loadStandings(){
 }
 
 
-/* ---------------------------------------------
-   LEAGUE DISPLAY
-   --------------------------------------------- */
+/* LEAGUE DISPLAY */
 
 function renderLeague(){
 
   const data =
     leagues[league];
+
 
   document.documentElement
     .style
@@ -1871,55 +2125,75 @@ function renderLeague(){
       data.accent
     );
 
-  q("#league-name").textContent =
-    data.title;
 
   q("#story").textContent =
     data.story;
 
+
   q("#full-title").textContent =
     `${data.title} · FULL TABLE`;
 
+
   document
-    .querySelectorAll("[data-league]")
-    .forEach(button => {
+    .querySelectorAll(
+      "[data-league]"
+    )
+    .forEach(
+      button => {
 
-      button.classList.toggle(
-        "active",
-        button.dataset.league === league
-      );
+        button.classList.toggle(
+          "active",
+          button.dataset.league ===
+          league
+        );
 
-    });
+      }
+    );
 
 }
 
 
-/* ---------------------------------------------
-   INITIAL LOADING
-   --------------------------------------------- */
+/* LOADING */
 
 function showInitialLoading(){
 
   q("#matches").innerHTML = `
+
     <div class="empty">
+
       Loading live matches...
+
     </div>
+
   `;
+
 
   q("#results-list").innerHTML = `
+
     <div class="empty">
+
       Loading results...
+
     </div>
+
   `;
+
 
   q("#upcoming-list").innerHTML = `
+
     <div class="empty">
+
       Loading fixtures...
+
     </div>
+
   `;
 
+
   q("#short").innerHTML = `
+
     <tr>
+
       <td
         colspan="5"
         style="
@@ -1927,117 +2201,150 @@ function showInitialLoading(){
           color:#8e98b3
         "
       >
+
         Loading...
+
       </td>
+
     </tr>
+
   `;
 
 }
 
 
-/* ---------------------------------------------
-   LOAD EVERYTHING
-   --------------------------------------------- */
+/* LOAD EVERYTHING */
 
-async function loadAll(initialLoad = false){
+async function loadAll(
+  initialLoad = false
+){
 
   if(refreshInProgress){
     return;
   }
 
+
   refreshInProgress = true;
+
 
   renderLeague();
 
+
   if(initialLoad){
+
     showInitialLoading();
+
   }
+
 
   try{
 
     await Promise.all([
+
       loadLive(),
+
       loadResults(),
+
       loadUpcoming(),
+
       loadStandings()
+
     ]);
 
   }finally{
 
-    refreshInProgress = false;
+    refreshInProgress =
+      false;
 
   }
 
 }
 
 
-/* ---------------------------------------------
-   LEAGUE BUTTONS
-   --------------------------------------------- */
+/* LEAGUE BUTTONS */
 
 document
-  .querySelectorAll("[data-league]")
-  .forEach(button => {
+  .querySelectorAll(
+    "[data-league]"
+  )
+  .forEach(
+    button => {
 
-    button.onclick = () => {
+      button.onclick = () => {
 
-      league =
-        button.dataset.league;
+        league =
+          button.dataset.league;
 
-      mode = "overall";
 
-      document
-        .querySelectorAll("[data-mode]")
-        .forEach(item => {
+        mode =
+          "overall";
 
-          item.classList.toggle(
-            "active",
-            item.dataset.mode === "overall"
+
+        document
+          .querySelectorAll(
+            "[data-mode]"
+          )
+          .forEach(
+            item => {
+
+              item.classList.toggle(
+                "active",
+                item.dataset.mode ===
+                "overall"
+              );
+
+            }
           );
 
-        });
 
-      loadAll(true);
+        loadAll(true);
 
-    };
+      };
 
-  });
+    }
+  );
 
 
-/* ---------------------------------------------
-   HOME / AWAY / OVERALL
-   --------------------------------------------- */
+/* HOME / AWAY / OVERALL */
 
 document
-  .querySelectorAll("[data-mode]")
-  .forEach(button => {
+  .querySelectorAll(
+    "[data-mode]"
+  )
+  .forEach(
+    button => {
 
-    button.onclick = () => {
+      button.onclick = () => {
 
-      mode =
-        button.dataset.mode;
+        mode =
+          button.dataset.mode;
 
-      document
-        .querySelectorAll("[data-mode]")
-        .forEach(item => {
 
-          item.classList.toggle(
-            "active",
-            item === button
+        document
+          .querySelectorAll(
+            "[data-mode]"
+          )
+          .forEach(
+            item => {
+
+              item.classList.toggle(
+                "active",
+                item === button
+              );
+
+            }
           );
 
-        });
 
-      loadStandings();
+        loadStandings();
 
-    };
+      };
 
-  });
+    }
+  );
 
 
-/* ---------------------------------------------
-   FULL TABLE
-   --------------------------------------------- */
+/* FULL TABLE */
 
 q("#open-table").onclick = () => {
 
@@ -2045,12 +2352,14 @@ q("#open-table").onclick = () => {
     .classList
     .add("open");
 
+
   q("#full")
     .scrollIntoView({
       behavior:"smooth"
     });
 
 };
+
 
 q("#close-table").onclick = () => {
 
@@ -2061,25 +2370,25 @@ q("#close-table").onclick = () => {
 };
 
 
-/* ---------------------------------------------
-   FIRST LOAD
-   --------------------------------------------- */
+/* FIRST LOAD */
 
 loadAll(true);
 
 
-/* ---------------------------------------------
-   AUTOMATIC REFRESH
-   --------------------------------------------- */
+/* AUTOMATIC REFRESH */
 
 setInterval(
   () => loadAll(false),
   60000
 );
 
+
 </script>
+
 
 <script src="badges.js"></script>
 
+
 </body>
+
 </html>
