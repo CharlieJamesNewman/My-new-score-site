@@ -42,59 +42,69 @@ body{
 }
 
 header{
-  height:72px;
+  height:82px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   border-bottom:1px solid var(--line)
 }
 
+.logo-block{
+  display:flex;
+  flex-direction:column;
+  justify-content:center
+}
+
 .logo{
-  font:700 26px 'Barlow Condensed';
-  letter-spacing:.03em
+  font:700 30px 'Barlow Condensed';
+  letter-spacing:.03em;
+  line-height:.9
 }
 
 .logo b{
   color:var(--accent)
 }
 
-nav{
+.logo-sub{
+  margin-top:5px;
+  color:#7f89a4;
+  font:500 8px 'DM Mono';
+  letter-spacing:.14em;
+  text-transform:uppercase
+}
+
+.header-info{
   display:flex;
-  gap:23px;
-  height:100%;
-  align-items:center
+  align-items:center;
+  gap:22px
 }
 
-nav button{
-  height:100%;
-  border:0;
-  background:none;
-  color:var(--muted);
-  font:700 12px 'DM Sans';
-  cursor:pointer;
-  position:relative
+.header-date{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end
 }
 
-nav button.active{
-  color:#fff
+.header-date-label{
+  color:#66718c;
+  font:500 8px 'DM Mono';
+  letter-spacing:.1em;
+  text-transform:uppercase
 }
 
-nav button.active:after{
-  content:"";
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
-  height:3px;
-  background:var(--accent)
+.header-date-value{
+  margin-top:3px;
+  color:#dfe4f0;
+  font:500 11px 'DM Mono'
 }
 
 .live{
   border:1px solid #ffffff26;
   border-radius:24px;
-  padding:8px 11px;
+  padding:9px 12px;
   color:#d4dbec;
-  font:500 10px 'DM Mono'
+  font:500 10px 'DM Mono';
+  white-space:nowrap
 }
 
 .live i{
@@ -103,7 +113,8 @@ nav button.active:after{
   height:7px;
   border-radius:50%;
   background:var(--hot);
-  margin-right:5px
+  margin-right:5px;
+  box-shadow:0 0 0 3px #ff4d6218
 }
 
 .chooser{
@@ -529,11 +540,28 @@ td{
   }
 
   header{
-    height:62px
+    height:70px
   }
 
-  header nav{
+  .logo{
+    font-size:27px
+  }
+
+  .logo-sub{
+    font-size:7px
+  }
+
+  .header-info{
+    gap:9px
+  }
+
+  .header-date{
     display:none
+  }
+
+  .live{
+    padding:8px 10px;
+    font-size:9px
   }
 
   .hero{
@@ -585,37 +613,44 @@ td{
 
 <header class="wrap">
 
-  <div class="logo">
-    MATCH<b>DAY</b>
+  <div class="logo-block">
+
+    <div class="logo">
+      MATCH<b>DAY</b>
+    </div>
+
+    <div class="logo-sub">
+      Football scores & fixtures
+    </div>
+
   </div>
 
-  <nav>
+  <div class="header-info">
 
-    <button class="active" data-go="scores">
-      Match centre
-    </button>
+    <div class="header-date">
 
-    <button data-go="fixtures">
-      Fixtures
-    </button>
+      <div class="header-date-label">
+        Today
+      </div>
 
-    <button data-go="table">
-      Table
-    </button>
+      <div
+        class="header-date-value"
+        id="header-date"
+      >
+        —
+      </div>
 
-    <button data-go="stats">
-      Stats
-    </button>
+    </div>
 
-  </nav>
+    <div class="live">
 
-  <div class="live">
+      <i></i>
 
-    <i></i>
+      <span id="live-count">
+        0 LIVE NOW
+      </span>
 
-    <span id="live-count">
-      0 LIVE NOW
-    </span>
+    </div>
 
   </div>
 
@@ -1031,6 +1066,36 @@ let refreshInProgress = false;
 const q = selector =>
   document.querySelector(selector);
 
+
+/* ---------------------------------------------
+   HEADER DATE
+   --------------------------------------------- */
+
+function updateHeaderDate(){
+
+  const date =
+    new Date();
+
+  q("#header-date").textContent =
+    date.toLocaleDateString(
+      "en-AU",
+      {
+        day:"2-digit",
+        month:"short",
+        year:"numeric"
+      }
+    ).toUpperCase();
+
+}
+
+updateHeaderDate();
+
+setInterval(
+  updateHeaderDate,
+  60000
+);
+
+
 function escapeHtml(value){
 
   return String(value ?? "")
@@ -1400,15 +1465,6 @@ async function loadLive(){
       error
     );
 
-    /*
-      IMPORTANT:
-      We deliberately do NOT replace the
-      existing live matches with an error.
-
-      This prevents the page from disappearing
-      during an automatic refresh.
-    */
-
     if(!container.innerHTML.trim()){
 
       container.innerHTML = `
@@ -1486,10 +1542,6 @@ async function loadResults(){
       "Results error:",
       error
     );
-
-    /*
-      Keep the old results on refresh failure.
-    */
 
     if(!container.innerHTML.trim()){
 
@@ -1591,10 +1643,6 @@ async function loadUpcoming(){
       "Upcoming error:",
       error
     );
-
-    /*
-      Keep old fixtures on refresh failure.
-    */
 
     if(!container.innerHTML.trim()){
 
@@ -1738,12 +1786,6 @@ async function loadStandings(){
 
     if(!table.length){
 
-      /*
-        If there was already valid table data,
-        don't destroy it just because a refresh
-        returned an empty response.
-      */
-
       if(
         fullTable.innerHTML.trim()
       ){
@@ -1787,10 +1829,6 @@ async function loadStandings(){
       "Standings error:",
       error
     );
-
-    /*
-      Keep the existing table visible.
-    */
 
     if(!fullTable.innerHTML.trim()){
 
@@ -1903,11 +1941,6 @@ function showInitialLoading(){
 
 async function loadAll(initialLoad = false){
 
-  /*
-    Prevent two automatic refreshes from running
-    over the top of each other.
-  */
-
   if(refreshInProgress){
     return;
   }
@@ -1915,14 +1948,6 @@ async function loadAll(initialLoad = false){
   refreshInProgress = true;
 
   renderLeague();
-
-  /*
-    ONLY show loading messages on the very
-    first page load or when changing leagues.
-
-    Automatic refreshes leave the existing
-    information visible.
-  */
 
   if(initialLoad){
     showInitialLoading();
@@ -1972,11 +1997,6 @@ document
 
         });
 
-      /*
-        A league change is a genuine new page
-        of data, so show loading states.
-      */
-
       loadAll(true);
 
     };
@@ -2007,10 +2027,6 @@ document
           );
 
         });
-
-      /*
-        Only the table needs to reload.
-      */
 
       loadStandings();
 
@@ -2046,49 +2062,6 @@ q("#close-table").onclick = () => {
 
 
 /* ---------------------------------------------
-   TOP NAVIGATION
-   --------------------------------------------- */
-
-document
-  .querySelectorAll("[data-go]")
-  .forEach(button => {
-
-    button.onclick = () => {
-
-      document
-        .querySelectorAll("[data-go]")
-        .forEach(item => {
-
-          item.classList.toggle(
-            "active",
-            item === button
-          );
-
-        });
-
-      const target =
-        button.dataset.go === "fixtures"
-          ? "fixtures"
-          : button.dataset.go;
-
-      const element =
-        q("#" + target);
-
-      if(element){
-
-        element.scrollIntoView({
-          behavior:"smooth",
-          block:"start"
-        });
-
-      }
-
-    };
-
-  });
-
-
-/* ---------------------------------------------
    FIRST LOAD
    --------------------------------------------- */
 
@@ -2097,10 +2070,6 @@ loadAll(true);
 
 /* ---------------------------------------------
    AUTOMATIC REFRESH
-   ---------------------------------------------
-
-   Refreshes every 60 seconds WITHOUT clearing
-   the existing information first.
    --------------------------------------------- */
 
 setInterval(
