@@ -173,12 +173,23 @@ h1{
 .match-team{
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:9px;
   min-width:0;
   font-size:10px;
   font-weight:750;
+  text-align:left;
+  justify-content:flex-start;
 }
-.match-team.away{justify-content:flex-end;text-align:right}
+.match-team.right{
+  justify-content:flex-end;
+  text-align:right;
+}
+.match-team span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
 .mini-crest{
   width:25px;height:25px;object-fit:contain;flex:none;
 }
@@ -425,7 +436,7 @@ function renderMatches(matches,team){
 
       return `
         <div class="match ${result ? `result-${result}` : ""}">
-          <div class="match-team ${isHome?"":"away"}">
+          <div class="match-team">
             ${isHome ? miniCrest(team?.crest) : miniCrest(opponent?.crest)}
             <span>${escapeHtml(isHome?teamName:opponentName)}</span>
           </div>
@@ -435,7 +446,7 @@ function renderMatches(matches,team){
             <div class="match-date">${escapeHtml(dateText(m.utcDate))}</div>
           </div>
 
-          <div class="match-team ${isHome?"away":""}">
+          <div class="match-team right">
             <span>${escapeHtml(isHome?opponentName:teamName)}</span>
             ${isHome ? miniCrest(opponent?.crest) : miniCrest(team?.crest)}
           </div>
