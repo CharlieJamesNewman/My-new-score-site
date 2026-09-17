@@ -40,12 +40,13 @@ header{
   justify-content:space-between;
   padding:25px 0 18px;
 }
-.logo{
+.logo{color:inherit;text-decoration:none;display:inline-block;
   font-weight:900;
   letter-spacing:-.06em;
   font-size:25px;
 }
 .logo b{color:var(--accent)}
+.logo:hover{opacity:.9}
 .logo-sub{
   color:var(--muted2);
   font-size:9px;
@@ -241,7 +242,7 @@ h1{
 <div class="wrap">
 <header>
   <div>
-    <div class="logo">SCORE<b>DASH</b></div>
+    <a class="logo" href="index.html" aria-label="Score Dash home">SCORE<b>DASH</b></a>
     <div class="logo-sub">Football scores & fixtures</div>
   </div>
   <a class="back" href="index.html">← Back to scores</a>
