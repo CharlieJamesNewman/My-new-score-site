@@ -10,7 +10,7 @@
   content="width=device-width,initial-scale=1"
 >
 
-<title>Matchday — Live Football</title>
+<title>Score Dash — Live Football</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -237,6 +237,143 @@ header:after{
 }
 
 /* MATCHES */
+
+/* MATCH CENTRE 2.0 */
+.match-centre{
+  padding:18px;
+  background:
+    radial-gradient(circle at 50% 0%,#ffffff08,transparent 45%),
+    linear-gradient(180deg,#0d1527,#0a1120);
+  border-bottom:1px solid var(--line);
+}
+.centre-top{
+  display:grid;
+  grid-template-columns:1fr 110px 1fr;
+  align-items:center;
+  gap:14px;
+  text-align:center;
+}
+.centre-team{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+}
+.centre-team .crest,
+.centre-team .crest img{
+  width:42px;
+  height:42px;
+}
+.centre-team-name{
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
+  line-height:1.15;
+}
+.centre-main-score{
+  color:var(--accent);
+  font:700 30px 'DM Mono';
+  letter-spacing:-.06em;
+}
+.centre-status{
+  margin-top:5px;
+  color:#8e98b3;
+  font:600 8px 'DM Mono';
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.centre-live{
+  color:var(--hot);
+}
+.centre-meta{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:7px;
+  margin-top:14px;
+}
+.centre-meta span{
+  padding:5px 8px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  color:#8993ad;
+  background:#ffffff04;
+  font:500 8px 'DM Mono';
+}
+.centre-section{
+  margin-top:15px;
+}
+.centre-section-title{
+  margin-bottom:8px;
+  color:#6f7a96;
+  font:600 8px 'DM Mono';
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.match-events{
+  margin-top:0;
+  display:grid;
+  gap:6px;
+}
+.event{
+  display:grid;
+  grid-template-columns:42px 1fr auto;
+  align-items:center;
+  gap:9px;
+  padding:8px 9px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:#ffffff04;
+}
+.event-minute{
+  color:var(--accent);
+  font:600 10px 'DM Mono';
+}
+.event-text{
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+}
+.event-sub{
+  margin-top:2px;
+  color:#7f89a4;
+  font-size:8px;
+}
+.event-card{
+  font-size:13px;
+}
+.event-empty{
+  padding:9px;
+  border:1px dashed var(--line);
+  border-radius:9px;
+  color:#68738d;
+  font-size:9px;
+  text-align:center;
+}
+.match-chevron{
+  position:absolute;
+  right:7px;
+  bottom:7px;
+  color:#59647f;
+  font-size:10px;
+  transition:transform .2s ease,color .2s ease;
+}
+.match.active .match-chevron{
+  color:var(--accent);
+  transform:rotate(180deg);
+}
+.match.active{
+  background:linear-gradient(90deg,#ffffff09,transparent);
+}
+@media(max-width:760px){
+  .centre-top{grid-template-columns:1fr 78px 1fr;gap:8px}
+  .centre-team .crest,.centre-team .crest img{width:36px;height:36px}
+  .centre-main-score{font-size:25px}
+  .centre-team-name{font-size:10px}
+  .match-chevron{right:5px}
+}
+
 
 .match{
   display:grid;
@@ -1200,20 +1337,94 @@ function matchRow(match,type){
   const awayName=teamName(away);
   const homeScore=score(match,"home");
   const awayScore=score(match,"away");
-  let rightText=type === "live" ? liveTime(match) : `${formatDate(match.utcDate)} · ${formatTime(match.utcDate)}`;
-  let scoreText=`${homeScore}—${awayScore}`;
-  if(type === "upcoming") scoreText="—";
+
+  let statusText;
+  if(type === "live"){
+    statusText=liveTime(match);
+  }else if(type === "result"){
+    statusText="FULL TIME";
+  }else{
+    statusText=`${formatDate(match.utcDate)} · ${formatTime(match.utcDate)}`;
+  }
+
+  const scoreText=type === "upcoming" ? "—" : `${homeScore}—${awayScore}`;
+  const halfHome=match?.score?.halfTime?.home;
+  const halfAway=match?.score?.halfTime?.away;
+  const halfTime =
+    typeof halfHome === "number" && typeof halfAway === "number"
+      ? `HT ${halfHome}—${halfAway}`
+      : "";
+
+  const competition=match?.competition?.name || "";
+  const venue=match?.venue || "";
+  const matchday=match?.matchday ? `Matchday ${match.matchday}` : "";
+
   return `
-    <button class="match" type="button" data-match-id="${match?.id || ""}" aria-expanded="false">
-      <span class="club">${crest(home)}${escapeHtml(homeName)}</span>
+    <button
+      class="match"
+      type="button"
+      data-match-id="${match?.id || ""}"
+      aria-expanded="false"
+    >
+      <span class="club">
+        ${crest(home)}
+        ${escapeHtml(homeName)}
+      </span>
+
       <span class="score">${scoreText}</span>
-      <span class="club away">${escapeHtml(awayName)}${crest(away)}</span>
-      <span class="time ${type === "live" ? "live-clock" : ""}">${type === "live" ? "🔴 " : ""}${rightText}</span>
+
+      <span class="club away">
+        ${escapeHtml(awayName)}
+        ${crest(away)}
+      </span>
+
+      <span class="time ${type === "live" ? "live-clock" : ""}">
+        ${type === "live" ? "🔴 " : ""}
+        ${escapeHtml(statusText)}
+      </span>
+
+      <span class="match-chevron">⌄</span>
     </button>
+
     <div class="detail" hidden>
-      <strong>${escapeHtml(match?.competition?.name || "")}</strong>
-      <span style="float:right;color:var(--accent)">${escapeHtml(rightText)}</span>
-      <div class="match-events" data-events-for="${match?.id || ""}">Loading match events…</div>
+      <div class="match-centre">
+
+        <div class="centre-top">
+
+          <div class="centre-team">
+            ${crest(home)}
+            <div class="centre-team-name">${escapeHtml(homeName)}</div>
+          </div>
+
+          <div>
+            <div class="centre-main-score">${scoreText}</div>
+            <div class="centre-status ${type === "live" ? "centre-live" : ""}">
+              ${escapeHtml(statusText)}
+            </div>
+          </div>
+
+          <div class="centre-team">
+            ${crest(away)}
+            <div class="centre-team-name">${escapeHtml(awayName)}</div>
+          </div>
+
+        </div>
+
+        <div class="centre-meta">
+          ${competition ? `<span>${escapeHtml(competition)}</span>` : ""}
+          ${halfTime ? `<span>${escapeHtml(halfTime)}</span>` : ""}
+          ${matchday ? `<span>${escapeHtml(matchday)}</span>` : ""}
+          ${venue ? `<span>${escapeHtml(venue)}</span>` : ""}
+        </div>
+
+        <div class="centre-section">
+          <div class="centre-section-title">Match events</div>
+          <div class="match-events" data-events-for="${match?.id || ""}">
+            Loading match events…
+          </div>
+        </div>
+
+      </div>
     </div>
   `;
 }
@@ -1252,14 +1463,28 @@ function attachMatchToggle(container){
   container.onclick=event=>{
     const button=event.target.closest(".match");
     if(!button) return;
+
     const detail=button.nextElementSibling;
     if(!detail) return;
+
     const wasHidden=detail.hidden;
-    container.querySelectorAll(".detail").forEach(item=>item.hidden=true);
-    container.querySelectorAll(".match").forEach(item=>item.setAttribute("aria-expanded","false"));
+
+    container.querySelectorAll(".detail").forEach(item=>{
+      item.hidden=true;
+    });
+
+    container.querySelectorAll(".match").forEach(item=>{
+      item.setAttribute("aria-expanded","false");
+      item.classList.remove("active");
+    });
+
     detail.hidden=!wasHidden;
     button.setAttribute("aria-expanded",String(wasHidden));
-    if(wasHidden) loadMatchEvents(detail,button.dataset.matchId);
+    button.classList.toggle("active",wasHidden);
+
+    if(wasHidden){
+      loadMatchEvents(detail,button.dataset.matchId);
+    }
   };
 }
 
