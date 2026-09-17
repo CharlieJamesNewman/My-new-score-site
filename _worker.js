@@ -1,26 +1,11 @@
 const DATA_API = "https://api.football-data.org/v4";
 
 const LEAGUES = {
-  premier: {
-    code: "PL",
-    name: "Premier League"
-  },
-  laliga: {
-    code: "PD",
-    name: "La Liga"
-  },
-  seriea: {
-    code: "SA",
-    name: "Serie A"
-  },
-  bundesliga: {
-    code: "BL1",
-    name: "Bundesliga"
-  },
-  ligue1: {
-    code: "FL1",
-    name: "Ligue 1"
-  }
+  premier: { code: "PL", name: "Premier League" },
+  laliga: { code: "PD", name: "La Liga" },
+  seriea: { code: "SA", name: "Serie A" },
+  bundesliga: { code: "BL1", name: "Bundesliga" },
+  ligue1: { code: "FL1", name: "Ligue 1" }
 };
 
 const CACHE_TTL = {
@@ -41,10 +26,10 @@ function jsonResponse(data, status = 200, extraHeaders = {}) {
     ...extraHeaders
   };
 
-  return new Response(JSON.stringify(data), {
-    status,
-    headers
-  });
+  return new Response(
+    JSON.stringify(data),
+    { status, headers }
+  );
 }
 
 async function footballDataRequest(
@@ -72,15 +57,18 @@ async function footballDataRequest(
   }
 
   try {
-    const response = await fetch(`${DATA_API}${path}`, {
-      method: "GET",
-      cache: "no-store",
-      headers: {
-        "X-Auth-Token": env.FootballDataToken,
-        "Accept": "application/json",
-        ...(options.headers || {})
+    const response = await fetch(
+      `${DATA_API}${path}`,
+      {
+        method: "GET",
+        cache: "no-store",
+        headers: {
+          "X-Auth-Token": env.FootballDataToken,
+          "Accept": "application/json",
+          ...(options.headers || {})
+        }
       }
-    });
+    );
 
     const text = await response.text();
 
@@ -96,17 +84,21 @@ async function footballDataRequest(
 
     if (!response.ok) {
       const headers = {};
-      const resetSeconds = response.headers.get(
-        "X-RequestCounter-Reset"
-      );
+
+      const resetSeconds =
+        response.headers.get(
+          "X-RequestCounter-Reset"
+        );
 
       if (resetSeconds) {
-        headers["Retry-After"] = resetSeconds;
+        headers["Retry-After"] =
+          resetSeconds;
       }
 
       return jsonResponse(
         {
-          error: "football-data.org request failed.",
+          error:
+            "football-data.org request failed.",
           api: data
         },
         response.status,
@@ -118,19 +110,25 @@ async function footballDataRequest(
       data,
       200,
       {
-        "Cache-Control": `public, max-age=${ttl}`
+        "Cache-Control":
+          `public, max-age=${ttl}`
       }
     );
 
     ctx.waitUntil(
-      cache.put(cacheKey, result.clone())
+      cache.put(
+        cacheKey,
+        result.clone()
+      )
     );
 
     return result;
+
   } catch (error) {
     return jsonResponse(
       {
-        error: "Unable to contact football-data.org.",
+        error:
+          "Unable to contact football-data.org.",
         details: error.message
       },
       500
@@ -140,64 +138,86 @@ async function footballDataRequest(
 
 function getLeague(url) {
   const leagueKey =
-    url.searchParams.get("league") || "premier";
+    url.searchParams.get("league") ||
+    "premier";
 
   return LEAGUES[leagueKey] || null;
 }
 
 function getCacheKey(url) {
-  return new Request(url.toString(), {
-    method: "GET"
-  });
+  return new Request(
+    url.toString(),
+    {
+      method: "GET"
+    }
+  );
 }
 
 function getMatchId(url) {
-  const value = url.searchParams.get("matchId");
+  const matchId =
+    url.searchParams.get("matchId");
 
-  if (!value || !/^\d+$/.test(value)) {
+  if (
+    !matchId ||
+    !/^\d+$/.test(matchId)
+  ) {
     return null;
   }
 
-  return value;
+  return matchId;
 }
 
 export default {
   async fetch(request, env, ctx) {
-    const url = new URL(request.url);
+
+    const url =
+      new URL(request.url);
 
     if (request.method === "OPTIONS") {
-      return new Response(null, {
-        status: 204,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type"
+      return new Response(
+        null,
+        {
+          status: 204,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods":
+              "GET, OPTIONS",
+            "Access-Control-Allow-Headers":
+              "Content-Type"
+          }
         }
-      });
+      );
     }
 
-    if (url.pathname.startsWith("/api/")) {
+    if (
+      url.pathname.startsWith("/api/")
+    ) {
+
       /*
-       * Detailed Match Centre endpoint.
-       *
-       * Example:
-       * /api/match?matchId=327117
+       * MATCH CENTRE
        */
-      if (url.pathname === "/api/match") {
-        const matchId = getMatchId(url);
+      if (
+        url.pathname === "/api/match"
+      ) {
+
+        const matchId =
+          getMatchId(url);
 
         if (!matchId) {
           return jsonResponse(
             {
-              error: "A valid matchId is required.",
-              example: "/api/match?matchId=327117"
+              error:
+                "A valid numeric matchId is required."
             },
             400
           );
         }
 
-        const cacheKey = getCacheKey(url);
-        const path = `/matches/${matchId}`;
+        const cacheKey =
+          getCacheKey(url);
+
+        const path =
+          `/matches/${matchId}`;
 
         return footballDataRequest(
           path,
@@ -207,27 +227,45 @@ export default {
           ctx,
           {
             headers: {
-              "X-Unfold-Goals": "true"
+              "X-Unfold-Goals":
+                "true",
+
+              "X-Unfold-Bookings":
+                "true"
             }
           }
         );
       }
 
-      const league = getLeague(url);
+      /*
+       * LEAGUE
+       */
+      const league =
+        getLeague(url);
 
       if (!league) {
         return jsonResponse(
           {
-            error: "Unknown league.",
-            availableLeagues: Object.keys(LEAGUES)
+            error:
+              "Unknown league.",
+            availableLeagues:
+              Object.keys(LEAGUES)
           },
           400
         );
       }
 
-      const cacheKey = getCacheKey(url);
+      const cacheKey =
+        getCacheKey(url);
 
-      if (url.pathname === "/api/live-scores") {
+      /*
+       * LIVE SCORES
+       */
+      if (
+        url.pathname ===
+        "/api/live-scores"
+      ) {
+
         const path =
           `/competitions/${league.code}/matches?status=LIVE`;
 
@@ -240,16 +278,33 @@ export default {
         );
       }
 
-      if (url.pathname === "/api/upcoming") {
-        const today = new Date();
-        const from = today.toISOString().slice(0, 10);
+      /*
+       * UPCOMING
+       */
+      if (
+        url.pathname ===
+        "/api/upcoming"
+      ) {
 
-        const futureDate = new Date(today);
+        const today =
+          new Date();
+
+        const from =
+          today
+            .toISOString()
+            .slice(0, 10);
+
+        const futureDate =
+          new Date(today);
+
         futureDate.setDate(
           futureDate.getDate() + 30
         );
 
-        const to = futureDate.toISOString().slice(0, 10);
+        const to =
+          futureDate
+            .toISOString()
+            .slice(0, 10);
 
         const path =
           `/competitions/${league.code}/matches?dateFrom=${from}&dateTo=${to}`;
@@ -263,16 +318,33 @@ export default {
         );
       }
 
-      if (url.pathname === "/api/results") {
-        const today = new Date();
-        const to = today.toISOString().slice(0, 10);
+      /*
+       * RESULTS
+       */
+      if (
+        url.pathname ===
+        "/api/results"
+      ) {
 
-        const pastDate = new Date(today);
+        const today =
+          new Date();
+
+        const to =
+          today
+            .toISOString()
+            .slice(0, 10);
+
+        const pastDate =
+          new Date(today);
+
         pastDate.setDate(
           pastDate.getDate() - 30
         );
 
-        const from = pastDate.toISOString().slice(0, 10);
+        const from =
+          pastDate
+            .toISOString()
+            .slice(0, 10);
 
         const path =
           `/competitions/${league.code}/matches?dateFrom=${from}&dateTo=${to}&status=FINISHED`;
@@ -286,7 +358,14 @@ export default {
         );
       }
 
-      if (url.pathname === "/api/standings") {
+      /*
+       * STANDINGS
+       */
+      if (
+        url.pathname ===
+        "/api/standings"
+      ) {
+
         const path =
           `/competitions/${league.code}/standings`;
 
@@ -299,7 +378,14 @@ export default {
         );
       }
 
-      if (url.pathname === "/api/competition") {
+      /*
+       * COMPETITION
+       */
+      if (
+        url.pathname ===
+        "/api/competition"
+      ) {
+
         const path =
           `/competitions/${league.code}`;
 
@@ -314,7 +400,9 @@ export default {
 
       return jsonResponse(
         {
-          error: "Unknown API endpoint.",
+          error:
+            "Unknown API endpoint.",
+
           availableEndpoints: [
             "/api/live-scores?league=premier",
             "/api/upcoming?league=premier",
