@@ -496,9 +496,33 @@ tbody tr:hover td{background:#ffffff05}
 
 /* FULL TABLE */
 
-.all-table{display:none;margin:0 0 40px}
-.all-table.open{display:block}
+.all-table{
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  margin:0;
+  border-top:1px solid transparent;
+  transition:
+    max-height .4s ease,
+    opacity .25s ease,
+    margin .4s ease,
+    border-color .3s ease
+}
+
+.all-table.open{
+  max-height:1200px;
+  opacity:1;
+  margin:18px 0 4px;
+  border-top-color:var(--line);
+  padding-top:4px;
+}
+
 .all-table td{padding:8px 18px}
+
+.all-table .panel-head{
+  margin-top:4px;
+  padding-bottom:10px;
+}
 
 /* FOOTER */
 
@@ -839,6 +863,62 @@ tbody tr:hover td{background:#ffffff05}
           FULL TABLE →
         </button>
 
+
+        <div
+          class="all-table"
+          id="full"
+  >
+
+    <div class="panel-head">
+
+      <strong id="full-title">
+        PREMIER LEAGUE · FULL TABLE
+      </strong>
+
+      <button
+        class="show-table"
+        id="close-table"
+      >
+        CLOSE
+      </button>
+
+    </div>
+
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>#</th>
+
+          <th>
+            Club
+          </th>
+
+          <th>
+            Played
+          </th>
+
+          <th>
+            GD
+          </th>
+
+          <th>
+            Pts
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody id="all"></tbody>
+
+    </table>
+
+        </div>
       </section>
 
 
@@ -915,63 +995,6 @@ tbody tr:hover td{background:#ffffff05}
 
 
   <!-- FULL TABLE -->
-
-  <section
-    class="panel all-table"
-    id="full"
-  >
-
-    <div class="panel-head">
-
-      <strong id="full-title">
-        PREMIER LEAGUE · FULL TABLE
-      </strong>
-
-      <button
-        class="show-table"
-        id="close-table"
-      >
-        CLOSE
-      </button>
-
-    </div>
-
-
-    <table>
-
-      <thead>
-
-        <tr>
-
-          <th>#</th>
-
-          <th>
-            Club
-          </th>
-
-          <th>
-            Played
-          </th>
-
-          <th>
-            GD
-          </th>
-
-          <th>
-            Pts
-          </th>
-
-        </tr>
-
-      </thead>
-
-
-      <tbody id="all"></tbody>
-
-    </table>
-
-  </section>
-
 
   <div class="attribution">
     Data provided by football-data.org
@@ -2130,11 +2153,7 @@ q("#open-table").onclick = () => {
     .classList
     .add("open");
 
-
-  q("#full")
-    .scrollIntoView({
-      behavior:"smooth"
-    });
+  q("#open-table").textContent = "HIDE FULL TABLE ↑";
 
 };
 
@@ -2144,6 +2163,8 @@ q("#close-table").onclick = () => {
   q("#full")
     .classList
     .remove("open");
+
+  q("#open-table").textContent = "FULL TABLE →";
 
 };
 
