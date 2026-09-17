@@ -494,36 +494,9 @@ tbody tr:hover td{background:#ffffff05}
 .number{color:var(--accent);font:600 21px 'Barlow Condensed'}
 .number span{display:block;color:#8e98b3;font:500 8px 'DM Mono';text-align:right}
 
-/* FULL TABLE */
-
-.all-table{
-  max-height:0;
-  overflow:hidden;
-  opacity:0;
-  margin:0;
-  border-top:1px solid transparent;
-  transition:
-    max-height .4s ease,
-    opacity .25s ease,
-    margin .4s ease,
-    border-color .3s ease
-}
-
-.all-table.open{
-  max-height:1200px;
-  opacity:1;
-  margin:18px 0 4px;
-  border-top-color:var(--line);
-  padding-top:4px;
-}
-
-.all-table td{padding:8px 18px}
-
-.all-table .panel-head{
-  margin-top:4px;
-  padding-bottom:10px;
-}
-
+/* EXPANDABLE LEAGUE TABLE */
+.standings-extra{display:none}
+#table.expanded .standings-extra{display:table-row}
 /* FOOTER */
 
 .attribution{
@@ -568,7 +541,6 @@ tbody tr:hover td{background:#ffffff05}
   .panel-head{padding:14px 15px}
   td{padding:8px 12px}
   th{padding:9px 12px 6px}
-  .all-table td,.all-table th{padding-left:10px;padding-right:10px}
 }
 
 </style>
@@ -859,66 +831,11 @@ tbody tr:hover td{background:#ffffff05}
         <button
           class="show-table"
           id="open-table"
+        aria-expanded="false"
         >
           FULL TABLE →
         </button>
 
-
-        <div
-          class="all-table"
-          id="full"
-  >
-
-    <div class="panel-head">
-
-      <strong id="full-title">
-        PREMIER LEAGUE · FULL TABLE
-      </strong>
-
-      <button
-        class="show-table"
-        id="close-table"
-      >
-        CLOSE
-      </button>
-
-    </div>
-
-
-    <table>
-
-      <thead>
-
-        <tr>
-
-          <th>#</th>
-
-          <th>
-            Club
-          </th>
-
-          <th>
-            Played
-          </th>
-
-          <th>
-            GD
-          </th>
-
-          <th>
-            Pts
-          </th>
-
-        </tr>
-
-      </thead>
-
-
-      <tbody id="all"></tbody>
-
-    </table>
-
-        </div>
       </section>
 
 
@@ -993,8 +910,6 @@ tbody tr:hover td{background:#ffffff05}
 
   </div>
 
-
-  <!-- FULL TABLE -->
 
   <div class="attribution">
     Data provided by football-data.org
@@ -1738,10 +1653,15 @@ function getStandingsTable(json){
 }
 
 
-function standingRow(row){
+function standingRow(row, index = 0){
 
   const team =
     row?.team;
+
+  const extraClass =
+    index >= 6
+      ? " standings-extra"
+      : "";
 
 
   const goalDifference =
@@ -1752,7 +1672,7 @@ function standingRow(row){
 
   return `
 
-    <tr>
+    <tr class="${extraClass}">
 
       <td>
 
@@ -1816,10 +1736,6 @@ async function loadStandings(){
   const shortTable =
     q("#short");
 
-  const fullTable =
-    q("#all");
-
-
   try{
 
     const json =
@@ -1861,14 +1777,7 @@ async function loadStandings(){
 
     shortTable.innerHTML =
       table
-        .slice(0,6)
-        .map(standingRow)
-        .join("");
-
-
-    fullTable.innerHTML =
-      table
-        .map(standingRow)
+        .map((row, index) => standingRow(row, index))
         .join("");
 
 
@@ -2145,26 +2054,25 @@ document
   );
 
 
-/* FULL TABLE */
+/* EXPANDABLE LEAGUE TABLE */
 
 q("#open-table").onclick = () => {
 
-  q("#full")
-    .classList
-    .add("open");
+  const tablePanel = q("#table");
+  const button = q("#open-table");
 
-  q("#open-table").textContent = "HIDE FULL TABLE ↑";
+  const expanded =
+    tablePanel.classList.toggle("expanded");
 
-};
+  button.textContent =
+    expanded
+      ? "SHOW LESS ↑"
+      : "FULL TABLE →";
 
-
-q("#close-table").onclick = () => {
-
-  q("#full")
-    .classList
-    .remove("open");
-
-  q("#open-table").textContent = "FULL TABLE →";
+  button.setAttribute(
+    "aria-expanded",
+    String(expanded)
+  );
 
 };
 
