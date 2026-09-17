@@ -239,15 +239,15 @@ header:after{
 /* MATCHES */
 
 /* CLICKABLE TEAM LINKS */
-.club .team-link{
+.team-link{
   color:inherit;
   text-decoration:none;
   transition:color .18s ease, transform .18s ease;
 }
-.club .team-link:hover{
+.team-link:hover{
   color:var(--accent);
 }
-.club .team-link:focus-visible{
+.team-link:focus-visible{
   outline:2px solid var(--accent);
   outline-offset:3px;
   border-radius:4px;
@@ -1746,9 +1746,7 @@ function standingRow(row){
 
           ${crest(team)}
 
-          ${escapeHtml(
-            teamName(team)
-          )}
+          ${teamLink(team,league)}
 
         </span>
 
