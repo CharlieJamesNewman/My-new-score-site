@@ -976,9 +976,10 @@ let mode = "overall";
  * This version uses: 
  * 1. A request generation number so only the newest selection can paint.
  * 2. AbortController so obsolete requests are cancelled.
- * 3. An in-memory cache for instant switching during the current visit.
- * 4. localStorage cache so refreshes can show the last good data instantly.
- * 5. Background refreshes that update the cache without blanking the UI.
+ * 3. One combined Worker request instead of four API requests per league.
+ * 4. An in-memory cache for instant switching during the current visit.
+ * 5. localStorage cache so refreshes can show the last good data instantly.
+ * 6. Background refreshes that update the cache without blanking the UI.
  */
 let requestGeneration = 0;
 let activeControllers = [];
@@ -1418,22 +1419,25 @@ async function loadLeagueData(selectedLeague, generation, background = false){
     renderCachedLeague(cached, selectedLeague);
   }
 
+  /*
+   * One combined request replaces four separate browser requests.
+   * The Worker combines the match feed and standings server-side.
+   * This is critical because football-data.org's free plan is limited
+   * to 10 API calls per minute.
+   */
   const controller = makeController();
 
   try{
-    const [live, results, upcoming, standings] =
-      await Promise.all([
-        fetchApi(`/api/live-scores?league=${encodeURIComponent(selectedLeague)}`, controller.signal),
-        fetchApi(`/api/results?league=${encodeURIComponent(selectedLeague)}`, controller.signal),
-        fetchApi(`/api/upcoming?league=${encodeURIComponent(selectedLeague)}`, controller.signal),
-        fetchApi(`/api/standings?league=${encodeURIComponent(selectedLeague)}`, controller.signal)
-      ]);
+    const bundle = await fetchApi(
+      `/api/league-data?league=${encodeURIComponent(selectedLeague)}`,
+      controller.signal
+    );
 
     const fresh = setCachedLeague(selectedLeague, {
-      live,
-      results,
-      upcoming,
-      standings
+      live: bundle?.live || {matches:[]},
+      results: bundle?.results || {matches:[]},
+      upcoming: bundle?.upcoming || {matches:[]},
+      standings: bundle?.standings || {standings:[]}
     });
 
     if(isCurrent(generation, selectedLeague)){
@@ -1447,10 +1451,8 @@ async function loadLeagueData(selectedLeague, generation, background = false){
     console.error("League data error:", selectedLeague, error);
 
     /* Never destroy good cached data just because a refresh failed. */
-    if(isCurrent(generation, selectedLeague)){
-      if(!hasCache){
-        showLoadErrors();
-      }
+    if(isCurrent(generation, selectedLeague) && !hasCache){
+      showLoadErrors();
     }
 
     return false;
