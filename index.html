@@ -495,20 +495,8 @@ tbody tr:hover td{background:#ffffff05}
 .number span{display:block;color:#8e98b3;font:500 8px 'DM Mono';text-align:right}
 
 /* EXPANDABLE LEAGUE TABLE */
-
-.standings-extra{
-  display:none;
-}
-
-#table.expanded .standings-extra{
-  display:table-row;
-}
-
-/* Keep the expanded table visually connected to the rows above it. */
-#table.expanded .standings-extra:first-of-type td{
-  border-top-color:var(--line-strong);
-}
-
+.standings-extra{display:none}
+#table.expanded .standings-extra{display:table-row}
 /* FOOTER */
 
 .attribution{
@@ -976,7 +964,28 @@ let league = "premier";
 
 let mode = "overall";
 
-let refreshInProgress = false;
+/*
+ * DATA LOADING SAFETY
+ *
+ * The old version used one global refreshInProgress flag. That meant a
+ * second league click could be ignored while the first league was still
+ * loading. Worse, the old requests all read the global `league` variable
+ * when they finished, so a fast sequence of clicks could let an older
+ * response overwrite the newly selected league.
+ *
+ * This version uses: 
+ * 1. A request generation number so only the newest selection can paint.
+ * 2. AbortController so obsolete requests are cancelled.
+ * 3. An in-memory cache for instant switching during the current visit.
+ * 4. localStorage cache so refreshes can show the last good data instantly.
+ * 5. Background refreshes that update the cache without blanking the UI.
+ */
+let requestGeneration = 0;
+let activeControllers = [];
+const leagueCache = new Map();
+const STORAGE_PREFIX = "scoreDash:v3:";
+const CACHE_MAX_AGE = 10 * 60 * 1000;
+const LIVE_MAX_AGE = 30 * 1000;
 
 
 /* IMPORTANT: ELEMENT SELECTOR */
@@ -1171,7 +1180,7 @@ function teamLink(team, leagueKey){
   return `<a class="team-link" href="team.html?teamId=${encodeURIComponent(id)}&league=${encodeURIComponent(leagueKey || league)}" onclick="event.stopPropagation()">${escapeHtml(name)}</a>`;
 }
 
-function matchRow(match,type){
+function matchRow(match,type,selectedLeague = league){
   const home=match?.homeTeam;
   const away=match?.awayTeam;
   const homeName=teamName(home);
@@ -1183,9 +1192,9 @@ function matchRow(match,type){
   if(type === "upcoming") scoreText="—";
   return `
     <button class="match" type="button" data-match-id="${match?.id || ""}" aria-expanded="false">
-      <span class="club">${crest(home)}${teamLink(home,league)}</span>
+      <span class="club">${crest(home)}${teamLink(home,selectedLeague)}</span>
       <span class="score">${scoreText}</span>
-      <span class="club away">${teamLink(away,league)}${crest(away)}</span>
+      <span class="club away">${teamLink(away,selectedLeague)}${crest(away)}</span>
       <span class="time ${type === "live" ? "live-clock" : ""}">${type === "live" ? "🔴 " : ""}${rightText}</span>
     </button>
     <div class="detail" hidden>
@@ -1243,594 +1252,359 @@ function attachMatchToggle(container){
 
 /* API */
 
-async function fetchApi(endpoint){
-
+async function fetchApi(endpoint, signal){
   const response =
     await fetch(
       `${API_BASE}${endpoint}`,
       {
-        cache:"no-store"
+        signal,
+        cache:"no-store",
+        headers:{
+          "Accept":"application/json"
+        }
       }
     );
-
 
   const text =
     await response.text();
 
-
   let json;
 
-
   try{
-
-    json =
-      JSON.parse(text);
-
+    json = JSON.parse(text);
   }catch{
-
     throw new Error(
       "The server returned invalid data."
     );
-
   }
 
-
   if(!response.ok){
-
     const message =
       json?.error ||
       json?.api?.message ||
       `HTTP ${response.status}`;
 
     throw new Error(message);
-
   }
-
 
   return json;
-
 }
 
+function isCurrent(generation, selectedLeague){
+  return generation === requestGeneration && selectedLeague === league;
+}
 
-/* LIVE */
-
-async function loadLive(){
-
-  const container =
-    q("#matches");
-
-  const panel =
-    container.closest(".panel");
-
-
+function safeStorageGet(key){
   try{
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  }catch{
+    return null;
+  }
+}
 
-    const json =
-      await fetchApi(
-        `/api/live-scores?league=${encodeURIComponent(league)}`
-      );
+function safeStorageSet(key, value){
+  try{
+    localStorage.setItem(key, JSON.stringify(value));
+  }catch{
+    /* Storage can be unavailable or full. The in-memory cache still works. */
+  }
+}
 
+function getStoredLeague(selectedLeague){
+  const key = `${STORAGE_PREFIX}${selectedLeague}`;
+  const stored = safeStorageGet(key);
 
-    const matches =
-      Array.isArray(
-        json?.matches
-      )
-        ? json.matches
-        : [];
+  if(!stored || !stored.data) return null;
 
+  return stored;
+}
 
-
-    if(!matches.length){
-
-      panel.classList.add("no-live");
-
-      container.innerHTML = `
-
-        <div class="empty">
-
-          No live matches right now.
-
-        </div>
-
-      `;
-
-      return true;
-
-    }
-
-    panel.classList.remove("no-live");
-
-
-    container.innerHTML =
-      matches
-        .map(
-          match =>
-            matchRow(
-              match,
-              "live"
-            )
-        )
-        .join("");
-
-
-    attachMatchToggle(
-      container
-    );
-
-
-    return true;
-
-
-  }catch(error){
-
-    panel.classList.remove("no-live");
-
-    console.error(
-      "Live scores error:",
-      error
-    );
-
-
-    container.innerHTML = `
-
-      <div class="error">
-
-        Live scores are temporarily unavailable.
-
-      </div>
-
-    `;
-
-
-    return false;
-
+function getCachedLeague(selectedLeague){
+  if(leagueCache.has(selectedLeague)){
+    return leagueCache.get(selectedLeague);
   }
 
-}
-
-
-/* RESULTS */
-
-async function loadResults(){
-
-  const container =
-    q("#results-list");
-
-
-  try{
-
-    const json =
-      await fetchApi(
-        `/api/results?league=${encodeURIComponent(league)}`
-      );
-
-
-    const matches =
-      Array.isArray(
-        json?.matches
-      )
-        ? json.matches
-        : [];
-
-
-    matches.sort(
-      (a,b) =>
-        new Date(b.utcDate) -
-        new Date(a.utcDate)
-    );
-
-
-    const recent =
-      matches.slice(0,10);
-
-
-    if(!recent.length){
-
-      container.innerHTML = `
-
-        <div class="empty">
-
-          No recent results available.
-
-        </div>
-
-      `;
-
-      return true;
-
-    }
-
-
-    container.innerHTML =
-      recent
-        .map(
-          match =>
-            matchRow(
-              match,
-              "result"
-            )
-        )
-        .join("");
-
-
-    attachMatchToggle(
-      container
-    );
-
-
-    return true;
-
-
-  }catch(error){
-
-    console.error(
-      "Results error:",
-      error
-    );
-
-
-    container.innerHTML = `
-
-      <div class="error">
-
-        Results are temporarily unavailable.
-
-      </div>
-
-    `;
-
-
-    return false;
-
+  const stored = getStoredLeague(selectedLeague);
+  if(stored){
+    leagueCache.set(selectedLeague, stored);
+    return stored;
   }
 
+  return null;
 }
 
+function setCachedLeague(selectedLeague, data){
+  const value = {
+    savedAt:Date.now(),
+    data
+  };
 
-/* UPCOMING */
+  leagueCache.set(selectedLeague, value);
+  safeStorageSet(`${STORAGE_PREFIX}${selectedLeague}`, value);
+  return value;
+}
 
-async function loadUpcoming(){
+function cacheIsFresh(cache, liveOnly = false){
+  if(!cache?.savedAt) return false;
+  const maxAge = liveOnly ? LIVE_MAX_AGE : CACHE_MAX_AGE;
+  return Date.now() - cache.savedAt < maxAge;
+}
 
-  const container =
-    q("#upcoming-list");
+function abortActiveRequests(){
+  activeControllers.forEach(controller=>{
+    try{ controller.abort(); }catch{}
+  });
+  activeControllers = [];
+}
 
+function makeController(){
+  const controller = new AbortController();
+  activeControllers.push(controller);
+  return controller;
+}
 
-  try{
+function removeController(controller){
+  activeControllers = activeControllers.filter(item=>item !== controller);
+}
 
-    const json =
-      await fetchApi(
-        `/api/upcoming?league=${encodeURIComponent(league)}`
-      );
+function showLoadingOnlyIfEmpty(){
+  const matches = q("#matches");
+  const results = q("#results-list");
+  const upcoming = q("#upcoming-list");
+  const shortTable = q("#short");
 
-
-    let matches =
-      Array.isArray(
-        json?.matches
-      )
-        ? json.matches
-        : [];
-
-
-    const now =
-      Date.now();
-
-
-    matches =
-      matches.filter(
-        match => {
-
-          const time =
-            new Date(
-              match.utcDate
-            ).getTime();
-
-
-          return (
-            time >= now &&
-            (
-              match.status === "TIMED" ||
-              match.status === "SCHEDULED"
-            )
-          );
-
-        }
-      );
-
-
-    matches.sort(
-      (a,b) =>
-        new Date(a.utcDate) -
-        new Date(b.utcDate)
-    );
-
-
-    const upcoming =
-      matches.slice(0,10);
-
-
-    if(!upcoming.length){
-
-      container.innerHTML = `
-
-        <div class="empty">
-
-          No upcoming fixtures available.
-
-        </div>
-
-      `;
-
-      return true;
-
-    }
-
-
-    container.innerHTML =
-      upcoming
-        .map(
-          match =>
-            matchRow(
-              match,
-              "upcoming"
-            )
-        )
-        .join("");
-
-
-    attachMatchToggle(
-      container
-    );
-
-
-    return true;
-
-
-  }catch(error){
-
-    console.error(
-      "Upcoming error:",
-      error
-    );
-
-
-    container.innerHTML = `
-
-      <div class="error">
-
-        Upcoming fixtures are temporarily unavailable.
-
-      </div>
-
+  if(!matches.children.length){
+    matches.innerHTML = `<div class="empty">Loading live matches...</div>`;
+  }
+  if(!results.children.length){
+    results.innerHTML = `<div class="empty">Loading results...</div>`;
+  }
+  if(!upcoming.children.length){
+    upcoming.innerHTML = `<div class="empty">Loading fixtures...</div>`;
+  }
+  if(!shortTable.children.length){
+    shortTable.innerHTML = `
+      <tr><td colspan="5" style="text-align:center;color:#8e98b3">Loading...</td></tr>
     `;
+  }
+}
 
+function resetTableExpansion(){
+  const tablePanel = q("#table");
+  const button = q("#open-table");
+  if(tablePanel) tablePanel.classList.remove("expanded");
+  if(button){
+    button.textContent = "FULL TABLE →";
+    button.setAttribute("aria-expanded","false");
+  }
+}
 
-    return false;
+function renderCachedLeague(cache, selectedLeague){
+  if(!cache?.data) return false;
 
+  renderLiveData(cache.data.live, selectedLeague);
+  renderResultsData(cache.data.results, selectedLeague);
+  renderUpcomingData(cache.data.upcoming, selectedLeague);
+  renderStandingsData(cache.data.standings, selectedLeague);
+  return true;
+}
+
+async function loadLeagueData(selectedLeague, generation, background = false){
+  const cached = getCachedLeague(selectedLeague);
+  const hasCache = !!cached;
+
+  if(hasCache && isCurrent(generation, selectedLeague)){
+    renderCachedLeague(cached, selectedLeague);
   }
 
+  const controller = makeController();
+
+  try{
+    const [live, results, upcoming, standings] =
+      await Promise.all([
+        fetchApi(`/api/live-scores?league=${encodeURIComponent(selectedLeague)}`, controller.signal),
+        fetchApi(`/api/results?league=${encodeURIComponent(selectedLeague)}`, controller.signal),
+        fetchApi(`/api/upcoming?league=${encodeURIComponent(selectedLeague)}`, controller.signal),
+        fetchApi(`/api/standings?league=${encodeURIComponent(selectedLeague)}`, controller.signal)
+      ]);
+
+    const fresh = setCachedLeague(selectedLeague, {
+      live,
+      results,
+      upcoming,
+      standings
+    });
+
+    if(isCurrent(generation, selectedLeague)){
+      renderCachedLeague(fresh, selectedLeague);
+    }
+
+    return true;
+  }catch(error){
+    if(error?.name === "AbortError") return false;
+
+    console.error("League data error:", selectedLeague, error);
+
+    /* Never destroy good cached data just because a refresh failed. */
+    if(isCurrent(generation, selectedLeague)){
+      if(!hasCache){
+        showLoadErrors();
+      }
+    }
+
+    return false;
+  }finally{
+    removeController(controller);
+  }
+}
+
+function showLoadErrors(){
+  q("#matches").innerHTML = `<div class="error">Live scores are temporarily unavailable.</div>`;
+  q("#results-list").innerHTML = `<div class="error">Results are temporarily unavailable.</div>`;
+  q("#upcoming-list").innerHTML = `<div class="error">Upcoming fixtures are temporarily unavailable.</div>`;
+  q("#short").innerHTML = `<tr><td colspan="5" style="text-align:center;color:#ff8b99">Table unavailable</td></tr>`;
 }
 
 
-/* STANDINGS */
+/* RENDERERS */
+
+function renderLiveData(json, selectedLeague){
+  const container = q("#matches");
+  const panel = container.closest(".panel");
+  const matches = Array.isArray(json?.matches) ? json.matches : [];
+
+  if(!matches.length){
+    panel.classList.add("no-live");
+    container.innerHTML = `<div class="empty">No live matches right now.</div>`;
+    return true;
+  }
+
+  panel.classList.remove("no-live");
+  container.innerHTML = matches.map(match=>matchRow(match,"live",selectedLeague)).join("");
+  attachMatchToggle(container);
+  return true;
+}
+
+function renderResultsData(json, selectedLeague){
+  const container = q("#results-list");
+  const matches = Array.isArray(json?.matches) ? json.matches : [];
+
+  matches.sort((a,b)=>new Date(b.utcDate)-new Date(a.utcDate));
+  const recent = matches.slice(0,10);
+
+  if(!recent.length){
+    container.innerHTML = `<div class="empty">No recent results available.</div>`;
+    return true;
+  }
+
+  container.innerHTML = recent.map(match=>matchRow(match,"result",selectedLeague)).join("");
+  attachMatchToggle(container);
+  return true;
+}
+
+function renderUpcomingData(json, selectedLeague){
+  const container = q("#upcoming-list");
+  let matches = Array.isArray(json?.matches) ? json.matches : [];
+  const now = Date.now();
+
+  matches = matches.filter(match=>{
+    const time = new Date(match.utcDate).getTime();
+    return time >= now && (match.status === "TIMED" || match.status === "SCHEDULED");
+  });
+
+  matches.sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate));
+  const upcoming = matches.slice(0,10);
+
+  if(!upcoming.length){
+    container.innerHTML = `<div class="empty">No upcoming fixtures available.</div>`;
+    return true;
+  }
+
+  container.innerHTML = upcoming.map(match=>matchRow(match,"upcoming",selectedLeague)).join("");
+  attachMatchToggle(container);
+  return true;
+}
+
+function renderStandingsData(json, selectedLeague){
+  const shortTable = q("#short");
+  const table = getStandingsTable(json);
+
+  if(!table.length){
+    shortTable.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#8e98b3">No table data available.</td></tr>`;
+    return true;
+  }
+
+  shortTable.innerHTML = table.map((row,index)=>standingRow(row,index,selectedLeague)).join("");
+  return true;
+}
+
+/* BACKWARD-COMPATIBLE LOADERS FOR THE REST OF THE PAGE */
+async function loadLive(selectedLeague = league, generation = requestGeneration){
+  const cached = getCachedLeague(selectedLeague);
+  if(cached?.data?.live && isCurrent(generation,selectedLeague)){
+    renderLiveData(cached.data.live,selectedLeague);
+  }
+  return true;
+}
+
+async function loadResults(selectedLeague = league, generation = requestGeneration){
+  const cached = getCachedLeague(selectedLeague);
+  if(cached?.data?.results && isCurrent(generation,selectedLeague)){
+    renderResultsData(cached.data.results,selectedLeague);
+  }
+  return true;
+}
+
+async function loadUpcoming(selectedLeague = league, generation = requestGeneration){
+  const cached = getCachedLeague(selectedLeague);
+  if(cached?.data?.upcoming && isCurrent(generation,selectedLeague)){
+    renderUpcomingData(cached.data.upcoming,selectedLeague);
+  }
+  return true;
+}
 
 function getStandingsTable(json){
+  const standings = Array.isArray(json?.standings) ? json.standings : [];
+  const requestedType = mode === "home" ? "HOME" : mode === "away" ? "AWAY" : "TOTAL";
+  const selected = standings.find(item=>item.type === requestedType);
 
-  const standings =
-    Array.isArray(
-      json?.standings
-    )
-      ? json.standings
-      : [];
-
-
-  const requestedType =
-    mode === "home"
-      ? "HOME"
-      : mode === "away"
-        ? "AWAY"
-        : "TOTAL";
-
-
-  const selected =
-    standings.find(
-      item =>
-        item.type ===
-        requestedType
-    );
-
-
-  if(
-    selected?.table &&
-    Array.isArray(
-      selected.table
-    )
-  ){
-
+  if(selected?.table && Array.isArray(selected.table)){
     return selected.table;
-
   }
 
-
-  const fallback =
-    standings.find(
-      item =>
-        Array.isArray(
-          item.table
-        )
-    );
-
-
+  const fallback = standings.find(item=>Array.isArray(item.table));
   return fallback?.table || [];
-
 }
 
-
-function standingRow(row, index = 0){
-
-  const team =
-    row?.team;
-
-  const extraClass =
-    index >= 6
-      ? "standings-extra"
-      : "";
-
-
-  const goalDifference =
-    Number(
-      row?.goalDifference ?? 0
-    );
-
+function standingRow(row,index = 0, selectedLeague = league){
+  const team = row?.team;
+  const extraClass = index >= 6 ? " standings-extra" : "";
+  const goalDifference = Number(row?.goalDifference ?? 0);
 
   return `
-
     <tr class="${extraClass}">
-
+      <td>${escapeHtml(row?.position ?? "")}</td>
       <td>
-
-        ${escapeHtml(
-          row?.position ?? ""
-        )}
-
-      </td>
-
-
-      <td>
-
         <span class="tc">
-
           ${crest(team)}
-
-          ${teamLink(team,league)}
-
+          ${teamLink(team,selectedLeague)}
         </span>
-
       </td>
-
-
-      <td>
-
-        ${escapeHtml(
-          row?.playedGames ?? 0
-        )}
-
-      </td>
-
-
-      <td>
-
-        ${
-          goalDifference > 0
-            ? "+" + goalDifference
-            : goalDifference
-        }
-
-      </td>
-
-
-      <td class="pts">
-
-        ${escapeHtml(
-          row?.points ?? 0
-        )}
-
-      </td>
-
+      <td>${escapeHtml(row?.playedGames ?? 0)}</td>
+      <td>${goalDifference > 0 ? "+" + goalDifference : goalDifference}</td>
+      <td class="pts">${escapeHtml(row?.points ?? 0)}</td>
     </tr>
-
   `;
-
 }
 
-
-async function loadStandings(){
-
-  const shortTable =
-    q("#short");
-
-  try{
-
-    const json =
-      await fetchApi(
-        `/api/standings?league=${encodeURIComponent(league)}`
-      );
-
-
-    const table =
-      getStandingsTable(json);
-
-
-    if(!table.length){
-
-      shortTable.innerHTML = `
-
-        <tr>
-
-          <td
-            colspan="5"
-            style="
-              text-align:center;
-              color:#8e98b3
-            "
-          >
-
-            No table data available.
-
-          </td>
-
-        </tr>
-
-      `;
-
-      return true;
-
-    }
-
-
-    shortTable.innerHTML =
-      table
-        .map((row, index) => standingRow(row, index))
-        .join("");
-
-
-    return true;
-
-
-  }catch(error){
-
-    console.error(
-      "Standings error:",
-      error
-    );
-
-
-    shortTable.innerHTML = `
-
-      <tr>
-
-        <td
-          colspan="5"
-          style="
-            text-align:center;
-            color:#ff8b99
-          "
-        >
-
-          Table unavailable
-
-        </td>
-
-      </tr>
-
-    `;
-
-
-    return false;
-
+async function loadStandings(selectedLeague = league, generation = requestGeneration){
+  const cached = getCachedLeague(selectedLeague);
+  if(cached?.data?.standings && isCurrent(generation,selectedLeague)){
+    renderStandingsData(cached.data.standings,selectedLeague);
   }
-
+  return true;
 }
-
 
 /* LEAGUE DISPLAY */
 
@@ -1873,199 +1647,75 @@ function renderLeague(){
 
 
 /* LOADING */
-
 function showInitialLoading(){
-
-  q("#matches").innerHTML = `
-
-    <div class="empty">
-
-      Loading live matches...
-
-    </div>
-
-  `;
-
-
-  q("#results-list").innerHTML = `
-
-    <div class="empty">
-
-      Loading results...
-
-    </div>
-
-  `;
-
-
-  q("#upcoming-list").innerHTML = `
-
-    <div class="empty">
-
-      Loading fixtures...
-
-    </div>
-
-  `;
-
-
-  q("#short").innerHTML = `
-
-    <tr>
-
-      <td
-        colspan="5"
-        style="
-          text-align:center;
-          color:#8e98b3
-        "
-      >
-
-        Loading...
-
-      </td>
-
-    </tr>
-
-  `;
-
+  q("#matches").innerHTML = `<div class="empty">Loading live matches...</div>`;
+  q("#results-list").innerHTML = `<div class="empty">Loading results...</div>`;
+  q("#upcoming-list").innerHTML = `<div class="empty">Loading fixtures...</div>`;
+  q("#short").innerHTML = `<tr><td colspan="5" style="text-align:center;color:#8e98b3">Loading...</td></tr>`;
 }
 
+/* LOAD SELECTED LEAGUE */
+async function loadAll(initialLoad = false){
+  const selectedLeague = league;
+  const generation = ++requestGeneration;
 
-/* LOAD EVERYTHING */
-
-async function loadAll(
-  initialLoad = false
-){
-
-  if(refreshInProgress){
-    return;
-  }
-
-
-  refreshInProgress = true;
-
-
+  abortActiveRequests();
   renderLeague();
+  resetTableExpansion();
 
+  const cached = getCachedLeague(selectedLeague);
+  const renderedCache = renderCachedLeague(cached,selectedLeague);
 
-  if(initialLoad){
-
-    showInitialLoading();
-
+  if(!renderedCache){
+    if(initialLoad) showInitialLoading();
+    else showLoadingOnlyIfEmpty();
   }
 
-
-  try{
-
-    await Promise.all([
-
-      loadLive(),
-
-      loadResults(),
-
-      loadUpcoming(),
-
-      loadStandings()
-
-    ]);
-
-  }finally{
-
-    refreshInProgress =
-      false;
-
-  }
-
+  /*
+   * If cached data is fresh we still refresh in the background, but the
+   * visitor keeps seeing the existing page while the new data arrives.
+   */
+  return loadLeagueData(selectedLeague,generation,renderedCache);
 }
-
 
 /* LEAGUE BUTTONS */
-
-document
-  .querySelectorAll(
-    "[data-league]"
-  )
-  .forEach(
-    button => {
-
-      button.onclick = () => {
-
-        league =
-          button.dataset.league;
-
-        q("#table").classList.remove("expanded");
-        q("#open-table").textContent = "FULL TABLE →";
-        q("#open-table").setAttribute("aria-expanded","false");
-
-
-        mode =
-          "overall";
-
-
-        document
-          .querySelectorAll(
-            "[data-mode]"
-          )
-          .forEach(
-            item => {
-
-              item.classList.toggle(
-                "active",
-                item.dataset.mode ===
-                "overall"
-              );
-
-            }
-          );
-
-
-        loadAll(true);
-
-      };
-
+document.querySelectorAll("[data-league]").forEach(button=>{
+  button.onclick = ()=>{
+    const nextLeague = button.dataset.league;
+    if(!nextLeague || nextLeague === league){
+      renderLeague();
+      return;
     }
-  );
 
+    league = nextLeague;
+    mode = "overall";
+
+    document.querySelectorAll("[data-mode]").forEach(item=>{
+      item.classList.toggle("active",item.dataset.mode === "overall");
+    });
+
+    loadAll(false);
+  };
+});
 
 /* HOME / AWAY / OVERALL */
+document.querySelectorAll("[data-mode]").forEach(button=>{
+  button.onclick = ()=>{
+    mode = button.dataset.mode;
 
-document
-  .querySelectorAll(
-    "[data-mode]"
-  )
-  .forEach(
-    button => {
+    document.querySelectorAll("[data-mode]").forEach(item=>{
+      item.classList.toggle("active",item === button);
+    });
 
-      button.onclick = () => {
-
-        mode =
-          button.dataset.mode;
-
-
-        document
-          .querySelectorAll(
-            "[data-mode]"
-          )
-          .forEach(
-            item => {
-
-              item.classList.toggle(
-                "active",
-                item === button
-              );
-
-            }
-          );
-
-
-        loadStandings();
-
-      };
-
+    const selectedLeague = league;
+    const cached = getCachedLeague(selectedLeague);
+    if(cached?.data?.standings){
+      renderStandingsData(cached.data.standings,selectedLeague);
+    }else{
+      loadStandings(selectedLeague,requestGeneration);
     }
-  );
-
+  };
+});
 
 /* EXPANDABLE LEAGUE TABLE */
 
@@ -2091,16 +1741,13 @@ q("#open-table").onclick = () => {
 
 
 /* FIRST LOAD */
-
 loadAll(true);
 
-
 /* AUTOMATIC REFRESH */
-
-setInterval(
-  () => loadAll(false),
-  60000
-);
+setInterval(()=>{
+  /* Background refresh: never blank the current league while it updates. */
+  loadAll(false);
+},60000);
 
 
 </script>
