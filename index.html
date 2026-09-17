@@ -324,6 +324,8 @@ header:after{
 
 .detail strong{color:#fff}
 
+
+.match-events{margin-top:14px;display:grid;gap:7px}.event{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#ffffff05}.event-minute{font:600 11px 'DM Mono';color:var(--accent)}.event-text{font-size:11px;color:#fff}.event-sub{font-size:9px;color:var(--muted-2);margin-top:2px}.event-card{font-size:14px}.event-card.yellow{color:#ffd84d}.event-card.red{color:#ff5a70}.event-empty{padding:10px 0;color:var(--muted-2);font-size:10px}
 .empty{
   padding:28px 18px;
   color:#77829d;
@@ -1192,192 +1194,74 @@ function liveTime(match){
 /* MATCH ROW */
 
 function matchRow(match,type){
-
-  const home =
-    match?.homeTeam;
-
-  const away =
-    match?.awayTeam;
-
-
-  const homeName =
-    teamName(home);
-
-  const awayName =
-    teamName(away);
-
-
-  const homeScore =
-    score(match,"home");
-
-  const awayScore =
-    score(match,"away");
-
-
-  let rightText = "";
-
-
-  if(type === "live"){
-
-    rightText =
-      liveTime(match);
-
-  }else{
-
-    rightText = `
-
-      ${formatDate(match.utcDate)}
-
-      ·
-
-      ${formatTime(match.utcDate)}
-
-    `;
-
-  }
-
-
-  let scoreText =
-    `${homeScore}—${awayScore}`;
-
-
-  if(type === "upcoming"){
-
-    scoreText = "—";
-
-  }
-
-
+  const home=match?.homeTeam;
+  const away=match?.awayTeam;
+  const homeName=teamName(home);
+  const awayName=teamName(away);
+  const homeScore=score(match,"home");
+  const awayScore=score(match,"away");
+  let rightText=type === "live" ? liveTime(match) : `${formatDate(match.utcDate)} · ${formatTime(match.utcDate)}`;
+  let scoreText=`${homeScore}—${awayScore}`;
+  if(type === "upcoming") scoreText="—";
   return `
-
-    <button
-      class="match"
-      type="button"
-    >
-
-      <span class="club">
-
-        ${crest(home)}
-
-        ${escapeHtml(homeName)}
-
-      </span>
-
-
-      <span class="score">
-
-        ${scoreText}
-
-      </span>
-
-
-      <span class="club away">
-
-        ${escapeHtml(awayName)}
-
-        ${crest(away)}
-
-      </span>
-
-
-      <span class="time ${type === "live" ? "live-clock" : ""}">
-
-        ${type === "live" ? "🔴 " : ""}${rightText}
-
-      </span>
-
+    <button class="match" type="button" data-match-id="${match?.id || ""}" aria-expanded="false">
+      <span class="club">${crest(home)}${escapeHtml(homeName)}</span>
+      <span class="score">${scoreText}</span>
+      <span class="club away">${escapeHtml(awayName)}${crest(away)}</span>
+      <span class="time ${type === "live" ? "live-clock" : ""}">${type === "live" ? "🔴 " : ""}${rightText}</span>
     </button>
-
-
-    <div
-      class="detail"
-      hidden
-    >
-
-      <strong>
-
-        ${escapeHtml(
-          match?.competition?.name || ""
-        )}
-
-      </strong>
-
-
-      <span
-        style="
-          float:right;
-          color:var(--accent)
-        "
-      >
-
-        ${
-          type === "live"
-
-            ? liveTime(match)
-
-            : formatDate(match.utcDate)
-              +
-              " · "
-              +
-              formatTime(match.utcDate)
-
-        }
-
-      </span>
-
+    <div class="detail" hidden>
+      <strong>${escapeHtml(match?.competition?.name || "")}</strong>
+      <span style="float:right;color:var(--accent)">${escapeHtml(rightText)}</span>
+      <div class="match-events" data-events-for="${match?.id || ""}">Loading match events…</div>
     </div>
-
   `;
-
 }
 
+function eventMinute(item){
+  const m=item?.minute;
+  const extra=item?.injuryTime;
+  if(typeof m !== "number") return "";
+  return typeof extra === "number" && extra > 0 ? `${m}′ +${extra}` : `${m}′`;
+}
+
+function renderMatchEvents(data){
+  const goals=Array.isArray(data?.goals) ? data.goals : [];
+  const bookings=Array.isArray(data?.bookings) ? data.bookings : [];
+  const events=[
+    ...goals.map(g=>({minute:eventMinute(g),sort:(g.minute||0)+(g.injuryTime||0)/100,icon:"⚽",label:g?.type === "OWN" ? "Own goal" : g?.type === "PENALTY" ? "Penalty" : "Goal",player:g?.scorer?.name || g?.player?.name || "Unknown player",team:g?.team?.name || ""})),
+    ...bookings.map(b=>({minute:eventMinute(b),sort:(b.minute||0)+(b.injuryTime||0)/100,icon:b?.card === "RED" || b?.card === "YELLOW_RED" ? "🟥" : "🟨",label:b?.card === "RED" || b?.card === "YELLOW_RED" ? "Red card" : "Yellow card",player:b?.player?.name || "Unknown player",team:b?.team?.name || ""}))
+  ].sort((a,b)=>a.sort-b.sort);
+  if(!events.length) return `<div class="event-empty">No goals or bookings recorded.</div>`;
+  return events.map(e=>`<div class="event"><span class="event-minute">${escapeHtml(e.minute)}</span><span><span class="event-text">${e.icon} ${escapeHtml(e.label)} — ${escapeHtml(e.player)}</span><span class="event-sub">${escapeHtml(e.team)}</span></span><span></span></div>`).join("");
+}
+
+async function loadMatchEvents(detail,matchId){
+  if(!matchId) return;
+  try{
+    const data=await fetchApi(`/api/match?matchId=${encodeURIComponent(matchId)}`);
+    detail.querySelector(`[data-events-for="${matchId}"]`).innerHTML=renderMatchEvents(data);
+  }catch(error){
+    console.error("Match events error:",error);
+    detail.querySelector(`[data-events-for="${matchId}"]`).innerHTML=`<div class="event-empty">Match events are temporarily unavailable.</div>`;
+  }
+}
 
 /* MATCH CLICK */
-
 function attachMatchToggle(container){
-
-  container.onclick =
-    event => {
-
-      const button =
-        event.target.closest(
-          ".match"
-        );
-
-      if(!button){
-        return;
-      }
-
-
-      const detail =
-        button.nextElementSibling;
-
-      if(!detail){
-        return;
-      }
-
-
-      const wasHidden =
-        detail.hidden;
-
-
-      container
-        .querySelectorAll(
-          ".detail"
-        )
-        .forEach(
-          item =>
-            item.hidden = true
-        );
-
-
-      detail.hidden =
-        !wasHidden;
-
-    };
-
+  container.onclick=event=>{
+    const button=event.target.closest(".match");
+    if(!button) return;
+    const detail=button.nextElementSibling;
+    if(!detail) return;
+    const wasHidden=detail.hidden;
+    container.querySelectorAll(".detail").forEach(item=>item.hidden=true);
+    container.querySelectorAll(".match").forEach(item=>item.setAttribute("aria-expanded","false"));
+    detail.hidden=!wasHidden;
+    button.setAttribute("aria-expanded",String(wasHidden));
+    if(wasHidden) loadMatchEvents(detail,button.dataset.matchId);
+  };
 }
-
 
 /* API */
 
