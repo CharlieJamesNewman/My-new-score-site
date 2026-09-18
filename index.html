@@ -1361,7 +1361,6 @@ function renderLeagueBundle(data){
   renderLiveFromBundle(data);
   renderResultsFromBundle(data);
   renderUpcomingFromBundle(data);
-  renderStandingsFromBundle(data);
 }
 
 function showLeagueError(message){
@@ -1416,7 +1415,23 @@ async function loadLeagueBundle(force=false){
 async function loadLive(){return !!(await loadLeagueBundle());}
 async function loadResults(){return !!(await loadLeagueBundle());}
 async function loadUpcoming(){return !!(await loadLeagueBundle());}
-async function loadStandings(){return !!(await loadLeagueBundle());}
+
+async function loadStandings(){
+  try{
+    const data=await fetchApi(`/api/standings?league=${encodeURIComponent(league)}`);
+    renderStandingsFromBundle({standings:data});
+    return true;
+  }catch(error){
+    console.error("Standings data error:",error);
+    const cached=getCachedLeague(league);
+    if(cached){
+      renderStandingsFromBundle(cached.data);
+      return true;
+    }
+    q("#short").innerHTML=`<tr><td colspan="5" style="text-align:center;color:#ff8b99">Standings are temporarily unavailable.</td></tr>`;
+    return false;
+  }
+}
 
 /* LEAGUE DISPLAY */
 
@@ -1524,8 +1539,12 @@ function showInitialLoading(){
 async function loadAll(initialLoad=false,force=false){
   renderLeague();
   if(initialLoad) showInitialLoading();
-  try{await loadLeagueBundle(force);}
-  catch(error){console.error("Load all error:",error);}
+  try{
+    await loadLeagueBundle(force);
+    await loadStandings();
+  }catch(error){
+    console.error("Load all error:",error);
+  }
 }
 
 /* LEAGUE BUTTONS */
