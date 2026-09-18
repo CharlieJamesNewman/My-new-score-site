@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="en">
 
 <head>
@@ -6,8 +7,9 @@
 <meta charset="utf-8">
 
 <meta
-  name="viewport"
-  content="width=device-width,initial-scale=1"
+name="viewport"
+content="width=device-width,initial-scale=1"
+
 >
 
 <title>Matchday — Live Football</title>
@@ -522,6 +524,10 @@ header:after{
   flex:none
 }
 
+/* =========================================================
+   TEAM CREST VISIBILITY
+   ========================================================= */
+
 .crest img{
   width:27px;
   height:27px;
@@ -529,9 +535,11 @@ header:after{
   object-fit:contain;
 
   filter:
-    drop-shadow(
-      0 3px 5px #00000035
-    )
+    drop-shadow(1px 0 0 #fff)
+    drop-shadow(-1px 0 0 #fff)
+    drop-shadow(0 1px 0 #fff)
+    drop-shadow(0 -1px 0 #fff)
+    drop-shadow(0 3px 5px #00000035);
 }
 
 .score{
@@ -1127,32 +1135,29 @@ tbody tr:hover td{
 
 </head>
 
-
 <body>
 
-
 <div class="stripe"></div>
-
 
 <header class="wrap">
 
   <div class="logo-block">
 
-    <div class="logo">
-      SCORE<b>DASH</b>
-    </div>
+```
+<div class="logo">
+  SCORE<b>DASH</b>
+</div>
 
-    <div class="logo-sub">
-      Football scores & fixtures
-    </div>
+<div class="logo-sub">
+  Football scores & fixtures
+</div>
+```
 
   </div>
 
 </header>
 
-
 <main class="wrap">
-
 
   <!-- =====================================================
        COMPETITION SELECTOR
@@ -1160,39 +1165,40 @@ tbody tr:hover td{
 
   <section class="chooser">
 
-    <div class="caption">
-      Choose a competition
-    </div>
+```
+<div class="caption">
+  Choose a competition
+</div>
 
-    <div class="league-list">
+<div class="league-list">
 
-      <button
-        class="active"
-        data-league="premier"
-      >
-        Premier League
-      </button>
+  <button
+    class="active"
+    data-league="premier"
+  >
+    Premier League
+  </button>
 
-      <button data-league="laliga">
-        LaLiga
-      </button>
+  <button data-league="laliga">
+    LaLiga
+  </button>
 
-      <button data-league="seriea">
-        Serie A
-      </button>
+  <button data-league="seriea">
+    Serie A
+  </button>
 
-      <button data-league="bundesliga">
-        Bundesliga
-      </button>
+  <button data-league="bundesliga">
+    Bundesliga
+  </button>
 
-      <button data-league="ligue1">
-        Ligue 1
-      </button>
+  <button data-league="ligue1">
+    Ligue 1
+  </button>
 
-    </div>
+</div>
+```
 
   </section>
-
 
   <!-- =====================================================
        MAIN CONTENT
@@ -1200,318 +1206,315 @@ tbody tr:hover td{
 
   <div class="grid">
 
+```
+<!-- ===================================================
+     LEFT COLUMN
+     =================================================== -->
 
-    <!-- ===================================================
-         LEFT COLUMN
-         =================================================== -->
-
-    <section id="scores">
-
-
-      <!-- LIVE MATCHES -->
-
-      <div class="panel">
-
-        <div class="panel-head">
-
-          <strong>
-            Live matches
-          </strong>
-
-          <span
-            class="tag"
-            id="live-tag"
-          >
-            LIVE FEED
-          </span>
-
-        </div>
+<section id="scores">
 
 
-        <div id="matches">
+  <!-- LIVE MATCHES -->
 
-          <div class="empty">
-            Loading live matches...
-          </div>
+  <div class="panel">
 
-        </div>
+    <div class="panel-head">
 
+      <strong>
+        Live matches
+      </strong>
+
+      <span
+        class="tag"
+        id="live-tag"
+      >
+        LIVE FEED
+      </span>
+
+    </div>
+
+
+    <div id="matches">
+
+      <div class="empty">
+        Loading live matches...
       </div>
 
-
-      <!-- RECENT RESULTS -->
-
-      <div
-        class="panel"
-        id="results"
-        style="margin-top:18px"
-      >
-
-        <div class="panel-head">
-
-          <strong>
-            Recent results
-          </strong>
-
-          <span class="tag">
-            LAST 10
-          </span>
-
-        </div>
-
-
-        <div id="results-list">
-
-          <div class="empty">
-            Loading results...
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- UPCOMING FIXTURES -->
-
-      <div
-        class="panel"
-        id="fixtures"
-        style="margin-top:18px"
-      >
-
-        <div class="panel-head">
-
-          <strong>
-            Upcoming fixtures
-          </strong>
-
-          <span class="tag">
-            NEXT 10
-          </span>
-
-        </div>
-
-
-        <div id="upcoming-list">
-
-          <div class="empty">
-            Loading fixtures...
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- FEATURED STORY -->
-
-      <article class="story">
-
-        <small>
-          FEATURED ANALYSIS
-        </small>
-
-        <strong id="story">
-          Follow the latest league action.
-        </strong>
-
-        <button
-          type="button"
-        >
-          READ THE STORY →
-        </button>
-
-      </article>
-
-
-    </section>
-
-
-    <!-- ===================================================
-         RIGHT COLUMN
-         =================================================== -->
-
-    <aside class="right">
-
-
-      <!-- LEAGUE TABLE -->
-
-      <section
-        class="panel"
-        id="table"
-      >
-
-        <div class="panel-head">
-
-          <strong>
-            League table
-          </strong>
-
-          <div class="tabs">
-
-            <button
-              class="active"
-              data-mode="overall"
-            >
-              Overall
-            </button>
-
-            <button data-mode="home">
-              Home
-            </button>
-
-            <button data-mode="away">
-              Away
-            </button>
-
-          </div>
-
-        </div>
-
-
-        <table>
-
-          <thead>
-
-            <tr>
-
-              <th>
-                #
-              </th>
-
-              <th>
-                Club
-              </th>
-
-              <th>
-                P
-              </th>
-
-              <th>
-                GD
-              </th>
-
-              <th>
-                Pts
-              </th>
-
-            </tr>
-
-          </thead>
-
-
-          <tbody id="short">
-
-            <tr>
-
-              <td
-                colspan="5"
-                style="
-                  text-align:center;
-                  color:#8e98b3
-                "
-              >
-                Loading...
-              </td>
-
-            </tr>
-
-          </tbody>
-
-        </table>
-
-
-        <button
-          class="show-table"
-          id="open-table"
-          aria-expanded="false"
-          type="button"
-        >
-          FULL TABLE →
-        </button>
-
-      </section>
-
-
-      <!-- PLAYER STATISTICS -->
-
-      <section
-        class="panel stats"
-        id="stats"
-      >
-
-        <div class="panel-head">
-
-          <strong>
-            Player statistics
-          </strong>
-
-        </div>
-
-
-        <div class="leader">
-
-          <span class="rank">
-            —
-          </span>
-
-
-          <div>
-
-            <div class="player">
-              Player statistics
-            </div>
-
-            <div class="team">
-              Not connected yet
-            </div>
-
-          </div>
-
-
-          <div class="number">
-
-            —
-
-            <span>
-              COMING SOON
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div
-          style="
-            padding:12px 18px;
-            color:#66718c;
-            font-size:10px;
-            line-height:1.5
-          "
-        >
-
-          League match data and tables are connected.
-          Player statistics can be added separately.
-
-        </div>
-
-      </section>
-
-
-    </aside>
-
+    </div>
 
   </div>
 
+
+  <!-- RECENT RESULTS -->
+
+  <div
+    class="panel"
+    id="results"
+    style="margin-top:18px"
+  >
+
+    <div class="panel-head">
+
+      <strong>
+        Recent results
+      </strong>
+
+      <span class="tag">
+        LAST 10
+      </span>
+
+    </div>
+
+
+    <div id="results-list">
+
+      <div class="empty">
+        Loading results...
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- UPCOMING FIXTURES -->
+
+  <div
+    class="panel"
+    id="fixtures"
+    style="margin-top:18px"
+  >
+
+    <div class="panel-head">
+
+      <strong>
+        Upcoming fixtures
+      </strong>
+
+      <span class="tag">
+        NEXT 10
+      </span>
+
+    </div>
+
+
+    <div id="upcoming-list">
+
+      <div class="empty">
+        Loading fixtures...
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- FEATURED STORY -->
+
+  <article class="story">
+
+    <small>
+      FEATURED ANALYSIS
+    </small>
+
+    <strong id="story">
+      Follow the latest league action.
+    </strong>
+
+    <button
+      type="button"
+    >
+      READ THE STORY →
+    </button>
+
+  </article>
+
+
+</section>
+
+
+<!-- ===================================================
+     RIGHT COLUMN
+     =================================================== -->
+
+<aside class="right">
+
+
+  <!-- LEAGUE TABLE -->
+
+  <section
+    class="panel"
+    id="table"
+  >
+
+    <div class="panel-head">
+
+      <strong>
+        League table
+      </strong>
+
+      <div class="tabs">
+
+        <button
+          class="active"
+          data-mode="overall"
+        >
+          Overall
+        </button>
+
+        <button data-mode="home">
+          Home
+        </button>
+
+        <button data-mode="away">
+          Away
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>
+            #
+          </th>
+
+          <th>
+            Club
+          </th>
+
+          <th>
+            P
+          </th>
+
+          <th>
+            GD
+          </th>
+
+          <th>
+            Pts
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody id="short">
+
+        <tr>
+
+          <td
+            colspan="5"
+            style="
+              text-align:center;
+              color:#8e98b3
+            "
+          >
+            Loading...
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+
+    <button
+      class="show-table"
+      id="open-table"
+      aria-expanded="false"
+      type="button"
+    >
+      FULL TABLE →
+    </button>
+
+  </section>
+
+
+  <!-- PLAYER STATISTICS -->
+
+  <section
+    class="panel stats"
+    id="stats"
+  >
+
+    <div class="panel-head">
+
+      <strong>
+        Player statistics
+      </strong>
+
+    </div>
+
+
+    <div class="leader">
+
+      <span class="rank">
+        —
+      </span>
+
+
+      <div>
+
+        <div class="player">
+          Player statistics
+        </div>
+
+        <div class="team">
+          Not connected yet
+        </div>
+
+      </div>
+
+
+      <div class="number">
+
+        —
+
+        <span>
+          COMING SOON
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div
+      style="
+        padding:12px 18px;
+        color:#66718c;
+        font-size:10px;
+        line-height:1.5
+      "
+    >
+
+      League match data and tables are connected.
+      Player statistics can be added separately.
+
+    </div>
+
+  </section>
+
+
+</aside>
+```
+
+  </div>
 
   <div class="attribution">
     Data provided by football-data.org
   </div>
 
-
 </main>
-
 
 <script>
 
@@ -2396,15 +2399,6 @@ function attachMatchToggle(
    CACHE
    ========================================================= */
 
-/*
-  IMPORTANT:
-
-  v3 deliberately replaces v2.
-
-  This prevents old cached league data from
-  interfering with the corrected API.
-*/
-
 const leagueCache =
   new Map();
 
@@ -2905,14 +2899,6 @@ function renderStandingsFromBundle(
     q("#short");
 
 
-  /*
-    The Worker now returns:
-
-    data.standings.TOTAL
-    data.standings.HOME
-    data.standings.AWAY
-  */
-
   const standings =
     data?.standings ||
     {};
@@ -3286,12 +3272,6 @@ async function loadStandings(){
     );
 
 
-    /*
-      Fall back to the already-loaded
-      league bundle if the separate
-      standings request fails.
-    */
-
     const cached =
       getCachedLeague(
         league
@@ -3654,9 +3634,7 @@ setInterval(
 
 </script>
 
-
 <script src="badges.js"></script>
-
 
 </body>
 
