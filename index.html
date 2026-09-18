@@ -1419,7 +1419,7 @@ async function loadUpcoming(){return !!(await loadLeagueBundle());}
 async function loadStandings(){
   try{
     const data=await fetchApi(`/api/standings?league=${encodeURIComponent(league)}`);
-    renderStandingsFromBundle({standings:data});
+    renderStandingsFromBundle(data);
     return true;
   }catch(error){
     console.error("Standings data error:",error);
