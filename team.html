@@ -615,6 +615,10 @@ h1{
 const API_BASE = "";
 
 
+/* =========================================================
+   READ TEAM FROM URL
+   ========================================================= */
+
 const params =
   new URLSearchParams(
     location.search
@@ -631,6 +635,10 @@ const league =
     "premier"
   ).toLowerCase();
 
+
+/* =========================================================
+   LEAGUE NAMES
+   ========================================================= */
 
 const leagueNames = {
 
@@ -651,6 +659,10 @@ const leagueNames = {
 
 };
 
+
+/* =========================================================
+   LEAGUE ACCENTS
+   ========================================================= */
 
 const leagueAccent = {
 
@@ -681,7 +693,13 @@ document.documentElement
   );
 
 
-function escapeHtml(value){
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHtml(
+  value
+){
 
   return String(
     value ?? ""
@@ -715,7 +733,13 @@ function escapeHtml(value){
 }
 
 
-async function fetchApi(endpoint){
+/* =========================================================
+   API
+   ========================================================= */
+
+async function fetchApi(
+  endpoint
+){
 
   const response =
     await fetch(
@@ -726,10 +750,13 @@ async function fetchApi(endpoint){
       }
     );
 
+
   const text =
     await response.text();
 
+
   let data;
+
 
   try{
 
@@ -744,102 +771,170 @@ async function fetchApi(endpoint){
 
   }
 
+
   if(
     !response.ok
   ){
 
-    throw new Error(
-      data?.message ||
-      data?.error ||
-      `HTTP ${response.status}`
-    );
+    const error =
+      new Error(
+        data?.message ||
+        data?.error ||
+        `HTTP ${response.status}`
+      );
+
+
+    error.status =
+      response.status;
+
+
+    throw error;
 
   }
+
 
   return data;
 
 }
 
 
-function crest(url){
+/* =========================================================
+   CREST
+   ========================================================= */
+
+function crest(
+  url
+){
 
   if(!url){
-    return "";
+
+    return `
+      <div
+        style="
+          width:105px;
+          height:105px;
+        "
+      ></div>
+    `;
+
   }
 
+
   return `
+
     <img
       class="hero-crest"
       src="${escapeHtml(url)}"
       alt=""
+      onerror="this.style.display='none'"
     >
+
   `;
 
 }
 
 
-function miniCrest(url){
+function miniCrest(
+  url
+){
 
   if(!url){
+
     return "";
+
   }
 
+
   return `
+
     <img
       class="mini-crest"
       src="${escapeHtml(url)}"
       alt=""
+      onerror="this.style.display='none'"
     >
+
   `;
 
 }
 
 
-function dateText(value){
+/* =========================================================
+   DATE
+   ========================================================= */
+
+function dateText(
+  value
+){
 
   if(!value){
+
     return "";
+
   }
+
 
   const date =
     new Date(value);
+
 
   if(
     Number.isNaN(
       date.getTime()
     )
   ){
+
     return "";
+
   }
+
 
   return date.toLocaleDateString(
     "en-AU",
     {
-      day:"numeric",
-      month:"short"
+      day:
+        "numeric",
+
+      month:
+        "short"
     }
   );
 
 }
 
 
-function resultFor(match){
+/* =========================================================
+   RESULT
+   ========================================================= */
+
+function resultFor(
+  match
+){
 
   const full =
     match?.score?.fullTime;
 
+
   const h =
     full?.home;
+
 
   const a =
     full?.away;
 
+
   if(
-    typeof h !== "number" ||
-    typeof a !== "number"
+    typeof h !==
+      "number" ||
+
+    typeof a !==
+      "number"
   ){
+
     return "";
+
   }
+
 
   const isHome =
     String(
@@ -847,16 +942,21 @@ function resultFor(match){
     ) ===
     String(teamId);
 
+
   if(
     h === a
   ){
+
     return "D";
+
   }
+
 
   const won =
     isHome
       ? h > a
       : a > h;
+
 
   return won
     ? "W"
@@ -865,25 +965,153 @@ function resultFor(match){
 }
 
 
-function formatScore(match){
+/* =========================================================
+   SCORE
+   ========================================================= */
+
+function formatScore(
+  match
+){
 
   const h =
     match?.score?.fullTime?.home;
 
+
   const a =
     match?.score?.fullTime?.away;
 
+
   if(
-    typeof h !== "number" ||
-    typeof a !== "number"
+    typeof h !==
+      "number" ||
+
+    typeof a !==
+      "number"
   ){
+
     return "—";
+
   }
+
 
   return `${h}—${a}`;
 
 }
 
+
+/* =========================================================
+   NORMALISE TEAM RESPONSE
+   ========================================================= */
+
+function normaliseTeam(
+  data
+){
+
+  /*
+    Supports either:
+
+    {
+      id,
+      name,
+      crest
+    }
+
+    OR:
+
+    {
+      team: {
+        id,
+        name,
+        crest
+      }
+    }
+  */
+
+  if(
+    data?.team &&
+    typeof data.team ===
+      "object"
+  ){
+
+    return data.team;
+
+  }
+
+
+  return data || {};
+
+}
+
+
+/* =========================================================
+   NORMALISE MATCH RESPONSE
+   ========================================================= */
+
+function normaliseMatches(
+  data
+){
+
+  if(
+    Array.isArray(data)
+  ){
+
+    return data;
+
+  }
+
+
+  if(
+    Array.isArray(
+      data?.matches
+    )
+  ){
+
+    return data.matches;
+
+  }
+
+
+  return [];
+
+}
+
+
+/* =========================================================
+   NORMALISE SCORERS
+   ========================================================= */
+
+function normaliseScorers(
+  data
+){
+
+  if(
+    Array.isArray(data)
+  ){
+
+    return data;
+
+  }
+
+
+  if(
+    Array.isArray(
+      data?.scorers
+    )
+  ){
+
+    return data.scorers;
+
+  }
+
+
+  return [];
+
+}
+
+
+/* =========================================================
+   RENDER HERO
+   ========================================================= */
 
 function renderHero(
   team,
@@ -892,8 +1120,8 @@ function renderHero(
 
   const finished =
     matches.filter(
-      m =>
-        m.status ===
+      match =>
+        match.status ===
         "FINISHED"
     );
 
@@ -903,18 +1131,25 @@ function renderHero(
       .slice()
       .sort(
         (a,b) =>
-          new Date(b.utcDate) -
-          new Date(a.utcDate)
+          new Date(
+            b.utcDate
+          ) -
+          new Date(
+            a.utcDate
+          )
       )
       .slice(0,5)
       .reverse();
 
 
   let wins = 0;
+
   let draws = 0;
+
   let losses = 0;
 
   let goalsFor = 0;
+
   let goalsAgainst = 0;
 
 
@@ -924,15 +1159,21 @@ function renderHero(
       const h =
         match?.score?.fullTime?.home;
 
+
       const a =
         match?.score?.fullTime?.away;
 
 
       if(
-        typeof h !== "number" ||
-        typeof a !== "number"
+        typeof h !==
+          "number" ||
+
+        typeof a !==
+          "number"
       ){
+
         return;
+
       }
 
 
@@ -955,24 +1196,34 @@ function renderHero(
           : h;
 
 
-      goalsFor += gf;
-      goalsAgainst += ga;
+      goalsFor +=
+        gf;
+
+
+      goalsAgainst +=
+        ga;
 
 
       if(
         gf > ga
       ){
+
         wins++;
+
       }
 
       else if(
         gf === ga
       ){
+
         draws++;
+
       }
 
       else{
+
         losses++;
+
       }
 
     }
@@ -987,14 +1238,22 @@ function renderHero(
             match => {
 
               const result =
-                resultFor(match);
+                resultFor(
+                  match
+                );
+
 
               return `
+
                 <span
-                  class="form-dot form-${result}"
+                  class="
+                    form-dot
+                    form-${result}
+                  "
                 >
                   ${result}
                 </span>
+
               `;
 
             }
@@ -1002,44 +1261,68 @@ function renderHero(
           .join("")
 
       : `
+
           <span class="meta">
             No completed matches yet
           </span>
+
         `;
 
 
+  const goalDifference =
+    goalsFor -
+    goalsAgainst;
+
+
   document
-    .getElementById("hero")
+    .getElementById(
+      "hero"
+    )
     .classList
-    .remove("loading");
+    .remove(
+      "loading"
+    );
 
 
   document
-    .getElementById("hero")
+    .getElementById(
+      "hero"
+    )
     .innerHTML = `
 
       <div class="hero-main">
 
         <div>
-          ${crest(team?.crest)}
+
+          ${crest(
+            team?.crest
+          )}
+
         </div>
+
 
         <div>
 
           <div class="kicker">
+
             ${escapeHtml(
               leagueNames[league] ||
               league
             )}
+
           </div>
 
+
           <h1>
+
             ${escapeHtml(
               team?.name ||
               team?.shortName ||
               "Team"
             )}
+
           </h1>
+
 
           <div class="meta">
 
@@ -1061,8 +1344,11 @@ function renderHero(
 
           </div>
 
+
           <div class="form">
+
             ${formHtml}
+
           </div>
 
         </div>
@@ -1072,7 +1358,9 @@ function renderHero(
 
       <div class="stats">
 
+
         <div class="stat">
+
           <div class="stat-label">
             Played
           </div>
@@ -1080,10 +1368,12 @@ function renderHero(
           <div class="stat-value">
             ${finished.length}
           </div>
+
         </div>
 
 
         <div class="stat">
+
           <div class="stat-label">
             Wins
           </div>
@@ -1091,10 +1381,12 @@ function renderHero(
           <div class="stat-value">
             ${wins}
           </div>
+
         </div>
 
 
         <div class="stat">
+
           <div class="stat-label">
             Draws
           </div>
@@ -1102,10 +1394,12 @@ function renderHero(
           <div class="stat-value">
             ${draws}
           </div>
+
         </div>
 
 
         <div class="stat">
+
           <div class="stat-label">
             Losses
           </div>
@@ -1113,21 +1407,29 @@ function renderHero(
           <div class="stat-value">
             ${losses}
           </div>
+
         </div>
 
 
         <div class="stat">
+
           <div class="stat-label">
             Goal diff
           </div>
 
           <div class="stat-value">
+
             ${
-              goalsFor -
-              goalsAgainst
+              goalDifference > 0
+                ? "+" +
+                  goalDifference
+                : goalDifference
             }
+
           </div>
+
         </div>
+
 
       </div>
 
@@ -1136,18 +1438,31 @@ function renderHero(
 }
 
 
+/* =========================================================
+   RENDER MATCHES
+   ========================================================= */
+
 function renderMatches(
-  matches,
-  team
+  matches
 ){
+
+  const container =
+    document.getElementById(
+      "matches"
+    );
+
 
   const sorted =
     matches
       .slice()
       .sort(
         (a,b) =>
-          new Date(b.utcDate) -
-          new Date(a.utcDate)
+          new Date(
+            b.utcDate
+          ) -
+          new Date(
+            a.utcDate
+          )
       );
 
 
@@ -1155,334 +1470,632 @@ function renderMatches(
     !sorted.length
   ){
 
-    document
-      .getElementById(
-        "matches"
-      )
-      .innerHTML =
-        `
-          <div class="empty">
-            No matches available.
-          </div>
-        `;
+    container.innerHTML = `
+
+      <div class="empty">
+
+        No matches available.
+
+      </div>
+
+    `;
 
     return;
+
   }
 
 
-  document
-    .getElementById(
-      "matches"
-    )
-    .innerHTML =
+  container.innerHTML =
 
-      sorted
-        .slice(0,20)
-        .map(
-          match => {
+    sorted
+      .slice(0,20)
+      .map(
+        match => {
 
-            const isHome =
-              String(
-                match.homeTeam?.id
-              ) ===
-              String(teamId);
+          const result =
+            match.status ===
+            "FINISHED"
+
+              ? resultFor(
+                  match
+                )
+
+              : "";
 
 
-            const result =
-              match.status ===
+          const home =
+            match.homeTeam ||
+            {};
+
+
+          const away =
+            match.awayTeam ||
+            {};
+
+
+          const score =
+            match.status ===
               "FINISHED"
-                ? resultFor(match)
-                : "";
+
+              ? formatScore(
+                  match
+                )
+
+              : "—";
 
 
-            const home =
-              match.homeTeam;
+          return `
 
-
-            const away =
-              match.awayTeam;
-
-
-            return `
-
-              <div
-                class="match ${
+            <div
+              class="
+                match
+                ${
                   result
                     ? `result-${result}`
                     : ""
-                }"
+                }
+              "
+            >
+
+
+              <div
+                class="match-team"
               >
 
-                <div class="match-team">
+                ${miniCrest(
+                  home.crest
+                )}
 
-                  ${miniCrest(
-                    home?.crest
+
+                <span>
+
+                  ${escapeHtml(
+                    home.shortName ||
+                    home.name ||
+                    ""
                   )}
 
-                  <span>
-                    ${escapeHtml(
-                      home?.shortName ||
-                      home?.name ||
-                      ""
-                    )}
-                  </span>
+                </span>
+
+              </div>
+
+
+              <div>
+
+                <div
+                  class="match-score"
+                >
+
+                  ${escapeHtml(
+                    score
+                  )}
 
                 </div>
 
 
-                <div>
+                <div
+                  class="match-date"
+                >
 
-                  <div class="match-score">
-                    ${escapeHtml(
-                      formatScore(match)
-                    )}
-                  </div>
-
-                  <div class="match-date">
-                    ${escapeHtml(
-                      dateText(
-                        match.utcDate
-                      )
-                    )}
-                  </div>
-
-                </div>
-
-
-                <div class="match-team right">
-
-                  <span>
-                    ${escapeHtml(
-                      away?.shortName ||
-                      away?.name ||
-                      ""
-                    )}
-                  </span>
-
-                  ${miniCrest(
-                    away?.crest
+                  ${escapeHtml(
+                    dateText(
+                      match.utcDate
+                    )
                   )}
 
                 </div>
 
               </div>
 
-            `;
 
-          }
-        )
-        .join("");
+              <div
+                class="
+                  match-team
+                  right
+                "
+              >
+
+                <span>
+
+                  ${escapeHtml(
+                    away.shortName ||
+                    away.name ||
+                    ""
+                  )}
+
+                </span>
+
+
+                ${miniCrest(
+                  away.crest
+                )}
+
+              </div>
+
+
+            </div>
+
+          `;
+
+        }
+      )
+      .join("");
 
 }
 
 
+/* =========================================================
+   RENDER SCORERS
+   ========================================================= */
+
 function renderScorers(
-  data
+  scorers
 ){
 
-  const scorers =
-    Array.isArray(
-      data?.scorers
-    )
-      ? data.scorers
-      : [];
+  const container =
+    document.getElementById(
+      "scorers"
+    );
 
 
   if(
     !scorers.length
   ){
 
-    document
-      .getElementById(
-        "scorers"
-      )
-      .innerHTML =
-        `
-          <div class="empty">
-            No scorer data is available
-            for this team.
-          </div>
-        `;
+    container.innerHTML = `
+
+      <div class="empty">
+
+        No scorer data is available
+        for this team.
+
+      </div>
+
+    `;
 
     return;
+
   }
 
 
-  document
-    .getElementById(
-      "scorers"
-    )
-    .innerHTML =
+  /*
+    Sort highest goals first.
+  */
 
-      scorers
-        .slice(0,10)
-        .map(
-          item => {
+  const sorted =
+    scorers
+      .slice()
+      .sort(
+        (a,b) =>
+          Number(
+            b?.goals ??
+            b?.numberOfGoals ??
+            0
+          ) -
 
-            const player =
-              item?.player;
+          Number(
+            a?.goals ??
+            a?.numberOfGoals ??
+            0
+          )
+      );
 
-            const goals =
-              item?.goals ?? 0;
+
+  container.innerHTML =
+
+    sorted
+      .slice(0,10)
+      .map(
+        item => {
+
+          const player =
+            item?.player ||
+            {};
 
 
-            return `
+          const goals =
+            item?.goals ??
+            item?.numberOfGoals ??
+            0;
 
-              <div class="scorer">
 
-                <div>
+          const team =
+            item?.team ||
+            {};
 
-                  <div class="player-name">
-                    ${escapeHtml(
-                      player?.name ||
-                      "Unknown player"
-                    )}
-                  </div>
 
-                  <div class="player-team">
-                    ${escapeHtml(
-                      item?.team?.shortName ||
-                      item?.team?.name ||
-                      ""
-                    )}
-                  </div>
+          return `
+
+            <div
+              class="scorer"
+            >
+
+              <div>
+
+                <div
+                  class="player-name"
+                >
+
+                  ${escapeHtml(
+                    player.name ||
+                    item?.name ||
+                    "Unknown player"
+                  )}
 
                 </div>
 
 
-                <div class="goals">
+                <div
+                  class="player-team"
+                >
+
                   ${escapeHtml(
-                    goals
-                  )} ⚽
+                    team.shortName ||
+                    team.name ||
+                    ""
+                  )}
+
                 </div>
 
               </div>
 
-            `;
 
-          }
-        )
-        .join("");
+              <div
+                class="goals"
+              >
+
+                ${escapeHtml(
+                  goals
+                )}
+
+                ⚽
+
+              </div>
+
+            </div>
+
+          `;
+
+        }
+      )
+      .join("");
 
 }
 
+
+/* =========================================================
+   LOAD TEAM INFORMATION
+   ========================================================= */
+
+async function loadTeam(){
+
+  try{
+
+    const data =
+      await fetchApi(
+        `/api/team?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(league)}`
+      );
+
+
+    const team =
+      normaliseTeam(
+        data
+      );
+
+
+    if(
+      !team?.id &&
+      !team?.name
+    ){
+
+      throw new Error(
+        "The team endpoint returned no team information."
+      );
+
+    }
+
+
+    document.title =
+      `Score Dash — ${
+        team.shortName ||
+        team.name ||
+        "Team"
+      }`;
+
+
+    return team;
+
+  }catch(error){
+
+    console.error(
+      "Team information error:",
+      error
+    );
+
+
+    document
+      .getElementById(
+        "hero"
+      )
+      .classList
+      .remove(
+        "loading"
+      );
+
+
+    document
+      .getElementById(
+        "hero"
+      )
+      .innerHTML = `
+
+        <div
+          class="empty error"
+        >
+
+          Unable to load the team.
+
+          <br><br>
+
+          ${escapeHtml(
+            error?.message ||
+            "Team information is unavailable."
+          )}
+
+        </div>
+
+      `;
+
+
+    return null;
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD TEAM MATCHES
+   ========================================================= */
+
+async function loadTeamMatches(){
+
+  try{
+
+    const data =
+      await fetchApi(
+        `/api/team-matches?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(league)}`
+      );
+
+
+    return normaliseMatches(
+      data
+    );
+
+  }catch(error){
+
+    console.error(
+      "Team matches error:",
+      error
+    );
+
+
+    document
+      .getElementById(
+        "matches"
+      )
+      .innerHTML = `
+
+        <div class="empty error">
+
+          Team matches are temporarily unavailable.
+
+          <br><br>
+
+          ${escapeHtml(
+            error?.message ||
+            ""
+          )}
+
+        </div>
+
+      `;
+
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD TEAM SCORERS
+   ========================================================= */
+
+async function loadTeamScorers(){
+
+  try{
+
+    const data =
+      await fetchApi(
+        `/api/team-scorers?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(league)}`
+      );
+
+
+    return normaliseScorers(
+      data
+    );
+
+  }catch(error){
+
+    /*
+      Scorers are optional.
+
+      If this endpoint isn't available,
+      the team page should still work.
+    */
+
+    console.warn(
+      "Team scorers unavailable:",
+      error
+    );
+
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================================================
+   MAIN LOAD
+   ========================================================= */
 
 async function load(){
 
   if(!teamId){
 
     document
-      .getElementById("hero")
-      .innerHTML =
-        `
-          <div class="empty">
-            No team was selected.
-          </div>
-        `;
+      .getElementById(
+        "hero"
+      )
+      .classList
+      .remove(
+        "loading"
+      );
+
+
+    document
+      .getElementById(
+        "hero"
+      )
+      .innerHTML = `
+
+        <div class="empty error">
+
+          No team was selected.
+
+        </div>
+
+      `;
+
+
+    document
+      .getElementById(
+        "matches"
+      )
+      .innerHTML = `
+
+        <div class="empty">
+
+          No team was selected.
+
+        </div>
+
+      `;
+
+
+    document
+      .getElementById(
+        "scorers"
+      )
+      .innerHTML = `
+
+        <div class="empty">
+
+          No team was selected.
+
+        </div>
+
+      `;
+
 
     return;
+
   }
 
 
-  try{
+  /*
+    Load all three independently.
 
-    const [
-      team,
-      matches,
-      scorers
-    ] = await Promise.all([
+    This is the important change from
+    the previous version.
+  */
 
-      fetchApi(
-        `/api/team?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(league)}`
-      ),
+  const [
+    teamResult,
+    matchesResult,
+    scorersResult
+  ] = await Promise.allSettled([
 
-      fetchApi(
-        `/api/team-matches?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(league)}`
-      ),
+    loadTeam(),
 
-      fetchApi(
-        `/api/team-scorers?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(league)}`
-      )
+    loadTeamMatches(),
 
-    ]);
+    loadTeamScorers()
 
-
-    const matchList =
-      Array.isArray(
-        matches?.matches
-      )
-        ? matches.matches
-        : [];
+  ]);
 
 
-    document.title =
-      `Score Dash — ${
-        team?.shortName ||
-        team?.name ||
-        "Team"
-      }`;
+  const team =
+    teamResult.status ===
+      "fulfilled"
 
+      ? teamResult.value
+
+      : null;
+
+
+  const matches =
+    matchesResult.status ===
+      "fulfilled"
+
+      ? matchesResult.value
+
+      : [];
+
+
+  const scorers =
+    scorersResult.status ===
+      "fulfilled"
+
+      ? scorersResult.value
+
+      : [];
+
+
+  /*
+    If team information loaded,
+    render the hero using the
+    match information we managed
+    to retrieve.
+  */
+
+  if(team){
 
     renderHero(
       team,
-      matchList
+      matches
     );
-
-
-    renderMatches(
-      matchList,
-      team
-    );
-
-
-    renderScorers(
-      scorers
-    );
-
-
-  }catch(error){
-
-    console.error(
-      "Team page error:",
-      error
-    );
-
-
-    document
-      .getElementById("hero")
-      .innerHTML =
-        `
-          <div class="empty error">
-            Unable to load this team right now.
-            <br><br>
-            ${escapeHtml(
-              error?.message ||
-              ""
-            )}
-          </div>
-        `;
-
-
-    document
-      .getElementById("matches")
-      .innerHTML =
-        `
-          <div class="empty">
-            Team matches are temporarily unavailable.
-          </div>
-        `;
-
-
-    document
-      .getElementById("scorers")
-      .innerHTML =
-        `
-          <div class="empty">
-            Team statistics are temporarily unavailable.
-          </div>
-        `;
 
   }
+
+
+  /*
+    Always render the other sections,
+    even if one API endpoint failed.
+  */
+
+  renderMatches(
+    matches
+  );
+
+
+  renderScorers(
+    scorers
+  );
 
 }
 
@@ -1492,4 +2105,5 @@ load();
 </script>
 
 </body>
+
 </html>
