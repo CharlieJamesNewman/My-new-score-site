@@ -1236,7 +1236,7 @@ const leagueInFlight = new Map();
 const LEAGUE_CACHE_MS = 60000;
 
 function cacheKeyForLeague(key){
-  return `scoreDashLeague:${key}`;
+  return `scoreDashLeague:v2:${key}`;
 }
 
 function readSavedLeague(key){
@@ -1318,11 +1318,38 @@ function renderUpcomingFromBundle(data){
   attachMatchToggle(container);
 }
 
+function standingRow(row,index=0){
+  const team=row?.team || {};
+  const goalDifference=Number(row?.goalDifference ?? 0);
+  const extraClass=index>=6 ? " standings-extra" : "";
+  return `
+    <tr class="${extraClass}">
+      <td>${escapeHtml(row?.position ?? "")}</td>
+      <td>
+        <span class="tc">
+          ${crest(team)}
+          ${teamLink(team,league)}
+        </span>
+      </td>
+      <td>${escapeHtml(row?.playedGames ?? 0)}</td>
+      <td>${goalDifference>0 ? "+"+goalDifference : goalDifference}</td>
+      <td class="pts">${escapeHtml(row?.points ?? 0)}</td>
+    </tr>
+  `;
+}
+
 function renderStandingsFromBundle(data){
   const shortTable=q("#short");
-  const standingsGroups=Array.isArray(data?.standings?.standings)?data.standings.standings:[];
-  const selectedGroup=standingsGroups.find(group=>group?.type==="TOTAL")||standingsGroups[0];
-  const table=Array.isArray(selectedGroup?.table)?selectedGroup.table:[];
+  const standingsGroups=Array.isArray(data?.standings?.standings)
+    ? data.standings.standings
+    : Array.isArray(data?.standings)
+      ? data.standings
+      : [];
+  const requestedType=mode==="home" ? "HOME" : mode==="away" ? "AWAY" : "TOTAL";
+  const selectedGroup=standingsGroups.find(group=>group?.type===requestedType)
+    || standingsGroups.find(group=>group?.type==="TOTAL")
+    || standingsGroups[0];
+  const table=Array.isArray(selectedGroup?.table) ? selectedGroup.table : [];
   if(!table.length){
     shortTable.innerHTML=`<tr><td colspan="5" style="text-align:center;color:#8e98b3">No table data available.</td></tr>`;
     return;
