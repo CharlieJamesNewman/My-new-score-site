@@ -1279,7 +1279,7 @@ async function fetchApi(endpoint){
 function renderLiveFromBundle(data){
   const container=q("#matches");
   const panel=container.closest(".panel");
-  const matches=Array.isArray(data?.live)?data.live:[];
+  const matches=Array.isArray(data?.live?.matches)?data.live.matches:[];
   if(!matches.length){
     panel.classList.add("no-live");
     container.innerHTML=`<div class="empty">No live matches right now.</div>`;
@@ -1292,7 +1292,7 @@ function renderLiveFromBundle(data){
 
 function renderResultsFromBundle(data){
   const container=q("#results-list");
-  const matches=Array.isArray(data?.results)?data.results.slice(0,10):[];
+  const matches=Array.isArray(data?.results?.matches)?data.results.matches.slice(0,10):[];
   if(!matches.length){
     container.innerHTML=`<div class="empty">No recent results available.</div>`;
     return;
@@ -1304,8 +1304,8 @@ function renderResultsFromBundle(data){
 function renderUpcomingFromBundle(data){
   const container=q("#upcoming-list");
   const now=Date.now();
-  const matches=Array.isArray(data?.upcoming)
-    ? data.upcoming.filter(match=>{
+  const matches=Array.isArray(data?.upcoming?.matches)
+    ? data.upcoming.matches.filter(match=>{
         const time=new Date(match.utcDate).getTime();
         return time>=now&&(match.status==="TIMED"||match.status==="SCHEDULED");
       }).slice(0,10)
@@ -1320,7 +1320,9 @@ function renderUpcomingFromBundle(data){
 
 function renderStandingsFromBundle(data){
   const shortTable=q("#short");
-  const table=Array.isArray(data?.standings)?data.standings:[];
+  const standingsGroups=Array.isArray(data?.standings?.standings)?data.standings.standings:[];
+  const selectedGroup=standingsGroups.find(group=>group?.type==="TOTAL")||standingsGroups[0];
+  const table=Array.isArray(selectedGroup?.table)?selectedGroup.table:[];
   if(!table.length){
     shortTable.innerHTML=`<tr><td colspan="5" style="text-align:center;color:#8e98b3">No table data available.</td></tr>`;
     return;
