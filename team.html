@@ -1,10 +1,19 @@
 <!doctype html>
 <html lang="en">
+
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
 <title>Score Dash — Team</title>
+
 <style>
+
 :root{
   --accent:#c9ff4a;
   --bg:#070b14;
@@ -15,39 +24,90 @@
   --muted2:#7f89a4;
   --hot:#ff4d62;
 }
-*{box-sizing:border-box}
-button,input,select,textarea{font-family:inherit}
+
+*{
+  box-sizing:border-box
+}
+
+button,
+input,
+select,
+textarea{
+  font-family:inherit
+}
+
 body{
   margin:0;
+
   background:
-    radial-gradient(circle at 50% -10%,#ffffff0b,transparent 40%),
-    linear-gradient(180deg,#070b14,#050812);
+    radial-gradient(
+      circle at 50% -10%,
+      #ffffff0b,
+      transparent 40%
+    ),
+    linear-gradient(
+      180deg,
+      #070b14,
+      #050812
+    );
+
   color:#fff;
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
   min-height:100vh;
 }
-a{color:inherit}
+
+a{
+  color:inherit
+}
+
 .top{
   height:3px;
   background:var(--accent);
 }
+
 .wrap{
-  width:min(1120px,calc(100% - 28px));
+  width:min(
+    1120px,
+    calc(100% - 28px)
+  );
+
   margin:0 auto;
 }
+
 header{
   display:flex;
   align-items:center;
   justify-content:space-between;
+
   padding:25px 0 18px;
 }
-.logo{color:inherit;text-decoration:none;display:inline-block;
+
+.logo{
+  color:inherit;
+  text-decoration:none;
+  display:inline-block;
+
   font-weight:900;
   letter-spacing:-.06em;
   font-size:25px;
 }
-.logo b{color:var(--accent)}
-.logo:hover{opacity:.9}
+
+.logo b{
+  color:var(--accent)
+}
+
+.logo:hover{
+  opacity:.9
+}
+
 .logo-sub{
   color:var(--muted2);
   font-size:9px;
@@ -55,471 +115,1381 @@ header{
   text-transform:uppercase;
   margin-top:2px;
 }
+
 .back{
   text-decoration:none;
   color:var(--muted);
+
   border:1px solid var(--line);
+
   background:#ffffff05;
+
   border-radius:999px;
+
   padding:9px 13px;
-  font:700 9px "DM Mono",monospace;
+
+  font:
+    700 9px
+    "DM Mono",
+    monospace;
+
   text-transform:uppercase;
   letter-spacing:.08em;
 }
-.back:hover{color:var(--accent);border-color:#ffffff2a}
+
+.back:hover{
+  color:var(--accent);
+  border-color:#ffffff2a
+}
+
 .hero{
   border:1px solid var(--line);
+
   background:
-    radial-gradient(circle at 50% 0%,#ffffff0b,transparent 55%),
-    linear-gradient(180deg,#111a2d,#0c1322);
+    radial-gradient(
+      circle at 50% 0%,
+      #ffffff0b,
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      #111a2d,
+      #0c1322
+    );
+
   border-radius:18px;
+
   padding:30px 24px 24px;
-  box-shadow:0 18px 55px #00000030;
+
+  box-shadow:
+    0 18px 55px #00000030;
 }
+
 .hero-main{
   display:grid;
-  grid-template-columns:130px 1fr;
+
+  grid-template-columns:
+    130px 1fr;
+
   gap:25px;
+
   align-items:center;
 }
-.crest{
+
+.hero-crest{
   width:105px;
   height:105px;
+
   object-fit:contain;
-  filter:drop-shadow(0 10px 18px #00000040);
+
+  filter:
+    drop-shadow(
+      0 10px 18px #00000040
+    );
 }
+
 .kicker{
   color:var(--accent);
-  font:700 9px "DM Mono",monospace;
+
+  font:
+    700 9px
+    "DM Mono",
+    monospace;
+
   letter-spacing:.12em;
   text-transform:uppercase;
 }
+
 h1{
   margin:6px 0 5px;
-  font-size:clamp(30px,5vw,50px);
+
+  font-size:
+    clamp(
+      30px,
+      5vw,
+      50px
+    );
+
   letter-spacing:-.055em;
 }
+
 .meta{
   color:var(--muted2);
   font-size:11px;
 }
+
 .stats{
   display:grid;
-  grid-template-columns:repeat(5,1fr);
+
+  grid-template-columns:
+    repeat(5,1fr);
+
   gap:10px;
+
   margin-top:24px;
 }
+
 .stat{
   padding:15px;
+
   border:1px solid var(--line);
+
   background:#ffffff04;
+
   border-radius:11px;
 }
+
 .stat-label{
   color:var(--muted2);
-  font:700 8px "DM Mono",monospace;
+
+  font:
+    700 8px
+    "DM Mono",
+    monospace;
+
   text-transform:uppercase;
   letter-spacing:.08em;
 }
+
 .stat-value{
   margin-top:6px;
   font-size:22px;
   font-weight:850;
 }
+
 .form{
   display:flex;
   gap:6px;
   margin-top:13px;
 }
+
 .form-dot{
   width:28px;
   height:28px;
+
   display:grid;
   place-items:center;
+
   border-radius:8px;
-  font:800 9px "DM Mono",monospace;
+
+  font:
+    800 9px
+    "DM Mono",
+    monospace;
+
   background:#ffffff0a;
   border:1px solid var(--line);
 }
-.form-W{color:#c9ff4a}
-.form-D{color:#ffd15c}
-.form-L{color:#ff6d7e}
+
+.form-W{
+  color:#c9ff4a
+}
+
+.form-D{
+  color:#ffd15c
+}
+
+.form-L{
+  color:#ff6d7e
+}
+
 .grid{
   display:grid;
-  grid-template-columns:1.25fr .75fr;
+
+  grid-template-columns:
+    1.25fr .75fr;
+
   gap:14px;
+
   margin-top:14px;
 }
+
 .panel{
   border:1px solid var(--line);
-  background:linear-gradient(180deg,#101728,#0c1322);
+
+  background:
+    linear-gradient(
+      180deg,
+      #101728,
+      #0c1322
+    );
+
   border-radius:15px;
+
   padding:19px;
 }
+
 .panel-title{
-  font:800 10px "DM Mono",monospace;
+  font:
+    800 10px
+    "DM Mono",
+    monospace;
+
   letter-spacing:.1em;
   text-transform:uppercase;
+
   color:#fff;
+
   margin-bottom:13px;
 }
+
 .match{
   display:grid;
-  grid-template-columns:1fr 64px 1fr;
+
+  grid-template-columns:
+    1fr 64px 1fr;
+
   gap:10px;
+
   align-items:center;
+
   padding:13px 0;
+
   border-bottom:1px solid var(--line);
 }
-.match:last-child{border-bottom:0}
+
+.match:last-child{
+  border-bottom:0
+}
+
 .match-team{
   display:flex;
   align-items:center;
+
   gap:9px;
+
   min-width:0;
+
   font-size:10px;
   font-weight:750;
+
   text-align:left;
+
   justify-content:flex-start;
 }
+
 .match-team.right{
   justify-content:flex-end;
   text-align:right;
 }
+
 .match-team span{
   min-width:0;
+
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
 }
+
 .mini-crest{
-  width:25px;height:25px;object-fit:contain;flex:none;
+  width:25px;
+  height:25px;
+
+  object-fit:contain;
+
+  flex:none;
 }
+
 .match-score{
   text-align:center;
-  font:800 13px "DM Mono",monospace;
+
+  font:
+    800 13px
+    "DM Mono",
+    monospace;
 }
+
 .match-date{
   color:var(--muted2);
-  font:600 8px "DM Mono",monospace;
+
+  font:
+    600 8px
+    "DM Mono",
+    monospace;
+
   text-align:center;
+
   margin-top:3px;
 }
+
+.result-W .match-score{
+  color:#c9ff4a
+}
+
+.result-D .match-score{
+  color:#ffd15c
+}
+
+.result-L .match-score{
+  color:#ff6d7e
+}
+
 .scorer{
   display:flex;
+
   align-items:center;
   justify-content:space-between;
+
   padding:12px 0;
+
   border-bottom:1px solid var(--line);
 }
-.scorer:last-child{border-bottom:0}
-.player-name{font-size:10px;font-weight:800}
-.player-team{font-size:8px;color:var(--muted2);margin-top:3px}
+
+.scorer:last-child{
+  border-bottom:0
+}
+
+.player-name{
+  font-size:10px;
+  font-weight:800;
+}
+
+.player-team{
+  font-size:8px;
+  color:var(--muted2);
+  margin-top:3px;
+}
+
 .goals{
   color:var(--accent);
-  font:800 13px "DM Mono",monospace;
+
+  font:
+    800 13px
+    "DM Mono",
+    monospace;
 }
+
 .empty{
   padding:20px 5px;
+
   text-align:center;
+
   color:var(--muted2);
+
   font-size:10px;
 }
-.loading{opacity:.7}
+
+.loading{
+  opacity:.7
+}
+
+.error{
+  color:#ff7c8d;
+}
+
 @media(max-width:760px){
-  .hero-main{grid-template-columns:80px 1fr;gap:16px}
-  .crest{width:72px;height:72px}
-  .stats{grid-template-columns:repeat(3,1fr)}
-  .grid{grid-template-columns:1fr}
+
+  .hero-main{
+    grid-template-columns:
+      80px 1fr;
+
+    gap:16px;
+  }
+
+  .hero-crest{
+    width:72px;
+    height:72px;
+  }
+
+  .stats{
+    grid-template-columns:
+      repeat(3,1fr);
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
 }
+
 @media(max-width:460px){
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .hero{padding:22px 16px}
+
+  .stats{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
+  .hero{
+    padding:22px 16px;
+  }
 }
+
 </style>
+
 </head>
+
+
 <body>
+
 <div class="top"></div>
+
 <div class="wrap">
+
 <header>
+
   <div>
-    <a class="logo" href="index.html" aria-label="Score Dash home">SCORE<b>DASH</b></a>
-    <div class="logo-sub">Football scores & fixtures</div>
+
+    <a
+      class="logo"
+      href="index.html"
+      aria-label="Score Dash home"
+    >
+      SCORE<b>DASH</b>
+    </a>
+
+    <div class="logo-sub">
+      Football scores & fixtures
+    </div>
+
   </div>
-  <a class="back" href="index.html">← Back to scores</a>
+
+  <a
+    class="back"
+    href="index.html"
+  >
+    ← Back to scores
+  </a>
+
 </header>
 
+
 <main>
-  <section class="hero">
-    <div id="hero" class="loading">Loading team…</div>
-  </section>
 
-  <div class="grid">
-    <section class="panel">
-      <div class="panel-title">Recent & upcoming matches</div>
-      <div id="matches"><div class="empty">Loading matches…</div></div>
-    </section>
+<section class="hero">
 
-    <section class="panel">
-      <div class="panel-title">Top scorers</div>
-      <div id="scorers"><div class="empty">Loading scorers…</div></div>
-    </section>
+  <div
+    id="hero"
+    class="loading"
+  >
+    Loading team…
   </div>
-</main>
+
+</section>
+
+
+<div class="grid">
+
+
+<section class="panel">
+
+  <div class="panel-title">
+    Recent & upcoming matches
+  </div>
+
+  <div id="matches">
+
+    <div class="empty">
+      Loading matches…
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="panel">
+
+  <div class="panel-title">
+    Top scorers
+  </div>
+
+  <div id="scorers">
+
+    <div class="empty">
+      Loading scorers…
+    </div>
+
+  </div>
+
+</section>
+
+
 </div>
 
+</main>
+
+</div>
+
+
 <script>
+
 const API_BASE = "";
 
-const params = new URLSearchParams(location.search);
-const teamId = params.get("teamId");
-const league = params.get("league") || "premier";
+
+const params =
+  new URLSearchParams(
+    location.search
+  );
+
+
+const teamId =
+  params.get("teamId");
+
+
+const league =
+  (
+    params.get("league") ||
+    "premier"
+  ).toLowerCase();
+
 
 const leagueNames = {
-  premier:"Premier League",
-  laliga:"La Liga",
-  seriea:"Serie A",
-  bundesliga:"Bundesliga",
-  ligue1:"Ligue 1"
+
+  premier:
+    "Premier League",
+
+  laliga:
+    "La Liga",
+
+  seriea:
+    "Serie A",
+
+  bundesliga:
+    "Bundesliga",
+
+  ligue1:
+    "Ligue 1"
+
 };
+
 
 const leagueAccent = {
-  premier:"#c9ff4a",
-  laliga:"#ff5349",
-  seriea:"#21b8ff",
-  bundesliga:"#ff3c47",
-  ligue1:"#ffd942"
+
+  premier:
+    "#c9ff4a",
+
+  laliga:
+    "#ff5349",
+
+  seriea:
+    "#21b8ff",
+
+  bundesliga:
+    "#ff3c47",
+
+  ligue1:
+    "#ffd942"
+
 };
 
-document.documentElement.style.setProperty(
-  "--accent",
-  leagueAccent[league] || "#c9ff4a"
-);
+
+document.documentElement
+  .style
+  .setProperty(
+    "--accent",
+    leagueAccent[league] ||
+    "#c9ff4a"
+  );
+
 
 function escapeHtml(value){
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+
+  return String(
+    value ?? ""
+  )
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
 }
+
 
 async function fetchApi(endpoint){
-  const response=await fetch(`${API_BASE}${endpoint}`,{cache:"no-store"});
-  const text=await response.text();
+
+  const response =
+    await fetch(
+      `${API_BASE}${endpoint}`,
+      {
+        cache:
+          "no-store"
+      }
+    );
+
+  const text =
+    await response.text();
+
   let data;
-  try{data=JSON.parse(text)}catch{data={}};
-  if(!response.ok){
-    throw new Error(data?.error || "Request failed");
-  }
-  return data;
-}
-
-function crest(url){
-  if(!url) return "";
-  return `<img class="crest" src="${escapeHtml(url)}" alt="">`;
-}
-
-function miniCrest(url){
-  if(!url) return "";
-  return `<img class="mini-crest" src="${escapeHtml(url)}" alt="">`;
-}
-
-function dateText(value){
-  if(!value) return "";
-  return new Date(value).toLocaleDateString("en-AU",{
-    day:"numeric",month:"short"
-  });
-}
-
-function resultFor(match){
-  const full=match?.score?.fullTime;
-  const h=full?.home;
-  const a=full?.away;
-
-  if(typeof h!=="number" || typeof a!=="number") return "D";
-
-  const isHome=String(match.homeTeam?.id)===String(teamId);
-
-  if(h===a) return "D";
-
-  const won=isHome ? h>a : a>h;
-  return won ? "W" : "L";
-}
-
-function formatScore(match){
-  const h=match?.score?.fullTime?.home;
-  const a=match?.score?.fullTime?.away;
-
-  if(typeof h!=="number" || typeof a!=="number") return "—";
-
-  return `${h}—${a}`;
-}
-
-function renderHero(team, matches){
-  const finished=matches.filter(m=>m.status==="FINISHED");
-  const form=finished
-    .slice()
-    .sort((a,b)=>new Date(b.utcDate)-new Date(a.utcDate))
-    .slice(0,5)
-    .reverse();
-
-  let wins=0,draws=0,losses=0,goalsFor=0,goalsAgainst=0;
-
-  finished.forEach(m=>{
-    const h=m?.score?.fullTime?.home;
-    const a=m?.score?.fullTime?.away;
-
-    if(typeof h!=="number" || typeof a!=="number") return;
-
-    const isHome=String(m.homeTeam?.id)===String(teamId);
-    const gf=isHome?h:a;
-    const ga=isHome?a:h;
-
-    goalsFor+=gf;
-    goalsAgainst+=ga;
-
-    if(gf>ga) wins++;
-    else if(gf===ga) draws++;
-    else losses++;
-  });
-
-  const formHtml=form.length
-    ? form.map(m=>`<span class="form-dot form-${resultFor(m)}">${resultFor(m)}</span>`).join("")
-    : `<span class="meta">No completed matches yet</span>`;
-
-  document.getElementById("hero").classList.remove("loading");
-  document.getElementById("hero").innerHTML=`
-    <div class="hero-main">
-      <div>${crest(team?.crest)}</div>
-      <div>
-        <div class="kicker">${escapeHtml(leagueNames[league] || "")}</div>
-        <h1>${escapeHtml(team?.name || team?.shortName || "Team")}</h1>
-        <div class="meta">
-          ${escapeHtml(team?.venue || "")}
-          ${team?.founded ? ` · Founded ${escapeHtml(team.founded)}` : ""}
-        </div>
-        <div class="form">${formHtml}</div>
-      </div>
-    </div>
-
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Played</div><div class="stat-value">${finished.length}</div></div>
-      <div class="stat"><div class="stat-label">Wins</div><div class="stat-value">${wins}</div></div>
-      <div class="stat"><div class="stat-label">Draws</div><div class="stat-value">${draws}</div></div>
-      <div class="stat"><div class="stat-label">Losses</div><div class="stat-value">${losses}</div></div>
-      <div class="stat"><div class="stat-label">Goal diff</div><div class="stat-value">${goalsFor-goalsAgainst}</div></div>
-    </div>
-  `;
-}
-
-function renderMatches(matches,team){
-  const sorted=matches
-    .slice()
-    .sort((a,b)=>new Date(b.utcDate)-new Date(a.utcDate));
-
-  if(!sorted.length){
-    document.getElementById("matches").innerHTML=
-      `<div class="empty">No matches available.</div>`;
-    return;
-  }
-
-  document.getElementById("matches").innerHTML=
-    sorted.slice(0,20).map(m=>{
-      const isHome=String(m.homeTeam?.id)===String(teamId);
-      const result=m.status==="FINISHED" ? resultFor(m) : "";
-      const opponent=isHome?m.awayTeam:m.homeTeam;
-      const opponentName=opponent?.shortName || opponent?.name || "Opponent";
-      const teamName=team?.shortName || team?.name || "Team";
-
-      return `
-        <div class="match ${result ? `result-${result}` : ""}">
-          <div class="match-team">
-            ${isHome ? miniCrest(team?.crest) : miniCrest(opponent?.crest)}
-            <span>${escapeHtml(isHome?teamName:opponentName)}</span>
-          </div>
-
-          <div>
-            <div class="match-score">${escapeHtml(formatScore(m))}</div>
-            <div class="match-date">${escapeHtml(dateText(m.utcDate))}</div>
-          </div>
-
-          <div class="match-team right">
-            <span>${escapeHtml(isHome?opponentName:teamName)}</span>
-            ${isHome ? miniCrest(opponent?.crest) : miniCrest(team?.crest)}
-          </div>
-        </div>
-      `;
-    }).join("");
-}
-
-function renderScorers(data){
-  const scorers=Array.isArray(data?.scorers)?data.scorers:[];
-
-  if(!scorers.length){
-    document.getElementById("scorers").innerHTML=
-      `<div class="empty">Scorer data isn't available for this team on the current API plan.</div>`;
-    return;
-  }
-
-  document.getElementById("scorers").innerHTML=
-    scorers.slice(0,10).map(item=>{
-      const player=item?.player;
-      const goals=item?.goals ?? 0;
-
-      return `
-        <div class="scorer">
-          <div>
-            <div class="player-name">${escapeHtml(player?.name || "Unknown player")}</div>
-            <div class="player-team">${escapeHtml(item?.team?.shortName || item?.team?.name || "")}</div>
-          </div>
-          <div class="goals">${escapeHtml(goals)} ⚽</div>
-        </div>
-      `;
-    }).join("");
-}
-
-async function load(){
-  if(!teamId){
-    document.getElementById("hero").innerHTML=
-      `<div class="empty">No team was selected.</div>`;
-    return;
-  }
 
   try{
-    const [team,matches,scorers]=await Promise.all([
-      fetchApi(`/api/team?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(league)}`),
-      fetchApi(`/api/team-matches?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(league)}`),
-      fetchApi(`/api/team-scorers?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(league)}`)
-    ]);
 
-    const matchList=Array.isArray(matches?.matches)?matches.matches:[];
+    data =
+      JSON.parse(text);
 
-    document.title=`Score Dash — ${team?.shortName || team?.name || "Team"}`;
+  }catch{
 
-    renderHero(team,matchList);
-    renderMatches(matchList,team);
-    renderScorers(scorers);
+    throw new Error(
+      "The server returned invalid data."
+    );
 
-  }catch(error){
-    console.error(error);
-
-    document.getElementById("hero").innerHTML=`
-      <div class="empty">
-        Unable to load this team right now.
-      </div>
-    `;
-
-    document.getElementById("matches").innerHTML=
-      `<div class="empty">Team matches are temporarily unavailable.</div>`;
-
-    document.getElementById("scorers").innerHTML=
-      `<div class="empty">Team statistics are temporarily unavailable.</div>`;
   }
+
+  if(
+    !response.ok
+  ){
+
+    throw new Error(
+      data?.message ||
+      data?.error ||
+      `HTTP ${response.status}`
+    );
+
+  }
+
+  return data;
+
 }
 
+
+function crest(url){
+
+  if(!url){
+    return "";
+  }
+
+  return `
+    <img
+      class="hero-crest"
+      src="${escapeHtml(url)}"
+      alt=""
+    >
+  `;
+
+}
+
+
+function miniCrest(url){
+
+  if(!url){
+    return "";
+  }
+
+  return `
+    <img
+      class="mini-crest"
+      src="${escapeHtml(url)}"
+      alt=""
+    >
+  `;
+
+}
+
+
+function dateText(value){
+
+  if(!value){
+    return "";
+  }
+
+  const date =
+    new Date(value);
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+    return "";
+  }
+
+  return date.toLocaleDateString(
+    "en-AU",
+    {
+      day:"numeric",
+      month:"short"
+    }
+  );
+
+}
+
+
+function resultFor(match){
+
+  const full =
+    match?.score?.fullTime;
+
+  const h =
+    full?.home;
+
+  const a =
+    full?.away;
+
+  if(
+    typeof h !== "number" ||
+    typeof a !== "number"
+  ){
+    return "";
+  }
+
+  const isHome =
+    String(
+      match.homeTeam?.id
+    ) ===
+    String(teamId);
+
+  if(
+    h === a
+  ){
+    return "D";
+  }
+
+  const won =
+    isHome
+      ? h > a
+      : a > h;
+
+  return won
+    ? "W"
+    : "L";
+
+}
+
+
+function formatScore(match){
+
+  const h =
+    match?.score?.fullTime?.home;
+
+  const a =
+    match?.score?.fullTime?.away;
+
+  if(
+    typeof h !== "number" ||
+    typeof a !== "number"
+  ){
+    return "—";
+  }
+
+  return `${h}—${a}`;
+
+}
+
+
+function renderHero(
+  team,
+  matches
+){
+
+  const finished =
+    matches.filter(
+      m =>
+        m.status ===
+        "FINISHED"
+    );
+
+
+  const form =
+    finished
+      .slice()
+      .sort(
+        (a,b) =>
+          new Date(b.utcDate) -
+          new Date(a.utcDate)
+      )
+      .slice(0,5)
+      .reverse();
+
+
+  let wins = 0;
+  let draws = 0;
+  let losses = 0;
+
+  let goalsFor = 0;
+  let goalsAgainst = 0;
+
+
+  finished.forEach(
+    match => {
+
+      const h =
+        match?.score?.fullTime?.home;
+
+      const a =
+        match?.score?.fullTime?.away;
+
+
+      if(
+        typeof h !== "number" ||
+        typeof a !== "number"
+      ){
+        return;
+      }
+
+
+      const isHome =
+        String(
+          match.homeTeam?.id
+        ) ===
+        String(teamId);
+
+
+      const gf =
+        isHome
+          ? h
+          : a;
+
+
+      const ga =
+        isHome
+          ? a
+          : h;
+
+
+      goalsFor += gf;
+      goalsAgainst += ga;
+
+
+      if(
+        gf > ga
+      ){
+        wins++;
+      }
+
+      else if(
+        gf === ga
+      ){
+        draws++;
+      }
+
+      else{
+        losses++;
+      }
+
+    }
+  );
+
+
+  const formHtml =
+    form.length
+
+      ? form
+          .map(
+            match => {
+
+              const result =
+                resultFor(match);
+
+              return `
+                <span
+                  class="form-dot form-${result}"
+                >
+                  ${result}
+                </span>
+              `;
+
+            }
+          )
+          .join("")
+
+      : `
+          <span class="meta">
+            No completed matches yet
+          </span>
+        `;
+
+
+  document
+    .getElementById("hero")
+    .classList
+    .remove("loading");
+
+
+  document
+    .getElementById("hero")
+    .innerHTML = `
+
+      <div class="hero-main">
+
+        <div>
+          ${crest(team?.crest)}
+        </div>
+
+        <div>
+
+          <div class="kicker">
+            ${escapeHtml(
+              leagueNames[league] ||
+              league
+            )}
+          </div>
+
+          <h1>
+            ${escapeHtml(
+              team?.name ||
+              team?.shortName ||
+              "Team"
+            )}
+          </h1>
+
+          <div class="meta">
+
+            ${
+              team?.venue
+                ? escapeHtml(
+                    team.venue
+                  )
+                : ""
+            }
+
+            ${
+              team?.founded
+                ? ` · Founded ${escapeHtml(
+                    team.founded
+                  )}`
+                : ""
+            }
+
+          </div>
+
+          <div class="form">
+            ${formHtml}
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="stats">
+
+        <div class="stat">
+          <div class="stat-label">
+            Played
+          </div>
+
+          <div class="stat-value">
+            ${finished.length}
+          </div>
+        </div>
+
+
+        <div class="stat">
+          <div class="stat-label">
+            Wins
+          </div>
+
+          <div class="stat-value">
+            ${wins}
+          </div>
+        </div>
+
+
+        <div class="stat">
+          <div class="stat-label">
+            Draws
+          </div>
+
+          <div class="stat-value">
+            ${draws}
+          </div>
+        </div>
+
+
+        <div class="stat">
+          <div class="stat-label">
+            Losses
+          </div>
+
+          <div class="stat-value">
+            ${losses}
+          </div>
+        </div>
+
+
+        <div class="stat">
+          <div class="stat-label">
+            Goal diff
+          </div>
+
+          <div class="stat-value">
+            ${
+              goalsFor -
+              goalsAgainst
+            }
+          </div>
+        </div>
+
+      </div>
+
+    `;
+
+}
+
+
+function renderMatches(
+  matches,
+  team
+){
+
+  const sorted =
+    matches
+      .slice()
+      .sort(
+        (a,b) =>
+          new Date(b.utcDate) -
+          new Date(a.utcDate)
+      );
+
+
+  if(
+    !sorted.length
+  ){
+
+    document
+      .getElementById(
+        "matches"
+      )
+      .innerHTML =
+        `
+          <div class="empty">
+            No matches available.
+          </div>
+        `;
+
+    return;
+  }
+
+
+  document
+    .getElementById(
+      "matches"
+    )
+    .innerHTML =
+
+      sorted
+        .slice(0,20)
+        .map(
+          match => {
+
+            const isHome =
+              String(
+                match.homeTeam?.id
+              ) ===
+              String(teamId);
+
+
+            const result =
+              match.status ===
+              "FINISHED"
+                ? resultFor(match)
+                : "";
+
+
+            const home =
+              match.homeTeam;
+
+
+            const away =
+              match.awayTeam;
+
+
+            return `
+
+              <div
+                class="match ${
+                  result
+                    ? `result-${result}`
+                    : ""
+                }"
+              >
+
+                <div class="match-team">
+
+                  ${miniCrest(
+                    home?.crest
+                  )}
+
+                  <span>
+                    ${escapeHtml(
+                      home?.shortName ||
+                      home?.name ||
+                      ""
+                    )}
+                  </span>
+
+                </div>
+
+
+                <div>
+
+                  <div class="match-score">
+                    ${escapeHtml(
+                      formatScore(match)
+                    )}
+                  </div>
+
+                  <div class="match-date">
+                    ${escapeHtml(
+                      dateText(
+                        match.utcDate
+                      )
+                    )}
+                  </div>
+
+                </div>
+
+
+                <div class="match-team right">
+
+                  <span>
+                    ${escapeHtml(
+                      away?.shortName ||
+                      away?.name ||
+                      ""
+                    )}
+                  </span>
+
+                  ${miniCrest(
+                    away?.crest
+                  )}
+
+                </div>
+
+              </div>
+
+            `;
+
+          }
+        )
+        .join("");
+
+}
+
+
+function renderScorers(
+  data
+){
+
+  const scorers =
+    Array.isArray(
+      data?.scorers
+    )
+      ? data.scorers
+      : [];
+
+
+  if(
+    !scorers.length
+  ){
+
+    document
+      .getElementById(
+        "scorers"
+      )
+      .innerHTML =
+        `
+          <div class="empty">
+            No scorer data is available
+            for this team.
+          </div>
+        `;
+
+    return;
+  }
+
+
+  document
+    .getElementById(
+      "scorers"
+    )
+    .innerHTML =
+
+      scorers
+        .slice(0,10)
+        .map(
+          item => {
+
+            const player =
+              item?.player;
+
+            const goals =
+              item?.goals ?? 0;
+
+
+            return `
+
+              <div class="scorer">
+
+                <div>
+
+                  <div class="player-name">
+                    ${escapeHtml(
+                      player?.name ||
+                      "Unknown player"
+                    )}
+                  </div>
+
+                  <div class="player-team">
+                    ${escapeHtml(
+                      item?.team?.shortName ||
+                      item?.team?.name ||
+                      ""
+                    )}
+                  </div>
+
+                </div>
+
+
+                <div class="goals">
+                  ${escapeHtml(
+                    goals
+                  )} ⚽
+                </div>
+
+              </div>
+
+            `;
+
+          }
+        )
+        .join("");
+
+}
+
+
+async function load(){
+
+  if(!teamId){
+
+    document
+      .getElementById("hero")
+      .innerHTML =
+        `
+          <div class="empty">
+            No team was selected.
+          </div>
+        `;
+
+    return;
+  }
+
+
+  try{
+
+    const [
+      team,
+      matches,
+      scorers
+    ] = await Promise.all([
+
+      fetchApi(
+        `/api/team?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(league)}`
+      ),
+
+      fetchApi(
+        `/api/team-matches?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(league)}`
+      ),
+
+      fetchApi(
+        `/api/team-scorers?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(league)}`
+      )
+
+    ]);
+
+
+    const matchList =
+      Array.isArray(
+        matches?.matches
+      )
+        ? matches.matches
+        : [];
+
+
+    document.title =
+      `Score Dash — ${
+        team?.shortName ||
+        team?.name ||
+        "Team"
+      }`;
+
+
+    renderHero(
+      team,
+      matchList
+    );
+
+
+    renderMatches(
+      matchList,
+      team
+    );
+
+
+    renderScorers(
+      scorers
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Team page error:",
+      error
+    );
+
+
+    document
+      .getElementById("hero")
+      .innerHTML =
+        `
+          <div class="empty error">
+            Unable to load this team right now.
+            <br><br>
+            ${escapeHtml(
+              error?.message ||
+              ""
+            )}
+          </div>
+        `;
+
+
+    document
+      .getElementById("matches")
+      .innerHTML =
+        `
+          <div class="empty">
+            Team matches are temporarily unavailable.
+          </div>
+        `;
+
+
+    document
+      .getElementById("scorers")
+      .innerHTML =
+        `
+          <div class="empty">
+            Team statistics are temporarily unavailable.
+          </div>
+        `;
+
+  }
+
+}
+
+
 load();
+
 </script>
+
 </body>
 </html>
