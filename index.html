@@ -1753,7 +1753,9 @@ function formatDate(
   }
 
   const date =
-    new Date(dateString);
+    new Date(
+      dateString
+    );
 
   if(
     Number.isNaN(
@@ -1765,16 +1767,46 @@ function formatDate(
 
   }
 
-  return date.toLocaleDateString(
-    "en-AU",
-    {
-      day:
-        "numeric",
 
-      month:
-        "short"
-    }
-  );
+  const days = [
+
+    "Sun",
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat"
+
+  ];
+
+
+  const months = [
+
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+
+  ];
+
+
+  return `
+    ${days[date.getDay()]}
+    ${date.getDate()}
+    ${months[date.getMonth()]}
+  `.replace(
+    /\s+/g,
+    " "
+  ).trim();
 
 }
 
@@ -1792,7 +1824,9 @@ function formatTime(
   }
 
   const date =
-    new Date(dateString);
+    new Date(
+      dateString
+    );
 
   if(
     Number.isNaN(
@@ -1804,19 +1838,45 @@ function formatTime(
 
   }
 
-  return date.toLocaleTimeString(
-    "en-AU",
-    {
-      hour:
-        "2-digit",
 
-      minute:
-        "2-digit",
+  const hours =
+    String(
+      date.getHours()
+    ).padStart(
+      2,
+      "0"
+    );
 
-      hour12:
-        false
-    }
-  );
+
+  const minutes =
+    String(
+      date.getMinutes()
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  const timeZone =
+    new Intl.DateTimeFormat(
+      "en-AU",
+      {
+        timeZoneName:
+          "short"
+      }
+    )
+      .formatToParts(
+        date
+      )
+      .find(
+        part =>
+          part.type ===
+          "timeZoneName"
+      )?.value ||
+      "";
+
+
+  return `${hours}:${minutes} ${timeZone}`;
 
 }
 
