@@ -16,7 +16,6 @@
       --muted: #89929d;
       --accent: #c9ff4a;
       --danger: #ff6262;
-      --gold: #f0c75e;
     }
 
     * {
@@ -48,7 +47,8 @@
     }
 
     button,
-    input {
+    input,
+    select {
       font: inherit;
     }
 
@@ -67,7 +67,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 20px;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
 
     .brand {
@@ -172,44 +172,80 @@
     }
 
     /* =========================
-       COMPETITIONS
+       LEAGUE SELECTOR
     ========================= */
 
-    .competition-bar {
+    .league-selector-row {
       display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 5px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
       margin-bottom: 22px;
-      scrollbar-width: thin;
     }
 
-    .competition-bar::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    .competition-btn {
-      flex: 0 0 auto;
-      border: 1px solid var(--border);
-      background: var(--panel);
+    .league-selector-label {
       color: var(--muted);
-      border-radius: 999px;
-      padding: 9px 15px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+    }
+
+    .league-select-wrap {
+      position: relative;
+      width: min(360px, 100%);
+    }
+
+    #league-select {
+      appearance: none;
+      -webkit-appearance: none;
+
+      width: 100%;
+      height: 46px;
+
+      padding: 0 42px 0 15px;
+
+      background: var(--panel);
+      color: var(--text);
+
+      border: 1px solid var(--border);
+      border-radius: 10px;
+
+      outline: none;
       cursor: pointer;
+
       font-size: 13px;
       font-weight: 800;
-      transition: .2s;
     }
 
-    .competition-btn:hover {
-      color: var(--text);
+    #league-select:hover {
       border-color: #3a434e;
     }
 
-    .competition-btn.active {
-      background: var(--accent);
-      color: #080a0d;
+    #league-select:focus {
       border-color: var(--accent);
+    }
+
+    .league-select-arrow {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--accent);
+      font-size: 14px;
+    }
+
+    #league-select optgroup {
+      background: #11151a;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    #league-select option {
+      background: #11151a;
+      color: var(--text);
+      padding: 10px;
     }
 
     /* =========================
@@ -218,7 +254,10 @@
 
     .dashboard-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.55fr) minmax(330px, .85fr);
+      grid-template-columns:
+        minmax(0, 1.55fr)
+        minmax(350px, .85fr);
+
       gap: 20px;
       align-items: start;
     }
@@ -283,7 +322,7 @@
     }
 
     /* =========================
-       LIVE MATCHES
+       LIVE
     ========================= */
 
     .live-badge {
@@ -482,7 +521,7 @@
     }
 
     /* =========================
-       LEAGUE TABLE
+       TABLE
     ========================= */
 
     .table-controls {
@@ -530,18 +569,18 @@
       text-transform: uppercase;
       letter-spacing: .5px;
       font-weight: 800;
-      padding: 9px 6px;
+      padding: 9px 5px;
       text-align: center;
       border-bottom: 1px solid var(--border);
     }
 
     th:first-child {
       text-align: left;
-      padding-left: 12px;
+      padding-left: 10px;
     }
 
     td {
-      padding: 9px 6px;
+      padding: 9px 5px;
       text-align: center;
       border-bottom: 1px solid rgba(37,44,52,.7);
       font-weight: 700;
@@ -549,7 +588,7 @@
 
     td:first-child {
       text-align: left;
-      padding-left: 12px;
+      padding-left: 10px;
     }
 
     tr:last-child td {
@@ -566,7 +605,7 @@
       display: flex;
       align-items: center;
       gap: 7px;
-      min-width: 130px;
+      min-width: 135px;
     }
 
     .club-cell img {
@@ -580,7 +619,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 145px;
+      max-width: 150px;
     }
 
     .club-cell a:hover {
@@ -623,7 +662,7 @@
 
     .scorer {
       display: grid;
-      grid-template-columns: 32px minmax(0,1fr) 38px;
+      grid-template-columns: 32px minmax(0,1fr) 42px;
       align-items: center;
       gap: 10px;
       padding: 11px 13px;
@@ -694,6 +733,7 @@
     ========================= */
 
     @media (max-width: 950px) {
+
       .dashboard-grid {
         grid-template-columns: 1fr;
       }
@@ -712,6 +752,7 @@
     }
 
     @media (max-width: 700px) {
+
       .page {
         width: min(100% - 20px, 1450px);
         padding-top: 15px;
@@ -728,6 +769,15 @@
       }
 
       .search-wrap {
+        width: 100%;
+      }
+
+      .league-selector-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .league-select-wrap {
         width: 100%;
       }
 
@@ -760,26 +810,90 @@
 
 <div class="page">
 
+  <!-- =========================
+       HEADER
+  ========================== -->
+
   <header>
+
     <div class="brand">
-      <div class="brand-name">SCORE<b>DASH</b></div>
-      <div class="brand-subtitle">Football scores & fixtures</div>
+      <div class="brand-name">
+        SCORE<b>DASH</b>
+      </div>
+
+      <div class="brand-subtitle">
+        Football scores & fixtures
+      </div>
     </div>
 
     <div class="search-wrap">
+
       <input
         id="team-search"
         type="text"
         autocomplete="off"
         placeholder="Search for a team..."
       >
+
       <div id="team-search-results"></div>
+
     </div>
+
   </header>
 
-  <div id="competition-bar" class="competition-bar">
-    <button class="competition-btn active">Loading leagues...</button>
+
+  <!-- =========================
+       LEAGUE DROPDOWN
+  ========================== -->
+
+  <div class="league-selector-row">
+
+    <div class="league-selector-label">
+      Competition
+    </div>
+
+    <div class="league-select-wrap">
+
+      <select id="league-select">
+
+        <optgroup label="Popular leagues">
+
+          <option value="premier" selected>
+            Premier League
+          </option>
+
+          <option value="laliga">
+            LaLiga
+          </option>
+
+          <option value="seriea">
+            Serie A
+          </option>
+
+          <option value="bundesliga">
+            Bundesliga
+          </option>
+
+          <option value="ligue1">
+            Ligue 1
+          </option>
+
+        </optgroup>
+
+      </select>
+
+      <div class="league-select-arrow">
+        ▼
+      </div>
+
+    </div>
+
   </div>
+
+
+  <!-- =========================
+       DASHBOARD
+  ========================== -->
 
   <div class="dashboard-grid">
 
@@ -789,64 +903,122 @@
 
     <main class="main-column">
 
-      <!-- LIVE -->
+      <!-- LIVE MATCHES -->
+
       <section class="section">
+
         <div class="section-header">
-          <div class="section-title">Live matches</div>
+
+          <div class="section-title">
+            Live matches
+          </div>
 
           <div class="live-badge">
             <span class="live-dot"></span>
             LIVE
           </div>
+
         </div>
 
         <div id="matches" class="card">
-          <div class="loading">Loading live matches...</div>
+
+          <div class="loading">
+            Loading live matches...
+          </div>
+
         </div>
+
       </section>
 
-      <!-- RESULTS -->
+
+      <!-- RECENT RESULTS -->
+
       <section class="section">
+
         <div class="section-header">
-          <div class="section-title">Recent results</div>
-          <div class="section-meta">Last 10</div>
+
+          <div class="section-title">
+            Recent results
+          </div>
+
+          <div class="section-meta">
+            Last 10
+          </div>
+
         </div>
 
         <div id="results-list" class="card">
-          <div class="loading">Loading results...</div>
+
+          <div class="loading">
+            Loading results...
+          </div>
+
         </div>
+
       </section>
 
+
       <!-- UPCOMING -->
+
       <section class="section">
+
         <div class="section-header">
-          <div class="section-title">Upcoming fixtures</div>
-          <div class="section-meta">Next 10</div>
+
+          <div class="section-title">
+            Upcoming fixtures
+          </div>
+
+          <div class="section-meta">
+            Next 10
+          </div>
+
         </div>
 
         <div id="upcoming-list" class="card">
-          <div class="loading">Loading fixtures...</div>
+
+          <div class="loading">
+            Loading fixtures...
+          </div>
+
         </div>
+
       </section>
 
+
       <!-- STORY -->
+
       <section class="section">
+
         <div class="section-header">
-          <div class="section-title">Around the league</div>
+
+          <div class="section-title">
+            Around the league
+          </div>
+
         </div>
 
         <div class="card story-card">
-          <h2 id="story-title" class="story-title">
-            Loading...
+
+          <h2
+            id="story-title"
+            class="story-title"
+          >
+            Premier League
           </h2>
 
-          <p id="story-text" class="story-text">
+          <p
+            id="story-text"
+            class="story-text"
+          >
             Loading league information...
           </p>
+
         </div>
+
       </section>
 
     </main>
+
 
     <!-- =========================
          RIGHT COLUMN
@@ -854,12 +1026,24 @@
 
     <aside class="side-column">
 
+
       <!-- LEAGUE TABLE -->
+
       <section class="section">
 
         <div class="section-header">
-          <div class="section-title">League table</div>
-          <div id="table-league-name" class="section-meta"></div>
+
+          <div class="section-title">
+            League table
+          </div>
+
+          <div
+            id="table-league-name"
+            class="section-meta"
+          >
+            Premier League
+          </div>
+
         </div>
 
         <div class="card">
@@ -890,10 +1074,13 @@
           </div>
 
           <div class="table-scroll">
+
             <table id="table">
 
               <thead>
+
                 <tr>
+
                   <th>#</th>
                   <th>Team</th>
                   <th>PL</th>
@@ -902,21 +1089,35 @@
                   <th>L</th>
                   <th>GD</th>
                   <th>Pts</th>
+
                 </tr>
+
               </thead>
 
               <tbody id="table-body">
+
                 <tr>
-                  <td colspan="8" class="loading">
+
+                  <td
+                    colspan="8"
+                    class="loading"
+                  >
                     Loading table...
+
                   </td>
+
                 </tr>
+
               </tbody>
 
             </table>
+
           </div>
 
-          <button id="table-more" class="show-more">
+          <button
+            id="table-more"
+            class="show-more"
+          >
             Show full table
           </button>
 
@@ -924,18 +1125,33 @@
 
       </section>
 
+
       <!-- TOP SCORERS -->
+
       <section class="section">
 
         <div class="section-header">
-          <div class="section-title">Top scorers</div>
-          <div id="scorers-league-name" class="section-meta"></div>
+
+          <div class="section-title">
+            Top scorers
+          </div>
+
+          <div
+            id="scorers-league-name"
+            class="section-meta"
+          >
+            Premier League
+          </div>
+
         </div>
 
-        <div id="scorers" class="card">
+        <div
+          id="scorers"
+          class="card"
+        >
 
-          <div class="empty">
-            Top scorer data will appear here when available.
+          <div class="loading">
+            Loading top scorers...
           </div>
 
         </div>
@@ -945,6 +1161,7 @@
     </aside>
 
   </div>
+
 
   <footer>
     Data provided by football-data.org
@@ -957,45 +1174,79 @@
 
   const API_BASE = "";
 
+
+  /* =========================
+     FEATURED LEAGUES
+  ========================== */
+
   const FEATURED = [
+
     {
       key: "premier",
       code: "PL",
       name: "Premier League"
     },
+
     {
       key: "laliga",
       code: "PD",
       name: "LaLiga"
     },
+
     {
       key: "seriea",
       code: "SA",
       name: "Serie A"
     },
+
     {
       key: "bundesliga",
       code: "BL1",
       name: "Bundesliga"
     },
+
     {
       key: "ligue1",
       code: "FL1",
       name: "Ligue 1"
     }
+
   ];
 
+
   let competitions = [...FEATURED];
-  let currentCompetition = FEATURED[0];
+
+  /*
+    Premier League is ALWAYS
+    the initial/default league.
+  */
+
+  let currentCompetition =
+    FEATURED[0];
+
 
   let leagueBundle = null;
-  let currentTableMode = "overall";
+
+  let currentTableMode =
+    "overall";
+
 
   const teamSearchInput =
-    document.getElementById("team-search");
+    document.getElementById(
+      "team-search"
+    );
+
 
   const searchResults =
-    document.getElementById("team-search-results");
+    document.getElementById(
+      "team-search-results"
+    );
+
+
+  const leagueSelect =
+    document.getElementById(
+      "league-select"
+    );
 
 
   /* =========================
@@ -1004,25 +1255,45 @@
 
   async function fetchApi(path) {
 
-    const response = await fetch(API_BASE + path);
+    const response =
+      await fetch(
+        API_BASE + path,
+        {
+          cache: "no-store"
+        }
+      );
+
 
     let data = null;
 
+
     try {
-      data = await response.json();
+
+      data =
+        await response.json();
+
     } catch (error) {
-      throw new Error("Invalid server response.");
+
+      throw new Error(
+        "The server returned an invalid response."
+      );
+
     }
 
+
     if (!response.ok) {
+
       throw new Error(
         data?.error ||
         data?.message ||
-        "Request failed."
+        `Server error ${response.status}`
       );
+
     }
 
+
     return data;
+
   }
 
 
@@ -1032,7 +1303,9 @@
 
   function teamName(team) {
 
-    if (!team) return "Unknown team";
+    if (!team) {
+      return "Unknown team";
+    }
 
     return (
       team.name ||
@@ -1040,12 +1313,15 @@
       team.tla ||
       "Unknown team"
     );
+
   }
 
 
   function crest(team) {
 
-    if (!team) return "";
+    if (!team) {
+      return "";
+    }
 
     return (
       team.crest ||
@@ -1053,18 +1329,30 @@
       team.logo ||
       ""
     );
+
   }
 
 
   function formatDate(value) {
 
-    if (!value) return "";
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
+    if (!value) {
       return "";
     }
+
+    const date =
+      new Date(value);
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return "";
+
+    }
+
 
     return date.toLocaleDateString(
       "en-AU",
@@ -1073,18 +1361,30 @@
         month: "short"
       }
     );
+
   }
 
 
   function formatTime(value) {
 
-    if (!value) return "";
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
+    if (!value) {
       return "";
     }
+
+    const date =
+      new Date(value);
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return "";
+
+    }
+
 
     return date.toLocaleTimeString(
       "en-AU",
@@ -1093,34 +1393,7 @@
         minute: "2-digit"
       }
     );
-  }
 
-
-  function teamLink(team) {
-
-    if (!team || !team.id) {
-      return teamName(team);
-    }
-
-    const href =
-      `team.html?teamId=${encodeURIComponent(team.id)}` +
-      `&league=${encodeURIComponent(currentCompetition.key)}`;
-
-    const logo = crest(team);
-
-    return `
-      <a
-        href="${href}"
-        class="team-link"
-        title="View ${escapeHtml(teamName(team))}"
-      >
-        ${logo
-          ? `<img src="${escapeHtml(logo)}" alt="">`
-          : ""
-        }
-        <span>${escapeHtml(teamName(team))}</span>
-      </a>
-    `;
   }
 
 
@@ -1132,48 +1405,73 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
+
   }
 
 
   function score(match, team) {
 
-    const goals = match?.score?.fullTime;
+    const goals =
+      match?.score?.fullTime;
+
 
     if (!goals) {
       return "-";
     }
 
-    if (
-      team === "home"
-      && goals.home != null
-    ) {
-      return goals.home;
-    }
 
     if (
-      team === "away"
-      && goals.away != null
+      team === "home" &&
+      goals.home != null
     ) {
-      return goals.away;
+
+      return goals.home;
+
     }
+
+
+    if (
+      team === "away" &&
+      goals.away != null
+    ) {
+
+      return goals.away;
+
+    }
+
 
     return "-";
+
   }
 
 
   function liveTime(match) {
 
-    if (!match) return "";
+    if (!match) {
+      return "";
+    }
 
-    if (match.status === "IN_PLAY") {
+
+    if (
+      match.status === "IN_PLAY"
+    ) {
+
       return "LIVE";
+
     }
 
-    if (match.status === "PAUSED") {
+
+    if (
+      match.status === "PAUSED"
+    ) {
+
       return "HT";
+
     }
+
 
     return match.status || "";
+
   }
 
 
@@ -1186,165 +1484,306 @@
     try {
 
       const data =
-        await fetchApi("/api/competitions");
+        await fetchApi(
+          "/api/competitions"
+        );
+
 
       if (
-        Array.isArray(data?.competitions) &&
+        Array.isArray(
+          data?.competitions
+        ) &&
         data.competitions.length
       ) {
+
+        const featuredMap =
+          new Map(
+            FEATURED.map(
+              item => [
+                item.code,
+                item
+              ]
+            )
+          );
+
 
         const returned =
           data.competitions;
 
-        const featuredMap =
-          new Map(
-            FEATURED.map(item => [item.code, item])
-          );
 
-        const result = [];
+        const popular = [];
 
-        for (const item of returned) {
 
-          const featured =
-            featuredMap.get(item.code);
+        /*
+          Always put the five
+          popular leagues first.
+        */
 
-          if (featured) {
-            result.push(featured);
-          } else {
+        for (
+          const featured
+          of FEATURED
+        ) {
 
-            result.push({
+          const found =
+            returned.find(
+              item =>
+                item.code ===
+                featured.code
+            );
+
+
+          if (found) {
+
+            popular.push({
+              ...featured,
+              ...found,
+              key: featured.key,
+              name: featured.name
+            });
+
+          }
+
+        }
+
+
+        /*
+          Add all remaining
+          competitions afterwards.
+        */
+
+        const others =
+          returned
+            .filter(
+              item =>
+                !featuredMap.has(
+                  item.code
+                )
+            )
+            .map(item => ({
+
               key:
                 item.key ||
-                String(item.code)
-                  .toLowerCase(),
+                String(
+                  item.code
+                ).toLowerCase(),
 
-              code: item.code,
+              code:
+                item.code,
 
               name:
                 item.name ||
                 item.code
-            });
 
-          }
-        }
+            }));
 
-        competitions = result;
+
+        competitions = [
+          ...popular,
+          ...others
+        ];
 
       }
 
     } catch (error) {
 
       console.warn(
-        "Could not load competitions:",
+        "Competition loading failed:",
         error
       );
 
-      competitions = [...FEATURED];
+      /*
+        Even if the competition
+        endpoint fails, keep the
+        five main leagues available.
+      */
+
+      competitions =
+        [...FEATURED];
+
     }
 
-    renderCompetitionButtons();
+
+    /*
+      Force Premier League
+      as default.
+    */
+
+    currentCompetition =
+      competitions.find(
+        item =>
+          item.key === "premier"
+      ) ||
+      FEATURED[0];
+
+
+    renderLeagueDropdown();
+
+
+    /*
+      Load Premier League
+      immediately.
+    */
+
+    leagueSelect.value =
+      currentCompetition.key;
+
 
     await addTeamsForCompetition(
       currentCompetition
     );
 
+
     await loadLeague(
       currentCompetition.key
     );
+
   }
 
 
-  function renderCompetitionButtons() {
+  /* =========================
+     DROPDOWN
+  ========================== */
 
-    const bar =
-      document.getElementById(
-        "competition-bar"
+  function renderLeagueDropdown() {
+
+    /*
+      The five popular leagues
+      are always at the top.
+    */
+
+    const popular =
+      FEATURED.filter(
+        featured =>
+          competitions.some(
+            competition =>
+              competition.key ===
+              featured.key
+          )
       );
 
-    if (!competitions.length) {
 
-      bar.innerHTML =
-        `<button class="competition-btn active">
-          No leagues available
-        </button>`;
+    const popularKeys =
+      new Set(
+        popular.map(
+          item => item.key
+        )
+      );
 
-      return;
+
+    const others =
+      competitions.filter(
+        item =>
+          !popularKeys.has(
+            item.key
+          )
+      );
+
+
+    let html = "";
+
+
+    if (popular.length) {
+
+      html +=
+        `<optgroup label="Popular leagues">`;
+
+
+      html +=
+        popular
+          .map(
+            competition =>
+              `<option
+                value="${escapeHtml(competition.key)}"
+              >
+                ${escapeHtml(competition.name)}
+              </option>`
+          )
+          .join("");
+
+
+      html +=
+        `</optgroup>`;
+
     }
 
-    bar.innerHTML =
-      competitions
-        .map(comp => {
 
-          const active =
-            comp.key === currentCompetition.key;
+    if (others.length) {
 
-          return `
-            <button
-              class="competition-btn ${active ? "active" : ""}"
-              data-league="${escapeHtml(comp.key)}"
-            >
-              ${escapeHtml(comp.name)}
-            </button>
-          `;
+      html +=
+        `<optgroup label="All leagues">`;
 
-        })
-        .join("");
 
-    bar
-      .querySelectorAll(".competition-btn")
-      .forEach(button => {
+      html +=
+        others
+          .map(
+            competition =>
+              `<option
+                value="${escapeHtml(competition.key)}"
+              >
+                ${escapeHtml(competition.name)}
+              </option>`
+          )
+          .join("");
 
-        button.addEventListener(
-          "click",
-          async () => {
 
-            const key =
-              button.dataset.league;
+      html +=
+        `</optgroup>`;
 
-            await switchCompetition(key);
-          }
+    }
+
+
+    leagueSelect.innerHTML =
+      html;
+
+
+    leagueSelect.value =
+      currentCompetition.key;
+
+  }
+
+
+  leagueSelect.addEventListener(
+    "change",
+    async event => {
+
+      const key =
+        event.target.value;
+
+
+      const found =
+        competitions.find(
+          item =>
+            item.key === key
         );
-      });
-  }
 
 
-  async function switchCompetition(key) {
+      if (!found) {
+        return;
+      }
 
-    const found =
-      competitions.find(
-        item => item.key === key
+
+      currentCompetition =
+        found;
+
+
+      leagueSelect.value =
+        currentCompetition.key;
+
+
+      showLoading();
+
+
+      await addTeamsForCompetition(
+        currentCompetition
       );
 
-    if (!found) return;
 
-    currentCompetition = found;
+      await loadLeague(
+        currentCompetition.key
+      );
 
-    renderCompetitionButtons();
-
-    showLoading();
-
-    await addTeamsForCompetition(
-      currentCompetition
-    );
-
-    await loadLeague(
-      currentCompetition.key
-    );
-  }
-
-
-  function getCompetition(key) {
-
-    return (
-      competitions.find(
-        item => item.key === key
-      ) ||
-      FEATURED.find(
-        item => item.key === key
-      ) ||
-      null
-    );
-  }
+    }
+  );
 
 
   /* =========================
@@ -1355,120 +1794,189 @@
 
     try {
 
+      showLoading();
+
+
       const data =
         await fetchApi(
           `/api/league-data?league=${encodeURIComponent(key)}`
         );
 
-      leagueBundle = data;
+
+      leagueBundle =
+        data;
+
 
       renderMatches(
         data?.matches || []
       );
 
+
       renderResults(
         data?.recentResults || []
       );
+
 
       renderUpcoming(
         data?.upcoming || []
       );
 
+
       renderStandings(
         data?.standings || []
       );
 
-      renderStory(data);
 
-      await renderScorers(key);
+      renderStory(
+        data
+      );
+
+
+      await renderScorers(
+        key
+      );
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "League loading error:",
+        error
+      );
+
 
       showError(
         error.message ||
         "Unable to load league data."
       );
+
     }
+
   }
 
 
   function showLoading() {
 
-    document.getElementById("matches").innerHTML =
+    document.getElementById(
+      "matches"
+    ).innerHTML =
       `<div class="loading">
         Loading live matches...
       </div>`;
 
-    document.getElementById("results-list").innerHTML =
+
+    document.getElementById(
+      "results-list"
+    ).innerHTML =
       `<div class="loading">
         Loading results...
       </div>`;
 
-    document.getElementById("upcoming-list").innerHTML =
+
+    document.getElementById(
+      "upcoming-list"
+    ).innerHTML =
       `<div class="loading">
         Loading fixtures...
       </div>`;
 
-    document.getElementById("table-body").innerHTML =
+
+    document.getElementById(
+      "table-body"
+    ).innerHTML =
       `<tr>
-        <td colspan="8" class="loading">
+        <td
+          colspan="8"
+          class="loading"
+        >
           Loading table...
         </td>
       </tr>`;
 
-    document.getElementById("scorers").innerHTML =
+
+    document.getElementById(
+      "scorers"
+    ).innerHTML =
       `<div class="loading">
         Loading top scorers...
       </div>`;
+
   }
 
 
   function showError(message) {
 
-    const html =
+    const safe =
+      escapeHtml(message);
+
+
+    document.getElementById(
+      "matches"
+    ).innerHTML =
       `<div class="error">
-        ${escapeHtml(message)}
+        ${safe}
       </div>`;
 
-    document.getElementById("matches").innerHTML =
-      html;
 
-    document.getElementById("results-list").innerHTML =
-      html;
+    document.getElementById(
+      "results-list"
+    ).innerHTML =
+      `<div class="error">
+        ${safe}
+      </div>`;
 
-    document.getElementById("upcoming-list").innerHTML =
-      html;
 
-    document.getElementById("table-body").innerHTML =
+    document.getElementById(
+      "upcoming-list"
+    ).innerHTML =
+      `<div class="error">
+        ${safe}
+      </div>`;
+
+
+    document.getElementById(
+      "table-body"
+    ).innerHTML =
       `<tr>
-        <td colspan="8" class="error">
-          ${escapeHtml(message)}
+        <td
+          colspan="8"
+          class="error"
+        >
+          ${safe}
         </td>
       </tr>`;
 
-    document.getElementById("scorers").innerHTML =
+
+    document.getElementById(
+      "scorers"
+    ).innerHTML =
       `<div class="error">
-        ${escapeHtml(message)}
+        ${safe}
       </div>`;
+
   }
 
 
   /* =========================
-     MATCHES
+     LIVE MATCHES
   ========================== */
 
   function renderMatches(matches) {
 
     const container =
-      document.getElementById("matches");
+      document.getElementById(
+        "matches"
+      );
+
 
     const live =
-      matches.filter(match =>
-        match.status === "IN_PLAY" ||
-        match.status === "PAUSED"
+      matches.filter(
+        match =>
+          match.status ===
+            "IN_PLAY" ||
+          match.status ===
+            "PAUSED"
       );
+
 
     if (!live.length) {
 
@@ -1478,12 +1986,21 @@
         </div>`;
 
       return;
+
     }
 
+
     container.innerHTML =
-      live.map(matchRow).join("");
+      live
+        .map(
+          match =>
+            matchRow(match)
+        )
+        .join("");
+
 
     attachMatchToggles();
+
   }
 
 
@@ -1494,19 +2011,16 @@
       match.home ||
       {};
 
+
     const away =
       match.awayTeam ||
       match.away ||
       {};
 
+
     const status =
       liveTime(match);
 
-    const homeScore =
-      score(match, "home");
-
-    const awayScore =
-      score(match, "away");
 
     return `
       <div class="match">
@@ -1514,71 +2028,123 @@
         <div class="match-main">
 
           <div
-            class="match-status ${status === "LIVE" ? "live" : ""}"
+            class="match-status ${
+              status === "LIVE"
+                ? "live"
+                : ""
+            }"
           >
             ${escapeHtml(status)}
           </div>
 
+
           <div class="teams">
 
             <div class="team-line">
+
               ${
                 crest(home)
-                ? `<img
-                    src="${escapeHtml(crest(home))}"
-                    alt=""
-                  >`
-                : ""
+                  ? `
+                    <img
+                      src="${escapeHtml(
+                        crest(home)
+                      )}"
+                      alt=""
+                    >
+                  `
+                  : ""
               }
+
 
               <a
                 class="team-name"
-                href="team.html?teamId=${encodeURIComponent(home.id || "")}&league=${encodeURIComponent(currentCompetition.key)}"
+                href="team.html?teamId=${encodeURIComponent(
+                  home.id || ""
+                )}&league=${encodeURIComponent(
+                  currentCompetition.key
+                )}"
               >
-                ${escapeHtml(teamName(home))}
+                ${escapeHtml(
+                  teamName(home)
+                )}
               </a>
+
             </div>
 
+
             <div class="team-line">
+
               ${
                 crest(away)
-                ? `<img
-                    src="${escapeHtml(crest(away))}"
-                    alt=""
-                  >`
-                : ""
+                  ? `
+                    <img
+                      src="${escapeHtml(
+                        crest(away)
+                      )}"
+                      alt=""
+                    >
+                  `
+                  : ""
               }
+
 
               <a
                 class="team-name"
-                href="team.html?teamId=${encodeURIComponent(away.id || "")}&league=${encodeURIComponent(currentCompetition.key)}"
+                href="team.html?teamId=${encodeURIComponent(
+                  away.id || ""
+                )}&league=${encodeURIComponent(
+                  currentCompetition.key
+                )}"
               >
-                ${escapeHtml(teamName(away))}
+                ${escapeHtml(
+                  teamName(away)
+                )}
               </a>
+
             </div>
 
           </div>
 
+
           <div class="scores">
-            <span>${escapeHtml(homeScore)}</span>
-            <span>${escapeHtml(awayScore)}</span>
+
+            <span>
+              ${escapeHtml(
+                score(match, "home")
+              )}
+            </span>
+
+            <span>
+              ${escapeHtml(
+                score(match, "away")
+              )}
+            </span>
+
           </div>
 
         </div>
 
+
         <div class="match-details">
-          ${renderMatchDetails(match)}
+
+          ${renderMatchDetails(
+            match
+          )}
+
         </div>
 
       </div>
     `;
+
   }
 
 
   function attachMatchToggles() {
 
     document
-      .querySelectorAll(".match-main")
+      .querySelectorAll(
+        ".match-main"
+      )
       .forEach(row => {
 
         row.addEventListener(
@@ -1586,20 +2152,31 @@
           event => {
 
             if (
-              event.target.closest("a")
+              event.target.closest(
+                "a"
+              )
             ) {
+
               return;
+
             }
 
+
             const match =
-              row.closest(".match");
+              row.closest(
+                ".match"
+              );
+
 
             match.classList.toggle(
               "open"
             );
+
           }
         );
+
       });
+
   }
 
 
@@ -1610,14 +2187,18 @@
       match.league?.name ||
       currentCompetition.name;
 
+
     const venue =
       match.venue?.name ||
       "";
 
+
     return `
       <div class="detail-row">
         Competition:
-        ${escapeHtml(competition)}
+        ${escapeHtml(
+          competition
+        )}
       </div>
 
       ${
@@ -1625,7 +2206,9 @@
           ? `
             <div class="detail-row">
               Venue:
-              ${escapeHtml(venue)}
+              ${escapeHtml(
+                venue
+              )}
             </div>
           `
           : ""
@@ -1636,12 +2219,17 @@
           ? `
             <div class="detail-row">
               Kick-off:
-              ${escapeHtml(formatTime(match.utcDate))}
+              ${escapeHtml(
+                formatTime(
+                  match.utcDate
+                )
+              )}
             </div>
           `
           : ""
       }
     `;
+
   }
 
 
@@ -1656,6 +2244,7 @@
         "results-list"
       );
 
+
     if (!results.length) {
 
       container.innerHTML =
@@ -1664,18 +2253,22 @@
         </div>`;
 
       return;
+
     }
+
 
     container.innerHTML =
       results
         .slice(0, 10)
-        .map(match =>
-          fixtureRow(
-            match,
-            false
-          )
+        .map(
+          match =>
+            fixtureRow(
+              match,
+              false
+            )
         )
         .join("");
+
   }
 
 
@@ -1690,6 +2283,7 @@
         "upcoming-list"
       );
 
+
     if (!fixtures.length) {
 
       container.innerHTML =
@@ -1698,57 +2292,68 @@
         </div>`;
 
       return;
+
     }
+
 
     container.innerHTML =
       fixtures
         .slice(0, 10)
-        .map(match =>
-          fixtureRow(
-            match,
-            true
-          )
+        .map(
+          match =>
+            fixtureRow(
+              match,
+              true
+            )
         )
         .join("");
+
   }
 
 
-  function fixtureRow(match, upcoming) {
+  function fixtureRow(
+    match,
+    upcoming
+  ) {
 
     const home =
       match.homeTeam ||
       match.home ||
       {};
 
+
     const away =
       match.awayTeam ||
       match.away ||
       {};
+
+
+    const date =
+      match.utcDate ||
+      match.date;
+
 
     return `
       <div class="fixture-row">
 
         <div class="fixture-date">
 
-          ${
-            formatDate(
-              match.utcDate ||
-              match.date
-            )
-          }
+          ${escapeHtml(
+            formatDate(date)
+          )}
 
           <br>
 
           ${
             upcoming
-              ? formatTime(
-                  match.utcDate ||
-                  match.date
+              ? escapeHtml(
+                  formatTime(date)
                 )
               : "FT"
           }
 
         </div>
+
 
         <div class="fixture-teams">
 
@@ -1756,56 +2361,95 @@
 
             ${
               crest(home)
-                ? `<img
-                    src="${escapeHtml(crest(home))}"
+                ? `
+                  <img
+                    src="${escapeHtml(
+                      crest(home)
+                    )}"
                     alt=""
-                  >`
+                  >
+                `
                 : ""
             }
 
+
             <a
-              href="team.html?teamId=${encodeURIComponent(home.id || "")}&league=${encodeURIComponent(currentCompetition.key)}"
+              href="team.html?teamId=${encodeURIComponent(
+                home.id || ""
+              )}&league=${encodeURIComponent(
+                currentCompetition.key
+              )}"
             >
-              ${escapeHtml(teamName(home))}
+              ${escapeHtml(
+                teamName(home)
+              )}
             </a>
 
           </div>
+
 
           <div class="fixture-team">
 
             ${
               crest(away)
-                ? `<img
-                    src="${escapeHtml(crest(away))}"
+                ? `
+                  <img
+                    src="${escapeHtml(
+                      crest(away)
+                    )}"
                     alt=""
-                  >`
+                  >
+                `
                 : ""
             }
 
+
             <a
-              href="team.html?teamId=${encodeURIComponent(away.id || "")}&league=${encodeURIComponent(currentCompetition.key)}"
+              href="team.html?teamId=${encodeURIComponent(
+                away.id || ""
+              )}&league=${encodeURIComponent(
+                currentCompetition.key
+              )}"
             >
-              ${escapeHtml(teamName(away))}
+              ${escapeHtml(
+                teamName(away)
+              )}
             </a>
 
           </div>
 
         </div>
 
+
         <div
-          class="fixture-score ${upcoming ? "upcoming" : ""}"
+          class="fixture-score ${
+            upcoming
+              ? "upcoming"
+              : ""
+          }"
         >
 
           ${
             upcoming
-              ? formatTime(
-                  match.utcDate ||
-                  match.date
+              ? escapeHtml(
+                  formatTime(date)
                 )
               : `
-                ${score(match, "home")}
+                ${escapeHtml(
+                  score(
+                    match,
+                    "home"
+                  )
+                )}
+
                 <br>
-                ${score(match, "away")}
+
+                ${escapeHtml(
+                  score(
+                    match,
+                    "away"
+                  )
+                )}
               `
           }
 
@@ -1813,6 +2457,7 @@
 
       </div>
     `;
+
   }
 
 
@@ -1827,40 +2472,54 @@
         "story-title"
       );
 
+
     const text =
       document.getElementById(
         "story-text"
       );
 
+
     title.textContent =
       currentCompetition.name;
 
+
     const table =
       data?.standings || [];
+
 
     if (table.length) {
 
       const leader =
         table[0];
 
+
+      const leaderTeam =
+        leader.team ||
+        leader;
+
+
       const leaderName =
         teamName(
-          leader.team ||
-          leader
+          leaderTeam
         );
+
 
       const points =
         leader.points ??
         leader.pts ??
         "-";
 
+
       text.textContent =
         `${leaderName} currently sits at the top of the ${currentCompetition.name} table with ${points} points.`;
+
     } else {
 
       text.textContent =
         `Follow live scores, recent results, upcoming fixtures and the league table for the ${currentCompetition.name}.`;
+
     }
+
   }
 
 
@@ -1868,40 +2527,61 @@
      STANDINGS
   ========================== */
 
-  function renderStandings(standings) {
+  function renderStandings(
+    standings
+  ) {
 
     const tbody =
       document.getElementById(
         "table-body"
       );
 
+
     const table =
       document.getElementById(
         "table"
       );
+
 
     const leagueName =
       document.getElementById(
         "table-league-name"
       );
 
+
     leagueName.textContent =
       currentCompetition.name;
+
 
     if (!standings.length) {
 
       tbody.innerHTML =
         `<tr>
-          <td colspan="8" class="loading">
+          <td
+            colspan="8"
+            class="empty"
+          >
             No league table data available.
           </td>
         </tr>`;
 
+
+      document.getElementById(
+        "table-more"
+      ).style.display =
+        "none";
+
+
       return;
+
     }
 
+
     const rows =
-      getTableRows(standings);
+      getTableRows(
+        standings
+      );
+
 
     tbody.innerHTML =
       rows
@@ -1914,14 +2594,19 @@
         )
         .join("");
 
+
     table.classList.remove(
       "expanded"
     );
 
+
     updateTableMoreButton();
 
+
     document
-      .querySelectorAll(".table-mode")
+      .querySelectorAll(
+        ".table-mode"
+      )
       .forEach(button => {
 
         button.classList.toggle(
@@ -1929,147 +2614,218 @@
           button.dataset.mode ===
             currentTableMode
         );
+
       });
+
   }
 
 
-  function getTableRows(standings) {
+  function getTableRows(
+    standings
+  ) {
 
-    const mode =
-      currentTableMode;
+    if (
+      currentTableMode ===
+      "overall"
+    ) {
 
-    if (mode === "overall") {
       return standings;
+
     }
 
-    return standings.map(item => {
 
-      const source =
-        mode === "home"
-          ? item.home
-          : item.away;
+    return standings.map(
+      item => {
 
-      if (!source) {
-        return item;
+        const source =
+          currentTableMode ===
+            "home"
+            ? item.home
+            : item.away;
+
+
+        if (!source) {
+          return item;
+        }
+
+
+        return {
+          ...item,
+
+          position:
+            source.position ??
+            item.position,
+
+          playedGames:
+            source.playedGames ??
+            item.playedGames,
+
+          won:
+            source.won ??
+            item.won,
+
+          draw:
+            source.draw ??
+            item.draw,
+
+          lost:
+            source.lost ??
+            item.lost,
+
+          goalDifference:
+            source.goalDifference ??
+            item.goalDifference,
+
+          points:
+            source.points ??
+            item.points
+
+        };
+
       }
+    );
 
-      return {
-        ...item,
-
-        position:
-          source.position ??
-          item.position,
-
-        playedGames:
-          source.playedGames ??
-          item.playedGames,
-
-        won:
-          source.won ??
-          item.won,
-
-        draw:
-          source.draw ??
-          item.draw,
-
-        lost:
-          source.lost ??
-          item.lost,
-
-        goalDifference:
-          source.goalDifference ??
-          item.goalDifference,
-
-        points:
-          source.points ??
-          item.points
-      };
-    });
   }
 
 
-  function renderTableRow(item, index) {
+  function renderTableRow(
+    item,
+    index
+  ) {
 
     const team =
       item.team ||
       item;
 
+
     const position =
       item.position ??
       index + 1;
+
 
     const played =
       item.playedGames ??
       item.played ??
       0;
 
+
     const won =
       item.won ??
       0;
+
 
     const draw =
       item.draw ??
       0;
 
+
     const lost =
       item.lost ??
       0;
+
 
     const gd =
       item.goalDifference ??
       item.gd ??
       0;
 
+
     const points =
       item.points ??
       item.pts ??
       0;
+
 
     const extra =
       index >= 10
         ? "table-extra"
         : "";
 
+
     return `
       <tr class="${extra}">
 
         <td class="position">
-          ${escapeHtml(position)}
+          ${escapeHtml(
+            position
+          )}
         </td>
 
+
         <td>
+
           <div class="club-cell">
 
             ${
               crest(team)
-                ? `<img
-                    src="${escapeHtml(crest(team))}"
+                ? `
+                  <img
+                    src="${escapeHtml(
+                      crest(team)
+                    )}"
                     alt=""
-                  >`
+                  >
+                `
                 : ""
             }
 
+
             <a
-              href="team.html?teamId=${encodeURIComponent(team.id || "")}&league=${encodeURIComponent(currentCompetition.key)}"
+              href="team.html?teamId=${encodeURIComponent(
+                team.id || ""
+              )}&league=${encodeURIComponent(
+                currentCompetition.key
+              )}"
             >
-              ${escapeHtml(teamName(team))}
+              ${escapeHtml(
+                teamName(team)
+              )}
             </a>
 
           </div>
+
         </td>
 
-        <td>${escapeHtml(played)}</td>
-        <td>${escapeHtml(won)}</td>
-        <td>${escapeHtml(draw)}</td>
-        <td>${escapeHtml(lost)}</td>
-        <td>${escapeHtml(gd)}</td>
+
+        <td>
+          ${escapeHtml(
+            played
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            won
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            draw
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            lost
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            gd
+          )}
+        </td>
 
         <td class="points">
-          ${escapeHtml(points)}
+          ${escapeHtml(
+            points
+          )}
         </td>
 
       </tr>
     `;
+
   }
 
 
@@ -2080,33 +2836,47 @@
         "table-more"
       );
 
+
     const rows =
       document.querySelectorAll(
         "#table-body tr"
       );
 
-    if (rows.length <= 10) {
+
+    if (
+      rows.length <= 10
+    ) {
 
       button.style.display =
         "none";
 
       return;
+
     }
+
 
     button.style.display =
       "block";
 
+
     button.textContent =
       document
-        .getElementById("table")
-        .classList.contains("expanded")
+        .getElementById(
+          "table"
+        )
+        .classList.contains(
+          "expanded"
+        )
         ? "Show top 10"
         : "Show full table";
+
   }
 
 
   document
-    .querySelectorAll(".table-mode")
+    .querySelectorAll(
+      ".table-mode"
+    )
     .forEach(button => {
 
       button.addEventListener(
@@ -2116,20 +2886,26 @@
           currentTableMode =
             button.dataset.mode;
 
+
           if (leagueBundle) {
 
             renderStandings(
               leagueBundle.standings ||
               []
             );
+
           }
+
         }
       );
+
     });
 
 
   document
-    .getElementById("table-more")
+    .getElementById(
+      "table-more"
+    )
     .addEventListener(
       "click",
       () => {
@@ -2139,11 +2915,14 @@
             "table"
           );
 
+
         table.classList.toggle(
           "expanded"
         );
 
+
         updateTableMoreButton();
+
       }
     );
 
@@ -2152,37 +2931,49 @@
      TOP SCORERS
   ========================== */
 
-  async function renderScorers(key) {
+  async function renderScorers(
+    key
+  ) {
 
     const container =
       document.getElementById(
         "scorers"
       );
 
+
     const leagueName =
       document.getElementById(
         "scorers-league-name"
       );
 
+
     leagueName.textContent =
       currentCompetition.name;
+
 
     container.innerHTML =
       `<div class="loading">
         Loading top scorers...
       </div>`;
 
+
     try {
 
       const data =
         await fetchApi(
-          `/api/scorers?league=${encodeURIComponent(key)}`
+          `/api/scorers?league=${encodeURIComponent(
+            key
+          )}`
         );
 
+
       const scorers =
-        Array.isArray(data?.scorers)
+        Array.isArray(
+          data?.scorers
+        )
           ? data.scorers
           : [];
+
 
       if (!scorers.length) {
 
@@ -2192,7 +2983,9 @@
           </div>`;
 
         return;
+
       }
+
 
       container.innerHTML =
         scorers
@@ -2204,13 +2997,16 @@
                 player.player ||
                 player;
 
+
               const team =
                 player.team ||
                 {};
 
+
               const goals =
                 player.goals ??
                 0;
+
 
               return `
                 <div class="scorer">
@@ -2238,7 +3034,9 @@
 
                   <div class="scorer-goals">
 
-                    ${escapeHtml(goals)}
+                    ${escapeHtml(
+                      goals
+                    )}
 
                     <span class="scorer-goals-label">
                       goals
@@ -2248,6 +3046,7 @@
 
                 </div>
               `;
+
             }
           )
           .join("");
@@ -2259,11 +3058,14 @@
         error
       );
 
+
       container.innerHTML =
         `<div class="empty">
           Top scorer data is not available yet.
         </div>`;
+
     }
+
   }
 
 
@@ -2275,17 +3077,6 @@
     new Map();
 
 
-  async function loadTeamsForSearch() {
-
-    for (const competition of competitions) {
-
-      await addTeamsForCompetition(
-        competition
-      );
-    }
-  }
-
-
   async function addTeamsForCompetition(
     competition
   ) {
@@ -2294,51 +3085,83 @@
       return;
     }
 
+
     const prefix =
       `${competition.key}:`;
 
-    let loaded = false;
 
-    for (const key of searchTeams.keys()) {
+    let alreadyLoaded =
+      false;
 
-      if (key.startsWith(prefix)) {
-        loaded = true;
+
+    for (
+      const key
+      of searchTeams.keys()
+    ) {
+
+      if (
+        key.startsWith(
+          prefix
+        )
+      ) {
+
+        alreadyLoaded =
+          true;
+
         break;
+
       }
+
     }
 
-    if (loaded) {
+
+    if (alreadyLoaded) {
       return;
     }
+
 
     try {
 
       const data =
         await fetchApi(
-          `/api/teams?league=${encodeURIComponent(competition.key)}`
+          `/api/teams?league=${encodeURIComponent(
+            competition.key
+          )}`
         );
 
+
       const teams =
-        Array.isArray(data?.teams)
+        Array.isArray(
+          data?.teams
+        )
           ? data.teams
           : [];
 
-      for (const team of teams) {
+
+      for (
+        const team
+        of teams
+      ) {
 
         if (!team?.id) {
           continue;
         }
 
+
         searchTeams.set(
           `${competition.key}:${team.id}`,
           {
             ...team,
+
             _league:
               competition.key,
+
             _leagueName:
               competition.name
+
           }
         );
+
       }
 
     } catch (error) {
@@ -2347,39 +3170,92 @@
         `Could not load teams for ${competition.name}:`,
         error
       );
+
     }
+
   }
 
 
-  function renderSearchResults(value) {
+  async function loadTeamsForSearch() {
+
+    /*
+      Load the popular five
+      first.
+    */
+
+    for (
+      const competition
+      of competitions.slice(0, 5)
+    ) {
+
+      await addTeamsForCompetition(
+        competition
+      );
+
+    }
+
+
+    /*
+      Then load other leagues
+      in the background.
+    */
+
+    for (
+      const competition
+      of competitions.slice(5)
+    ) {
+
+      addTeamsForCompetition(
+        competition
+      );
+
+    }
+
+  }
+
+
+  function renderSearchResults(
+    value
+  ) {
 
     const query =
-      value.trim().toLowerCase();
+      value
+        .trim()
+        .toLowerCase();
+
 
     if (!query) {
 
-      searchResults.innerHTML = "";
+      searchResults.innerHTML =
+        "";
+
 
       searchResults.style.display =
         "none";
 
+
       return;
+
     }
+
 
     const matches =
       [...searchTeams.values()]
-        .filter(team =>
-          teamName(team)
-            .toLowerCase()
-            .includes(query)
+        .filter(
+          team =>
+            teamName(team)
+              .toLowerCase()
+              .includes(query)
         )
-        .sort((a,b) =>
-          teamName(a)
-            .localeCompare(
-              teamName(b)
-            )
+        .sort(
+          (a, b) =>
+            teamName(a)
+              .localeCompare(
+                teamName(b)
+              )
         )
         .slice(0, 8);
+
 
     if (!matches.length) {
 
@@ -2388,53 +3264,73 @@
           No teams found.
         </div>`;
 
+
       searchResults.style.display =
         "block";
 
+
       return;
+
     }
+
 
     searchResults.innerHTML =
       matches
-        .map(team => {
+        .map(
+          team => {
 
-          const logo =
-            crest(team);
+            const logo =
+              crest(team);
 
-          return `
-            <a
-              class="search-result"
-              href="team.html?teamId=${encodeURIComponent(team.id)}&league=${encodeURIComponent(team._league)}"
-            >
 
-              ${
-                logo
-                  ? `<img
-                      src="${escapeHtml(logo)}"
-                      alt=""
-                    >`
-                  : ""
-              }
+            return `
+              <a
+                class="search-result"
+                href="team.html?teamId=${encodeURIComponent(
+                  team.id
+                )}&league=${encodeURIComponent(
+                  team._league
+                )}"
+              >
 
-              <span class="search-result-name">
-                ${escapeHtml(
-                  teamName(team)
-                )}
-              </span>
+                ${
+                  logo
+                    ? `
+                      <img
+                        src="${escapeHtml(
+                          logo
+                        )}"
+                        alt=""
+                      >
+                    `
+                    : ""
+                }
 
-              <span class="search-result-league">
-                ${escapeHtml(
-                  team._leagueName
-                )}
-              </span>
 
-            </a>
-          `;
-        })
+                <span class="search-result-name">
+                  ${escapeHtml(
+                    teamName(team)
+                  )}
+                </span>
+
+
+                <span class="search-result-league">
+                  ${escapeHtml(
+                    team._leagueName
+                  )}
+                </span>
+
+              </a>
+            `;
+
+          }
+        )
         .join("");
+
 
     searchResults.style.display =
       "block";
+
   }
 
 
@@ -2445,6 +3341,7 @@
       renderSearchResults(
         event.target.value
       );
+
     }
   );
 
@@ -2461,7 +3358,9 @@
 
         searchResults.style.display =
           "none";
+
       }
+
     }
   );
 
@@ -2472,13 +3371,22 @@
 
   async function start() {
 
+    /*
+      Load the page and Premier
+      League first.
+    */
+
     await loadCompetitions();
 
+
     /*
-      Load the remaining teams for
-      search after the page is visible.
+      Continue loading teams for
+      search after the main page
+      has appeared.
     */
+
     loadTeamsForSearch();
+
   }
 
 
