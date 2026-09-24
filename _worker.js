@@ -4,20 +4,6 @@ const FOOTBALL_DATA_API = "https://api.football-data.org/v4";
   ------------------------------------------------------------
   SCORE DASH — FOOTBALL-DATA.ORG CONFIGURATION
   ------------------------------------------------------------
-
-  These are the five leagues currently shown on the site.
-
-  IMPORTANT:
-  The website can also discover additional competitions through
-  /api/competitions once your football-data.org plan gives access
-  to them.
-
-  The aliases below are deliberately kept stable so existing
-  links such as:
-
-      ?league=premier
-
-  continue to work.
 */
 
 const FEATURED_COMPETITIONS = {
@@ -90,9 +76,6 @@ function addDays(dateString, days) {
   return date.toISOString().slice(0, 10);
 }
 
-/*
-  Convert a URL/cache path into a stable cache URL.
-*/
 function cacheUrlFor(path) {
   return new Request(
     `https://score-dash-cache.invalid${path}`,
@@ -103,8 +86,11 @@ function cacheUrlFor(path) {
 }
 
 /*
-  Main football-data.org request helper.
+  ------------------------------------------------------------
+  FOOTBALL-DATA.ORG REQUESTS
+  ------------------------------------------------------------
 */
+
 async function footballDataRequest(
   env,
   path,
@@ -112,7 +98,9 @@ async function footballDataRequest(
   extraHeaders = {}
 ) {
   if (!env.FootballDataToken) {
-    throw new Error("FootballDataToken is not configured.");
+    throw new Error(
+      "FootballDataToken is not configured."
+    );
   }
 
   const cache = caches.default;
@@ -137,10 +125,12 @@ async function footballDataRequest(
   );
 
   if (!response.ok) {
-    let message = `football-data.org returned HTTP ${response.status}`;
+    let message =
+      `football-data.org returned HTTP ${response.status}`;
 
     try {
-      const errorBody = await response.clone().json();
+      const errorBody =
+        await response.clone().json();
 
       if (errorBody?.message) {
         message = errorBody.message;
@@ -151,6 +141,7 @@ async function footballDataRequest(
 
     const error = new Error(message);
     error.status = response.status;
+
     throw error;
   }
 
@@ -162,11 +153,16 @@ async function footballDataRequest(
       "Content-Type":
         response.headers.get("Content-Type") ||
         "application/json; charset=utf-8",
-      "Cache-Control": `public, max-age=${cacheTtl}`
+
+      "Cache-Control":
+        `public, max-age=${cacheTtl}`
     }
   });
 
-  await cache.put(cacheRequest, cachedResponse.clone());
+  await cache.put(
+    cacheRequest,
+    cachedResponse.clone()
+  );
 
   return cachedResponse;
 }
@@ -177,19 +173,20 @@ async function footballDataJson(
   cacheTtl = 300,
   extraHeaders = {}
 ) {
-  const response = await footballDataRequest(
-    env,
-    path,
-    cacheTtl,
-    extraHeaders
-  );
+  const response =
+    await footballDataRequest(
+      env,
+      path,
+      cacheTtl,
+      extraHeaders
+    );
 
   return response.json();
 }
 
 /*
   ------------------------------------------------------------
-  COMPETITION RESOLUTION
+  COMPETITION HELPERS
   ------------------------------------------------------------
 */
 
@@ -208,39 +205,31 @@ function slugify(value) {
 }
 
 function featuredCompetitionFromKey(key) {
-  const normalised = normaliseKey(key);
+  const normalised =
+    normaliseKey(key);
 
-  return FEATURED_COMPETITIONS[normalised] || null;
+  return (
+    FEATURED_COMPETITIONS[
+      normalised
+    ] || null
+  );
 }
 
-/*
-  Allows:
-
-      premier
-      laliga
-      seriea
-      bundesliga
-      ligue1
-
-  as well as an actual football-data.org code such as:
-
-      PL
-      PD
-      SA
-      BL1
-      FL1
-
-  This means future competitions can be selected without
-  rewriting the backend.
-*/
-async function resolveCompetition(env, value) {
-  const input = String(value || "").trim();
+async function resolveCompetition(
+  env,
+  value
+) {
+  const input =
+    String(value || "").trim();
 
   if (!input) {
-    throw new Error("A competition is required.");
+    throw new Error(
+      "A competition is required."
+    );
   }
 
-  const alias = featuredCompetitionFromKey(input);
+  const alias =
+    featuredCompetitionFromKey(input);
 
   if (alias) {
     return {
@@ -252,47 +241,80 @@ async function resolveCompetition(env, value) {
     };
   }
 
-  const upper = input.toUpperCase();
+  const upper =
+    input.toUpperCase();
 
   /*
-    If the value looks like a football-data.org competition code,
-    try to resolve it directly.
+    First try it as a football-data.org
+    competition code.
   */
   try {
-    const competition = await footballDataJson(
-      env,
-      `/competitions/${encodeURIComponent(upper)}`,
-      CACHE_TTL.competitions
-    );
+    const competition =
+      await footballDataJson(
+        env,
+        `/competitions/${encodeURIComponent(
+          upper
+        )}`,
+        CACHE_TTL.competitions
+      );
 
     return {
-      key: slugify(competition.code || competition.name),
-      code: competition.code || upper,
-      name: competition.name || upper,
-      shortName: competition.name || upper,
-      country: competition.area?.name || "",
-      emblem: competition.emblem || null
+      key: slugify(
+        competition.code ||
+        competition.name
+      ),
+
+      code:
+        competition.code ||
+        upper,
+
+      name:
+        competition.name ||
+        upper,
+
+      shortName:
+        competition.name ||
+        upper,
+
+      country:
+        competition.area?.name ||
+        "",
+
+      emblem:
+        competition.emblem ||
+        null
     };
   } catch (_) {
     /*
-      If it wasn't a valid competition code, allow a slug/key
-      to be passed and return a useful error later.
+      If it isn't a direct code, search the
+      available competitions.
     */
 
-    const competitions = await getAvailableCompetitions(env);
-
-    const found = competitions.find((competition) => {
-      return (
-        normaliseKey(competition.key) === normaliseKey(input) ||
-        normaliseKey(competition.code) === normaliseKey(input)
+    const competitions =
+      await getAvailableCompetitions(
+        env
       );
-    });
+
+    const found =
+      competitions.find(
+        (competition) =>
+          normaliseKey(
+            competition.key
+          ) ===
+            normaliseKey(input) ||
+          normaliseKey(
+            competition.code
+          ) ===
+            normaliseKey(input)
+      );
 
     if (found) {
       return found;
     }
 
-    throw new Error(`Competition "${input}" was not found.`);
+    throw new Error(
+      `Competition "${input}" was not found.`
+    );
   }
 }
 
@@ -300,26 +322,24 @@ async function resolveCompetition(env, value) {
   ------------------------------------------------------------
   AVAILABLE COMPETITIONS
   ------------------------------------------------------------
-
-  This is the important future-proofing part.
-
-  football-data.org's /competitions endpoint gives us the
-  competitions available to the authenticated account.
-
-  When your plan gains access to more competitions, the website
-  can discover them automatically.
 */
 
-async function getAvailableCompetitions(env) {
-  const data = await footballDataJson(
-    env,
-    "/competitions",
-    CACHE_TTL.competitions
-  );
+async function getAvailableCompetitions(
+  env
+) {
+  const data =
+    await footballDataJson(
+      env,
+      "/competitions",
+      CACHE_TTL.competitions
+    );
 
-  const competitions = Array.isArray(data?.competitions)
-    ? data.competitions
-    : [];
+  const competitions =
+    Array.isArray(
+      data?.competitions
+    )
+      ? data.competitions
+      : [];
 
   const result = [];
 
@@ -328,14 +348,24 @@ async function getAvailableCompetitions(env) {
       continue;
     }
 
-    const code = competition.code;
+    const code =
+      competition.code;
 
-    let key = slugify(code);
+    let key =
+      slugify(code);
 
-    for (const [alias, config] of Object.entries(
-      FEATURED_COMPETITIONS
-    )) {
-      if (config.code === code) {
+    for (
+      const [
+        alias,
+        config
+      ] of Object.entries(
+        FEATURED_COMPETITIONS
+      )
+    ) {
+      if (
+        config.code ===
+        code
+      ) {
         key = alias;
         break;
       }
@@ -343,35 +373,66 @@ async function getAvailableCompetitions(env) {
 
     result.push({
       key,
+
       code,
-      name: competition.name || code,
-      shortName: competition.name || code,
-      country: competition.area?.name || "",
-      areaCode: competition.area?.code || "",
-      type: competition.type || "",
-      emblem: competition.emblem || null,
-      plan: competition.plan || null
+
+      name:
+        competition.name ||
+        code,
+
+      shortName:
+        competition.name ||
+        code,
+
+      country:
+        competition.area?.name ||
+        "",
+
+      areaCode:
+        competition.area?.code ||
+        "",
+
+      type:
+        competition.type ||
+        "",
+
+      emblem:
+        competition.emblem ||
+        null,
+
+      plan:
+        competition.plan ||
+        null
     });
   }
 
   /*
-    Make sure our five featured competitions remain available
-    in the selector even if /competitions has unusual filtering.
+    Keep the five featured leagues available.
   */
-  for (const [key, config] of Object.entries(
-    FEATURED_COMPETITIONS
-  )) {
-    const exists = result.some(
-      (item) => item.code === config.code
-    );
+  for (
+    const [
+      key,
+      config
+    ] of Object.entries(
+      FEATURED_COMPETITIONS
+    )
+  ) {
+    const exists =
+      result.some(
+        (item) =>
+          item.code ===
+          config.code
+      );
 
     if (!exists) {
       result.push({
         key,
         code: config.code,
         name: config.name,
-        shortName: config.shortName,
-        country: config.country,
+        shortName:
+          config.shortName,
+        country:
+          config.country,
         areaCode: "",
         type: "LEAGUE",
         emblem: null,
@@ -381,17 +442,49 @@ async function getAvailableCompetitions(env) {
   }
 
   /*
-    Featured competitions first.
+    Featured leagues first,
+    everything else alphabetically.
   */
-  result.sort((a, b) => {
-    const aFeatured = FEATURED_COMPETITIONS[a.key] ? 0 : 1;
-    const bFeatured = FEATURED_COMPETITIONS[b.key] ? 0 : 1;
+  const featuredOrder =
+    Object.keys(
+      FEATURED_COMPETITIONS
+    );
 
-    if (aFeatured !== bFeatured) {
-      return aFeatured - bFeatured;
+  result.sort((a, b) => {
+    const aIndex =
+      featuredOrder.indexOf(
+        a.key
+      );
+
+    const bIndex =
+      featuredOrder.indexOf(
+        b.key
+      );
+
+    const aFeatured =
+      aIndex !== -1;
+
+    const bFeatured =
+      bIndex !== -1;
+
+    if (
+      aFeatured &&
+      bFeatured
+    ) {
+      return aIndex - bIndex;
     }
 
-    return a.name.localeCompare(b.name);
+    if (aFeatured) {
+      return -1;
+    }
+
+    if (bFeatured) {
+      return 1;
+    }
+
+    return a.name.localeCompare(
+      b.name
+    );
   });
 
   return result;
@@ -399,7 +492,7 @@ async function getAvailableCompetitions(env) {
 
 /*
   ------------------------------------------------------------
-  TEAM / MATCH SIMPLIFIERS
+  TEAM HELPERS
   ------------------------------------------------------------
 */
 
@@ -410,21 +503,50 @@ function simplifyTeam(team) {
 
   return {
     id: team.id,
-    name: team.name || "Unknown team",
-    shortName: team.shortName || team.name || "Unknown",
-    tla: team.tla || "",
+
+    name:
+      team.name ||
+      "Unknown team",
+
+    shortName:
+      team.shortName ||
+      team.name ||
+      "Unknown",
+
+    tla:
+      team.tla ||
+      "",
+
     crest:
       team.crest ||
       team.crestURI ||
       null,
-    website: team.website || null,
-    venue: team.venue || null,
-    founded: team.founded || null,
+
+    website:
+      team.website ||
+      null,
+
+    venue:
+      team.venue ||
+      null,
+
+    founded:
+      team.founded ||
+      null,
+
     area: team.area
       ? {
-          id: team.area.id || null,
-          name: team.area.name || "",
-          code: team.area.code || ""
+          id:
+            team.area.id ||
+            null,
+
+          name:
+            team.area.name ||
+            "",
+
+          code:
+            team.area.code ||
+            ""
         }
       : null
   };
@@ -434,11 +556,14 @@ function simplifyScore(score) {
   if (!score) {
     return {
       winner: null,
+
       duration: null,
+
       fullTime: {
         home: null,
         away: null
       },
+
       halfTime: {
         home: null,
         away: null
@@ -447,15 +572,32 @@ function simplifyScore(score) {
   }
 
   return {
-    winner: score.winner || null,
-    duration: score.duration || null,
+    winner:
+      score.winner ||
+      null,
+
+    duration:
+      score.duration ||
+      null,
+
     fullTime: {
-      home: score.fullTime?.home ?? null,
-      away: score.fullTime?.away ?? null
+      home:
+        score.fullTime?.home ??
+        null,
+
+      away:
+        score.fullTime?.away ??
+        null
     },
+
     halfTime: {
-      home: score.halfTime?.home ?? null,
-      away: score.halfTime?.away ?? null
+      home:
+        score.halfTime?.home ??
+        null,
+
+      away:
+        score.halfTime?.away ??
+        null
     }
   };
 }
@@ -463,58 +605,145 @@ function simplifyScore(score) {
 function simplifyMatch(match) {
   return {
     id: match.id,
-    utcDate: match.utcDate,
-    status: match.status,
-    minute: match.minute ?? null,
-    injuryTime: match.injuryTime ?? null,
-    matchday: match.matchday ?? null,
-    stage: match.stage ?? null,
-    group: match.group ?? null,
 
-    competition: match.competition
-      ? {
-          id: match.competition.id,
-          name: match.competition.name,
-          code: match.competition.code,
-          emblem: match.competition.emblem || null
-        }
-      : null,
+    utcDate:
+      match.utcDate ||
+      match.date ||
+      null,
 
-    homeTeam: simplifyTeam(match.homeTeam),
-    awayTeam: simplifyTeam(match.awayTeam),
+    status:
+      match.status ||
+      null,
 
-    score: simplifyScore(match.score)
+    minute:
+      match.minute ??
+      null,
+
+    injuryTime:
+      match.injuryTime ??
+      null,
+
+    matchday:
+      match.matchday ??
+      null,
+
+    stage:
+      match.stage ||
+      null,
+
+    group:
+      match.group ||
+      null,
+
+    competition:
+      match.competition
+        ? {
+            id:
+              match.competition.id,
+
+            name:
+              match.competition.name,
+
+            code:
+              match.competition.code,
+
+            emblem:
+              match.competition
+                .emblem ||
+              null
+          }
+        : null,
+
+    homeTeam:
+      simplifyTeam(
+        match.homeTeam
+      ),
+
+    awayTeam:
+      simplifyTeam(
+        match.awayTeam
+      ),
+
+    score:
+      simplifyScore(
+        match.score
+      )
   };
 }
 
-function simplifyStandingRow(row) {
+/*
+  ------------------------------------------------------------
+  STANDINGS
+  ------------------------------------------------------------
+*/
+
+function simplifyStandingRow(
+  row
+) {
   return {
-    position: row.position,
-    team: simplifyTeam(row.team),
-    playedGames: row.playedGames ?? 0,
-    won: row.won ?? 0,
-    draw: row.draw ?? 0,
-    lost: row.lost ?? 0,
-    points: row.points ?? 0,
-    goalsFor: row.goalsFor ?? 0,
-    goalsAgainst: row.goalsAgainst ?? 0,
-    goalDifference: row.goalDifference ?? 0
+    position:
+      row.position,
+
+    team:
+      simplifyTeam(
+        row.team
+      ),
+
+    playedGames:
+      row.playedGames ??
+      0,
+
+    won:
+      row.won ??
+      0,
+
+    draw:
+      row.draw ??
+      0,
+
+    lost:
+      row.lost ??
+      0,
+
+    points:
+      row.points ??
+      0,
+
+    goalsFor:
+      row.goalsFor ??
+      0,
+
+    goalsAgainst:
+      row.goalsAgainst ??
+      0,
+
+    goalDifference:
+      row.goalDifference ??
+      0
   };
 }
 
-function simplifyStandings(data) {
+function simplifyStandings(
+  data
+) {
   const output = {
     TOTAL: [],
     HOME: [],
     AWAY: []
   };
 
-  const standings = Array.isArray(data?.standings)
-    ? data.standings
-    : [];
+  const standings =
+    Array.isArray(
+      data?.standings
+    )
+      ? data.standings
+      : [];
 
-  for (const section of standings) {
-    const type = section.type;
+  for (
+    const section of standings
+  ) {
+    const type =
+      section.type;
 
     if (
       type !== "TOTAL" &&
@@ -524,13 +753,18 @@ function simplifyStandings(data) {
       continue;
     }
 
-    if (!Array.isArray(section.table)) {
+    if (
+      !Array.isArray(
+        section.table
+      )
+    ) {
       continue;
     }
 
-    output[type] = section.table.map(
-      simplifyStandingRow
-    );
+    output[type] =
+      section.table.map(
+        simplifyStandingRow
+      );
   }
 
   return output;
@@ -542,15 +776,30 @@ function simplifyStandings(data) {
   ------------------------------------------------------------
 */
 
-async function getLeagueData(env, league) {
-  const competition = await resolveCompetition(
-    env,
-    league
-  );
+async function getLeagueData(
+  env,
+  league
+) {
+  const competition =
+    await resolveCompetition(
+      env,
+      league
+    );
 
-  const today = getTodayString();
-  const dateFrom = addDays(today, -30);
-  const dateTo = addDays(today, 30);
+  const today =
+    getTodayString();
+
+  const dateFrom =
+    addDays(
+      today,
+      -30
+    );
+
+  const dateTo =
+    addDays(
+      today,
+      30
+    );
 
   const matchesPath =
     `/competitions/${encodeURIComponent(
@@ -562,158 +811,262 @@ async function getLeagueData(env, league) {
       competition.code
     )}/standings`;
 
-  /*
-    Fetch matches and standings in parallel.
-  */
-  const [matchesData, standingsData] =
-    await Promise.all([
-      footballDataJson(
-        env,
-        matchesPath,
-        CACHE_TTL.leagueData
-      ),
+  const [
+    matchesData,
+    standingsData
+  ] = await Promise.all([
+    footballDataJson(
+      env,
+      matchesPath,
+      CACHE_TTL.leagueData
+    ),
 
-      footballDataJson(
-        env,
-        standingsPath,
-        CACHE_TTL.standings
-      )
-    ]);
+    footballDataJson(
+      env,
+      standingsPath,
+      CACHE_TTL.standings
+    )
+  ]);
 
-  const matches = Array.isArray(
-    matchesData?.matches
-  )
-    ? matchesData.matches
-    : [];
+  const matches =
+    Array.isArray(
+      matchesData?.matches
+    )
+      ? matchesData.matches
+      : [];
 
   const simplifiedMatches =
-    matches.map(simplifyMatch);
-
-  const liveStatuses = new Set([
-    "IN_PLAY",
-    "LIVE",
-    "PAUSED"
-  ]);
-
-  const finishedStatuses = new Set([
-    "FINISHED"
-  ]);
-
-  const live = simplifiedMatches
-    .filter((match) =>
-      liveStatuses.has(match.status)
-    )
-    .sort(
-      (a, b) =>
-        new Date(a.utcDate) -
-        new Date(b.utcDate)
+    matches.map(
+      simplifyMatch
     );
 
-  const results = simplifiedMatches
-    .filter((match) =>
-      finishedStatuses.has(match.status)
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.utcDate) -
-        new Date(a.utcDate)
-    );
+  const liveStatuses =
+    new Set([
+      "IN_PLAY",
+      "LIVE",
+      "PAUSED",
+      "SUSPENDED"
+    ]);
 
-  const upcoming = simplifiedMatches
-    .filter(
-      (match) =>
-        !liveStatuses.has(match.status) &&
-        !finishedStatuses.has(match.status) &&
-        ![
-          "POSTPONED",
-          "CANCELLED",
-          "SUSPENDED"
-        ].includes(match.status)
-    )
-    .sort(
-      (a, b) =>
-        new Date(a.utcDate) -
-        new Date(b.utcDate)
-    );
+  const finishedStatuses =
+    new Set([
+      "FINISHED"
+    ]);
+
+  const cancelledStatuses =
+    new Set([
+      "POSTPONED",
+      "CANCELLED",
+      "SUSPENDED"
+    ]);
+
+  const live =
+    simplifiedMatches
+      .filter((match) =>
+        liveStatuses.has(
+          match.status
+        )
+      )
+      .sort(
+        (a, b) =>
+          new Date(
+            a.utcDate
+          ) -
+          new Date(
+            b.utcDate
+          )
+      );
+
+  const results =
+    simplifiedMatches
+      .filter((match) =>
+        finishedStatuses.has(
+          match.status
+        )
+      )
+      .sort(
+        (a, b) =>
+          new Date(
+            b.utcDate
+          ) -
+          new Date(
+            a.utcDate
+          )
+      );
+
+  const upcoming =
+    simplifiedMatches
+      .filter(
+        (match) =>
+          !liveStatuses.has(
+            match.status
+          ) &&
+          !finishedStatuses.has(
+            match.status
+          ) &&
+          !cancelledStatuses.has(
+            match.status
+          )
+      )
+      .sort(
+        (a, b) =>
+          new Date(
+            a.utcDate
+          ) -
+          new Date(
+            b.utcDate
+          )
+      );
 
   return {
-    league: competition.key,
-    code: competition.code,
+    league:
+      competition.key,
+
+    code:
+      competition.code,
 
     competition: {
-      key: competition.key,
-      code: competition.code,
-      name: competition.name,
-      shortName: competition.shortName,
-      country: competition.country,
-      emblem: competition.emblem || null
+      key:
+        competition.key,
+
+      code:
+        competition.code,
+
+      name:
+        competition.name,
+
+      shortName:
+        competition.shortName,
+
+      country:
+        competition.country,
+
+      emblem:
+        competition.emblem ||
+        null
     },
 
-    updatedAt: new Date().toISOString(),
+    updatedAt:
+      new Date().toISOString(),
 
     live: {
-      count: live.length,
-      matches: live
+      count:
+        live.length,
+
+      matches:
+        live
     },
 
     results: {
-      count: results.length,
-      matches: results.slice(0, 20)
+      count:
+        results.length,
+
+      matches:
+        results.slice(
+          0,
+          20
+        )
     },
 
     upcoming: {
-      count: upcoming.length,
-      matches: upcoming.slice(0, 20)
+      count:
+        upcoming.length,
+
+      matches:
+        upcoming.slice(
+          0,
+          20
+        )
     },
 
-    standings: simplifyStandings(
-      standingsData
-    )
+    standings:
+      simplifyStandings(
+        standingsData
+      )
   };
 }
 
-async function getLeagueDataCached(env, league) {
-  const key = `league-data:${normaliseKey(
-    league
-  )}`;
+async function getLeagueDataCached(
+  env,
+  league
+) {
+  const key =
+    `league-data:${normaliseKey(
+      league
+    )}`;
 
-  if (inFlight.has(key)) {
-    return inFlight.get(key);
+  if (
+    inFlight.has(key)
+  ) {
+    return inFlight.get(
+      key
+    );
   }
 
-  const promise = getLeagueData(env, league)
-    .finally(() => {
-      inFlight.delete(key);
+  const promise =
+    getLeagueData(
+      env,
+      league
+    ).finally(() => {
+      inFlight.delete(
+        key
+      );
     });
 
-  inFlight.set(key, promise);
+  inFlight.set(
+    key,
+    promise
+  );
 
   return promise;
 }
 
 /*
   ------------------------------------------------------------
-  ENDPOINTS
+  API: COMPETITIONS
   ------------------------------------------------------------
 */
 
-async function handleCompetitions(env) {
+async function handleCompetitions(
+  env
+) {
   const competitions =
-    await getAvailableCompetitions(env);
+    await getAvailableCompetitions(
+      env
+    );
 
   return jsonResponse({
-    count: competitions.length,
-    featured: Object.keys(
-      FEATURED_COMPETITIONS
-    ),
+    count:
+      competitions.length,
+
+    featured:
+      Object.keys(
+        FEATURED_COMPETITIONS
+      ),
+
     competitions
   });
 }
 
-async function handleLeagueData(env, request) {
-  const url = new URL(request.url);
+/*
+  ------------------------------------------------------------
+  API: LEAGUE DATA
+  ------------------------------------------------------------
+*/
+
+async function handleLeagueData(
+  env,
+  request
+) {
+  const url =
+    new URL(
+      request.url
+    );
+
   const league =
-    url.searchParams.get("league");
+    url.searchParams.get(
+      "league"
+    );
 
   if (!league) {
     return jsonResponse(
@@ -731,13 +1084,30 @@ async function handleLeagueData(env, request) {
       league
     );
 
-  return jsonResponse(data);
+  return jsonResponse(
+    data
+  );
 }
 
-async function handleStandings(env, request) {
-  const url = new URL(request.url);
+/*
+  ------------------------------------------------------------
+  API: STANDINGS
+  ------------------------------------------------------------
+*/
+
+async function handleStandings(
+  env,
+  request
+) {
+  const url =
+    new URL(
+      request.url
+    );
+
   const league =
-    url.searchParams.get("league");
+    url.searchParams.get(
+      "league"
+    );
 
   if (!league) {
     return jsonResponse(
@@ -765,23 +1135,49 @@ async function handleStandings(env, request) {
     );
 
   return jsonResponse({
-    league: competition.key,
-    code: competition.code,
+    league:
+      competition.key,
+
+    code:
+      competition.code,
+
     competition: {
-      key: competition.key,
-      code: competition.code,
-      name: competition.name
+      key:
+        competition.key,
+
+      code:
+        competition.code,
+
+      name:
+        competition.name
     },
+
     standings:
-      simplifyStandings(data)
+      simplifyStandings(
+        data
+      )
   });
 }
 
-async function handleTeams(env, request) {
-  const url = new URL(request.url);
+/*
+  ------------------------------------------------------------
+  API: TEAMS
+  ------------------------------------------------------------
+*/
+
+async function handleTeams(
+  env,
+  request
+) {
+  const url =
+    new URL(
+      request.url
+    );
 
   const league =
-    url.searchParams.get("league");
+    url.searchParams.get(
+      "league"
+    );
 
   if (!league) {
     return jsonResponse(
@@ -808,27 +1204,56 @@ async function handleTeams(env, request) {
       CACHE_TTL.team
     );
 
-  const teams = Array.isArray(data?.teams)
-    ? data.teams.map(simplifyTeam)
-    : [];
+  const teams =
+    Array.isArray(
+      data?.teams
+    )
+      ? data.teams.map(
+          simplifyTeam
+        )
+      : [];
 
   return jsonResponse({
-    league: competition.key,
-    code: competition.code,
+    league:
+      competition.key,
+
+    code:
+      competition.code,
+
     competition: {
-      key: competition.key,
-      code: competition.code,
-      name: competition.name
+      key:
+        competition.key,
+
+      code:
+        competition.code,
+
+      name:
+        competition.name
     },
+
     teams
   });
 }
 
-async function handleTeam(env, request) {
-  const url = new URL(request.url);
+/*
+  ------------------------------------------------------------
+  API: SINGLE TEAM
+  ------------------------------------------------------------
+*/
+
+async function handleTeam(
+  env,
+  request
+) {
+  const url =
+    new URL(
+      request.url
+    );
 
   const teamId =
-    url.searchParams.get("teamId");
+    url.searchParams.get(
+      "teamId"
+    );
 
   if (!teamId) {
     return jsonResponse(
@@ -850,21 +1275,37 @@ async function handleTeam(env, request) {
     );
 
   return jsonResponse({
-    team: simplifyTeam(data)
+    team:
+      simplifyTeam(
+        data
+      )
   });
 }
+
+/*
+  ------------------------------------------------------------
+  API: TEAM MATCHES
+  ------------------------------------------------------------
+*/
 
 async function handleTeamMatches(
   env,
   request
 ) {
-  const url = new URL(request.url);
+  const url =
+    new URL(
+      request.url
+    );
 
   const teamId =
-    url.searchParams.get("teamId");
+    url.searchParams.get(
+      "teamId"
+    );
 
   const league =
-    url.searchParams.get("league");
+    url.searchParams.get(
+      "league"
+    );
 
   if (!teamId) {
     return jsonResponse(
@@ -884,17 +1325,20 @@ async function handleTeamMatches(
         )
       : null;
 
-  const today = getTodayString();
+  const today =
+    getTodayString();
 
-  const dateFrom = addDays(
-    today,
-    -90
-  );
+  const dateFrom =
+    addDays(
+      today,
+      -90
+    );
 
-  const dateTo = addDays(
-    today,
-    90
-  );
+  const dateTo =
+    addDays(
+      today,
+      90
+    );
 
   let path =
     `/teams/${encodeURIComponent(
@@ -902,9 +1346,10 @@ async function handleTeamMatches(
     )}/matches?dateFrom=${dateFrom}&dateTo=${dateTo}&limit=100`;
 
   if (competition) {
-    path += `&competitions=${encodeURIComponent(
-      competition.code
-    )}`;
+    path +=
+      `&competitions=${encodeURIComponent(
+        competition.code
+      )}`;
   }
 
   const data =
@@ -914,33 +1359,55 @@ async function handleTeamMatches(
       CACHE_TTL.teamMatches
     );
 
-  const matches = Array.isArray(
-    data?.matches
-  )
-    ? data.matches.map(simplifyMatch)
-    : [];
+  const matches =
+    Array.isArray(
+      data?.matches
+    )
+      ? data.matches.map(
+          simplifyMatch
+        )
+      : [];
 
   return jsonResponse({
-    teamId: Number(teamId),
+    teamId:
+      Number(teamId),
+
     league:
-      competition?.key || null,
+      competition?.key ||
+      null,
+
     code:
-      competition?.code || null,
+      competition?.code ||
+      null,
+
     matches
   });
 }
+
+/*
+  ------------------------------------------------------------
+  API: TEAM SCORERS
+  ------------------------------------------------------------
+*/
 
 async function handleTeamScorers(
   env,
   request
 ) {
-  const url = new URL(request.url);
+  const url =
+    new URL(
+      request.url
+    );
 
   const teamId =
-    url.searchParams.get("teamId");
+    url.searchParams.get(
+      "teamId"
+    );
 
   const league =
-    url.searchParams.get("league");
+    url.searchParams.get(
+      "league"
+    );
 
   if (!teamId) {
     return jsonResponse(
@@ -954,7 +1421,9 @@ async function handleTeamScorers(
 
   if (!league) {
     return jsonResponse({
-      teamId: Number(teamId),
+      teamId:
+        Number(teamId),
+
       scorers: []
     });
   }
@@ -975,48 +1444,189 @@ async function handleTeamScorers(
     );
 
   const scorers =
-    Array.isArray(data?.scorers)
+    Array.isArray(
+      data?.scorers
+    )
       ? data.scorers
           .filter(
             (item) =>
               Number(
                 item.team?.id
-              ) === Number(teamId)
+              ) ===
+              Number(teamId)
           )
-          .map((item) => ({
-            player: {
-              id:
-                item.player?.id ||
-                null,
-              name:
-                item.player?.name ||
-                "Unknown player"
-            },
-            team: simplifyTeam(
-              item.team
-            ),
-            goals:
-              item.goals ?? 0,
-            assists:
-              item.assists ?? 0,
-            penalties:
-              item.penalties ?? 0
-          }))
+          .map(
+            (item) => ({
+              player: {
+                id:
+                  item.player
+                    ?.id ||
+                  null,
+
+                name:
+                  item.player
+                    ?.name ||
+                  "Unknown player"
+              },
+
+              team:
+                simplifyTeam(
+                  item.team
+                ),
+
+              goals:
+                item.goals ??
+                0,
+
+              assists:
+                item.assists ??
+                0,
+
+              penalties:
+                item.penalties ??
+                0
+            })
+          )
       : [];
 
   return jsonResponse({
-    teamId: Number(teamId),
-    league: competition.key,
-    code: competition.code,
+    teamId:
+      Number(teamId),
+
+    league:
+      competition.key,
+
+    code:
+      competition.code,
+
     scorers
   });
 }
 
-async function handleMatch(env, request) {
-  const url = new URL(request.url);
+/*
+  ------------------------------------------------------------
+  API: LEAGUE TOP SCORERS
+  ------------------------------------------------------------
+*/
+
+async function handleScorers(
+  env,
+  request
+) {
+  const url =
+    new URL(
+      request.url
+    );
+
+  const league =
+    url.searchParams.get(
+      "league"
+    );
+
+  if (!league) {
+    return jsonResponse(
+      {
+        error:
+          "Missing league parameter."
+      },
+      400
+    );
+  }
+
+  const competition =
+    await resolveCompetition(
+      env,
+      league
+    );
+
+  const data =
+    await footballDataJson(
+      env,
+      `/competitions/${encodeURIComponent(
+        competition.code
+      )}/scorers?limit=20`,
+      CACHE_TTL.teamScorers
+    );
+
+  const scorers =
+    Array.isArray(
+      data?.scorers
+    )
+      ? data.scorers.map(
+          (item) => ({
+            player: {
+              id:
+                item.player
+                  ?.id ||
+                null,
+
+              name:
+                item.player
+                  ?.name ||
+                "Unknown player"
+            },
+
+            team:
+              simplifyTeam(
+                item.team
+              ),
+
+            goals:
+              item.goals ??
+              0,
+
+            assists:
+              item.assists ??
+              0,
+
+            penalties:
+              item.penalties ??
+              0
+          })
+        )
+      : [];
+
+  return jsonResponse({
+    league:
+      competition.key,
+
+    code:
+      competition.code,
+
+    competition: {
+      key:
+        competition.key,
+
+      code:
+        competition.code,
+
+      name:
+        competition.name
+    },
+
+    scorers
+  });
+}
+
+/*
+  ------------------------------------------------------------
+  API: MATCH
+  ------------------------------------------------------------
+*/
+
+async function handleMatch(
+  env,
+  request
+) {
+  const url =
+    new URL(
+      request.url
+    );
 
   const matchId =
-    url.searchParams.get("matchId");
+    url.searchParams.get(
+      "matchId"
+    );
 
   if (!matchId) {
     return jsonResponse(
@@ -1036,17 +1646,31 @@ async function handleMatch(env, request) {
       )}`,
       CACHE_TTL.match,
       {
-        "X-Unfold-Goals": "true",
-        "X-Unfold-Bookings": "true"
+        "X-Unfold-Goals":
+          "true",
+
+        "X-Unfold-Bookings":
+          "true"
       }
     );
 
   return jsonResponse({
-    match: simplifyMatch(data)
+    match:
+      simplifyMatch(
+        data
+      )
   });
 }
 
-async function handleTest(env) {
+/*
+  ------------------------------------------------------------
+  API TEST
+  ------------------------------------------------------------
+*/
+
+async function handleTest(
+  env
+) {
   const data =
     await footballDataJson(
       env,
@@ -1056,13 +1680,23 @@ async function handleTest(env) {
 
   return jsonResponse({
     ok: true,
+
     message:
       "football-data.org connection is working.",
+
     competition: {
-      id: data.id,
-      name: data.name,
-      code: data.code,
-      area: data.area?.name || ""
+      id:
+        data.id,
+
+      name:
+        data.name,
+
+      code:
+        data.code,
+
+      area:
+        data.area?.name ||
+        ""
     }
   });
 }
@@ -1073,7 +1707,9 @@ async function handleTest(env) {
   ------------------------------------------------------------
 */
 
-function friendlyError(error) {
+function friendlyError(
+  error
+) {
   const message =
     error?.message ||
     "Unknown error";
@@ -1115,7 +1751,9 @@ async function serveAsset(
   env,
   request
 ) {
-  return env.ASSETS.fetch(request);
+  return env.ASSETS.fetch(
+    request
+  );
 }
 
 /*
@@ -1125,15 +1763,23 @@ async function serveAsset(
 */
 
 export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
+  async fetch(
+    request,
+    env
+  ) {
+    const url =
+      new URL(
+        request.url
+      );
 
     try {
       if (
         url.pathname ===
         "/api/test-football-data"
       ) {
-        return await handleTest(env);
+        return await handleTest(
+          env
+        );
       }
 
       if (
@@ -1207,6 +1853,16 @@ export default {
 
       if (
         url.pathname ===
+        "/api/scorers"
+      ) {
+        return await handleScorers(
+          env,
+          request
+        );
+      }
+
+      if (
+        url.pathname ===
         "/api/match"
       ) {
         return await handleMatch(
@@ -1216,8 +1872,7 @@ export default {
       }
 
       /*
-        Keep these compatibility endpoints because
-        older versions of the frontend used them.
+        Compatibility endpoints
       */
 
       if (
@@ -1254,17 +1909,23 @@ export default {
         env,
         request
       );
+
     } catch (error) {
-      console.error(error);
+      console.error(
+        error
+      );
 
       const friendly =
-        friendlyError(error);
+        friendlyError(
+          error
+        );
 
       return jsonResponse(
         {
           error:
             friendly.message
         },
+
         error?.status >= 400 &&
         error?.status < 600
           ? error.status
