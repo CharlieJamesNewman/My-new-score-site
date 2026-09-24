@@ -53,12 +53,14 @@
     }
 
     .app {
-      width: min(1500px, calc(100% - 32px));
+      width: min(1250px, calc(100% - 32px));
       margin: 0 auto;
       padding: 24px 0 50px;
     }
 
-    /* HEADER */
+    /* =========================
+       HEADER
+    ========================= */
 
     .header {
       display: flex;
@@ -90,7 +92,9 @@
       gap: 10px;
     }
 
-    /* SEARCH */
+    /* =========================
+       SEARCH
+    ========================= */
 
     .search-wrap {
       position: relative;
@@ -158,7 +162,9 @@
       margin-top: 2px;
     }
 
-    /* LEAGUE SELECTOR */
+    /* =========================
+       LEAGUE SELECTOR
+    ========================= */
 
     .league-selector {
       display: flex;
@@ -190,21 +196,32 @@
       border-color: var(--accent);
     }
 
-    /* MAIN GRID */
+    /* =========================
+       MAIN GRID
+    ========================= */
 
     .page-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 420px;
+      grid-template-columns: minmax(0, 760px) 420px;
       gap: 18px;
+      justify-content: start;
       align-items: start;
     }
 
-    .left-column,
-    .right-column {
+    .left-column {
+      width: 100%;
+      max-width: 760px;
       min-width: 0;
     }
 
-    /* CARDS */
+    .right-column {
+      width: 100%;
+      min-width: 0;
+    }
+
+    /* =========================
+       CARDS
+    ========================= */
 
     .card {
       background: var(--panel);
@@ -250,18 +267,20 @@
       color: var(--danger);
     }
 
-    /* MATCH ROWS */
+    /* =========================
+       MATCH ROWS
+    ========================= */
 
     .match-row {
       width: 100%;
       display: grid;
-      grid-template-columns: 92px minmax(0, 1fr) 72px;
-      gap: 12px;
+      grid-template-columns: 85px minmax(0, 1fr) 65px;
+      gap: 10px;
       align-items: center;
       background: transparent;
       border: 0;
       border-bottom: 1px solid var(--border);
-      padding: 13px 16px;
+      padding: 12px 14px;
       text-align: left;
       cursor: pointer;
     }
@@ -276,7 +295,7 @@
 
     .match-meta {
       color: var(--muted);
-      font-size: 11px;
+      font-size: 10px;
       line-height: 1.5;
     }
 
@@ -292,23 +311,23 @@
     .team-line {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       min-width: 0;
       margin: 3px 0;
     }
 
     .team-line img {
-      width: 22px;
-      height: 22px;
+      width: 21px;
+      height: 21px;
       object-fit: contain;
-      flex: 0 0 22px;
+      flex: 0 0 21px;
     }
 
     .team-name {
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
     }
 
@@ -320,9 +339,9 @@
 
     .match-status {
       display: inline-block;
-      margin-top: 2px;
+      margin-top: 1px;
       color: var(--muted);
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
     }
 
@@ -334,16 +353,13 @@
       color: var(--muted);
     }
 
-    /* STANDINGS */
+    /* =========================
+       STANDINGS
+    ========================= */
 
     .standings-wrap {
-      padding: 0 10px 4px;
+      padding: 0 8px 4px;
     }
-
-    /*
-      The table is deliberately compact enough to fit the right panel.
-      There is NO horizontal scrolling.
-    */
 
     .standings-table {
       width: 100%;
@@ -382,12 +398,7 @@
 
     .standings-table th:nth-child(1),
     .standings-table td:nth-child(1) {
-      width: 24px;
-    }
-
-    .standings-table th:nth-child(2),
-    .standings-table td:nth-child(2) {
-      width: auto;
+      width: 23px;
     }
 
     .standings-table th:nth-child(n+3),
@@ -428,14 +439,6 @@
       color: var(--accent);
     }
 
-    .standings-extra {
-      display: none;
-    }
-
-    .standings-extra.expanded {
-      display: table-row;
-    }
-
     .table-footer {
       border-top: 1px solid var(--border);
       padding: 9px 10px;
@@ -451,7 +454,9 @@
       cursor: pointer;
     }
 
-    /* TOP SCORERS */
+    /* =========================
+       TOP SCORERS
+    ========================= */
 
     .scorer-row {
       display: grid;
@@ -497,7 +502,9 @@
       color: var(--accent);
     }
 
-    /* MODAL */
+    /* =========================
+       MODAL
+    ========================= */
 
     .modal-backdrop {
       display: none;
@@ -604,16 +611,17 @@
       font-weight: 800;
     }
 
-    .event-home,
-    .event-away {
-      color: var(--text);
+    .event-home {
+      text-align: left;
     }
 
     .event-away {
       text-align: right;
     }
 
-    /* FOOTER */
+    /* =========================
+       FOOTER
+    ========================= */
 
     .footer {
       margin-top: 25px;
@@ -622,19 +630,40 @@
       font-size: 11px;
     }
 
-    /* RESPONSIVE */
+    /* =========================
+       RESPONSIVE
+    ========================= */
 
-    @media (max-width: 1100px) {
+    @media (max-width: 1250px) {
+
       .page-grid {
-        grid-template-columns: minmax(0, 1fr) 390px;
+        grid-template-columns: minmax(0, 1fr) 400px;
+      }
+
+      .left-column {
+        max-width: 700px;
+      }
+
+    }
+
+    @media (max-width: 1050px) {
+
+      .page-grid {
+        grid-template-columns: minmax(0, 1fr) 380px;
+      }
+
+      .left-column {
+        max-width: 650px;
       }
 
       .search-wrap {
         width: 240px;
       }
+
     }
 
     @media (max-width: 850px) {
+
       .header {
         flex-direction: column;
         align-items: stretch;
@@ -652,21 +681,20 @@
         grid-template-columns: 1fr;
       }
 
-      .right-column {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 18px;
-        align-items: start;
+      .left-column {
+        max-width: 760px;
       }
 
-      .right-column .card {
-        margin-bottom: 0;
+      .right-column {
+        max-width: 760px;
       }
+
     }
 
     @media (max-width: 650px) {
+
       .app {
-        width: min(100% - 20px, 1500px);
+        width: calc(100% - 20px);
         padding-top: 15px;
       }
 
@@ -680,7 +708,7 @@
       }
 
       .match-row {
-        grid-template-columns: 65px minmax(0, 1fr) 48px;
+        grid-template-columns: 62px minmax(0, 1fr) 48px;
         gap: 7px;
         padding: 11px 10px;
       }
@@ -691,14 +719,6 @@
 
       .team-name {
         font-size: 11px;
-      }
-
-      .right-column {
-        grid-template-columns: 1fr;
-      }
-
-      .right-column .card {
-        margin-bottom: 18px;
       }
 
       .standings-table th,
@@ -725,6 +745,7 @@
         width: 45px;
         height: 45px;
       }
+
     }
   </style>
 </head>
@@ -734,6 +755,7 @@
   <div class="app">
 
     <!-- HEADER -->
+
     <header class="header">
 
       <div>
@@ -744,6 +766,7 @@
       <div class="header-right">
 
         <div class="search-wrap">
+
           <input
             id="teamSearch"
             class="search"
@@ -752,7 +775,11 @@
             placeholder="Search for a team..."
           />
 
-          <div id="searchResults" class="search-results"></div>
+          <div
+            id="searchResults"
+            class="search-results"
+          ></div>
+
         </div>
 
       </div>
@@ -761,67 +788,145 @@
 
 
     <!-- LEAGUE SELECTOR -->
+
     <div class="league-selector">
 
-      <label for="leagueSelect">League</label>
+      <label for="leagueSelect">
+        League
+      </label>
 
-      <select id="leagueSelect" class="league-select">
-        <option value="premier">Premier League</option>
-        <option value="laliga">LaLiga</option>
-        <option value="seriea">Serie A</option>
-        <option value="bundesliga">Bundesliga</option>
-        <option value="ligue1">Ligue 1</option>
+      <select
+        id="leagueSelect"
+        class="league-select"
+      >
+
+        <option value="premier">
+          Premier League
+        </option>
+
+        <option value="laliga">
+          LaLiga
+        </option>
+
+        <option value="seriea">
+          Serie A
+        </option>
+
+        <option value="bundesliga">
+          Bundesliga
+        </option>
+
+        <option value="ligue1">
+          Ligue 1
+        </option>
+
       </select>
 
     </div>
 
 
-    <!-- MAIN -->
+    <!-- MAIN GRID -->
+
     <main class="page-grid">
 
-      <!-- LEFT -->
+      <!-- LEFT COLUMN -->
+
       <section class="left-column">
 
-        <!-- LIVE -->
+        <!-- LIVE MATCHES -->
+
         <div class="card">
 
           <div class="card-header">
-            <div class="card-title">Live matches</div>
-            <div id="liveCount" class="card-count">0</div>
+
+            <div class="card-title">
+              Live matches
+            </div>
+
+            <div
+              id="liveCount"
+              class="card-count"
+            >
+              0
+            </div>
+
           </div>
 
-          <div id="liveMatches" class="card-body">
-            <div class="loading">Loading...</div>
+          <div
+            id="liveMatches"
+            class="card-body"
+          >
+
+            <div class="loading">
+              Loading...
+            </div>
+
           </div>
 
         </div>
 
 
-        <!-- RESULTS -->
+        <!-- RECENT RESULTS -->
+
         <div class="card">
 
           <div class="card-header">
-            <div class="card-title">Recent results</div>
-            <div id="resultsCount" class="card-count">Last 10</div>
+
+            <div class="card-title">
+              Recent results
+            </div>
+
+            <div
+              id="resultsCount"
+              class="card-count"
+            >
+              Last 10
+            </div>
+
           </div>
 
-          <div id="results" class="card-body">
-            <div class="loading">Loading...</div>
+          <div
+            id="results"
+            class="card-body"
+          >
+
+            <div class="loading">
+              Loading...
+            </div>
+
           </div>
 
         </div>
 
 
         <!-- UPCOMING -->
+
         <div class="card">
 
           <div class="card-header">
-            <div class="card-title">Upcoming fixtures</div>
-            <div id="upcomingCount" class="card-count">Next 10</div>
+
+            <div class="card-title">
+              Upcoming fixtures
+            </div>
+
+            <div
+              id="upcomingCount"
+              class="card-count"
+            >
+              Next 10
+            </div>
+
           </div>
 
-          <div id="upcoming" class="card-body">
-            <div class="loading">Loading...</div>
+          <div
+            id="upcoming"
+            class="card-body"
+          >
+
+            <div class="loading">
+              Loading...
+            </div>
+
           </div>
 
         </div>
@@ -829,24 +934,41 @@
       </section>
 
 
-      <!-- RIGHT -->
+      <!-- RIGHT COLUMN -->
+
       <aside class="right-column">
 
         <!-- LEAGUE TABLE -->
+
         <div class="card">
 
           <div class="card-header">
-            <div class="card-title">League table</div>
-            <div id="tableLeagueName" class="card-count">Premier League</div>
+
+            <div class="card-title">
+              League table
+            </div>
+
+            <div
+              id="tableLeagueName"
+              class="card-count"
+            >
+              Premier League
+            </div>
+
           </div>
 
-          <div id="standings" class="standings-wrap">
+
+          <div
+            id="standings"
+            class="standings-wrap"
+          >
 
             <div class="loading">
               Loading...
             </div>
 
           </div>
+
 
           <div class="table-footer">
 
@@ -864,12 +986,21 @@
 
 
         <!-- TOP SCORERS -->
+
         <div class="card">
 
           <div class="card-header">
-            <div class="card-title">Top scorers</div>
-            <div class="card-count">Goals</div>
+
+            <div class="card-title">
+              Top scorers
+            </div>
+
+            <div class="card-count">
+              Goals
+            </div>
+
           </div>
+
 
           <div id="scorers">
 
@@ -895,13 +1026,19 @@
 
   <!-- MATCH MODAL -->
 
-  <div id="modalBackdrop" class="modal-backdrop">
+  <div
+    id="modalBackdrop"
+    class="modal-backdrop"
+  >
 
     <div class="modal">
 
       <div class="modal-header">
 
-        <div id="modalTitle" class="modal-title">
+        <div
+          id="modalTitle"
+          class="modal-title"
+        >
           Match
         </div>
 
@@ -914,6 +1051,7 @@
         </button>
 
       </div>
+
 
       <div id="modalContent">
 
@@ -932,48 +1070,59 @@
 
     const API_BASE = "";
 
+
     const FEATURED_LEAGUES = [
+
       {
         key: "premier",
         code: "PL",
         name: "Premier League",
         country: "England"
       },
+
       {
         key: "laliga",
         code: "PD",
         name: "LaLiga",
         country: "Spain"
       },
+
       {
         key: "seriea",
         code: "SA",
         name: "Serie A",
         country: "Italy"
       },
+
       {
         key: "bundesliga",
         code: "BL1",
         name: "Bundesliga",
         country: "Germany"
       },
+
       {
         key: "ligue1",
         code: "FL1",
         name: "Ligue 1",
         country: "France"
       }
+
     ];
 
+
     let currentLeague = "premier";
+
     let currentTableRows = [];
+
     let tableExpanded = false;
+
     let teamsForSearch = [];
 
 
-    /* -------------------------
+    /* =========================
        HELPERS
-    ------------------------- */
+    ========================= */
 
     function escapeHtml(value) {
 
@@ -1019,10 +1168,13 @@
         return "";
       }
 
-      return date.toLocaleDateString("en-AU", {
-        day: "2-digit",
-        month: "short"
-      });
+      return date.toLocaleDateString(
+        "en-AU",
+        {
+          day: "2-digit",
+          month: "short"
+        }
+      );
 
     }
 
@@ -1037,20 +1189,28 @@
         return "";
       }
 
-      return date.toLocaleTimeString("en-AU", {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
+      return date.toLocaleTimeString(
+        "en-AU",
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+      );
 
     }
 
 
     function formatMatchDate(dateString) {
 
-      const date = formatDate(dateString);
-      const time = formatTime(dateString);
+      const date =
+        formatDate(dateString);
 
-      if (!date && !time) return "";
+      const time =
+        formatTime(dateString);
+
+      if (!date && !time) {
+        return "";
+      }
 
       return `${date} ${time}`;
 
@@ -1064,18 +1224,23 @@
       }
 
       return `
+
         <img
           src="${escapeHtml(team.crest)}"
           alt=""
           loading="lazy"
           onerror="this.style.display='none'"
         />
+
       `;
 
     }
 
 
-    function teamUrl(team, leagueKey) {
+    function teamUrl(
+      team,
+      leagueKey
+    ) {
 
       if (!team?.id) {
         return "#";
@@ -1088,30 +1253,49 @@
 
     async function fetchApi(path) {
 
-      const controller = new AbortController();
+      const controller =
+        new AbortController();
 
-      const timeout = setTimeout(() => {
-        controller.abort();
-      }, 15000);
+      const timeout =
+        setTimeout(
+          () => controller.abort(),
+          15000
+        );
+
 
       try {
 
-        const response = await fetch(
-          `${API_BASE}${path}`,
-          {
-            signal: controller.signal
-          }
-        );
+        const response =
+          await fetch(
+            `${API_BASE}${path}`,
+            {
+              signal: controller.signal
+            }
+          );
 
-        const text = await response.text();
+
+        const text =
+          await response.text();
+
 
         let data;
 
+
         try {
-          data = text ? JSON.parse(text) : {};
+
+          data =
+            text
+              ? JSON.parse(text)
+              : {};
+
         } catch (_) {
-          throw new Error("The server returned invalid JSON.");
+
+          throw new Error(
+            "The server returned invalid JSON."
+          );
+
         }
+
 
         if (!response.ok) {
 
@@ -1123,12 +1307,20 @@
 
         }
 
+
         return data;
 
       } catch (error) {
 
-        if (error.name === "AbortError") {
-          throw new Error("Request timed out.");
+        if (
+          error.name ===
+          "AbortError"
+        ) {
+
+          throw new Error(
+            "Request timed out."
+          );
+
         }
 
         throw error;
@@ -1142,26 +1334,35 @@
     }
 
 
-    /* -------------------------
+    /* =========================
        MATCH RENDERING
-    ------------------------- */
+    ========================= */
 
     function renderMatchRow(match) {
 
-      const home = match.homeTeam;
-      const away = match.awayTeam;
+      const home =
+        match.homeTeam;
+
+      const away =
+        match.awayTeam;
+
 
       const homeScore =
         match.score?.fullTime?.home ??
         "-";
 
+
       const awayScore =
         match.score?.fullTime?.away ??
         "-";
 
-      const status = match.status || "";
+
+      const status =
+        match.status || "";
+
 
       let statusText = "";
+
 
       if (
         status === "IN_PLAY" ||
@@ -1173,17 +1374,24 @@
             ? `${match.minute}'`
             : "LIVE";
 
-      } else if (status === "PAUSED") {
+      } else if (
+        status === "PAUSED"
+      ) {
 
         statusText = "HT";
 
-      } else if (status === "FINISHED") {
+      } else if (
+        status === "FINISHED"
+      ) {
 
         statusText = "FT";
 
       } else {
 
-        statusText = formatTime(match.utcDate);
+        statusText =
+          formatTime(
+            match.utcDate
+          );
 
       }
 
@@ -1209,14 +1417,20 @@
           <div class="match-meta">
 
             <div class="match-date">
-              ${escapeHtml(formatDate(match.utcDate))}
+              ${escapeHtml(
+                formatDate(
+                  match.utcDate
+                )
+              )}
             </div>
 
             <div>
               ${escapeHtml(
                 status === "FINISHED"
                   ? "Full time"
-                  : formatTime(match.utcDate)
+                  : formatTime(
+                      match.utcDate
+                    )
               )}
             </div>
 
@@ -1230,7 +1444,9 @@
               ${crest(home)}
 
               <span class="team-name">
-                ${escapeHtml(teamName(home))}
+                ${escapeHtml(
+                  teamName(home)
+                )}
               </span>
 
             </div>
@@ -1241,7 +1457,9 @@
               ${crest(away)}
 
               <span class="team-name">
-                ${escapeHtml(teamName(away))}
+                ${escapeHtml(
+                  teamName(away)
+                )}
               </span>
 
             </div>
@@ -1259,7 +1477,9 @@
               ${escapeHtml(awayScore)}
             </div>
 
-            <span class="match-status ${statusClass}">
+            <span
+              class="match-status ${statusClass}"
+            >
               ${escapeHtml(statusText)}
             </span>
 
@@ -1279,12 +1499,18 @@
     ) {
 
       const container =
-        document.getElementById(containerId);
+        document.getElementById(
+          containerId
+        );
+
 
       if (!container) return;
 
 
-      if (!Array.isArray(matches) || !matches.length) {
+      if (
+        !Array.isArray(matches) ||
+        !matches.length
+      ) {
 
         container.innerHTML =
           `<div class="empty">${escapeHtml(emptyText)}</div>`;
@@ -1295,30 +1521,44 @@
 
 
       container.innerHTML =
-        matches.map(renderMatchRow).join("");
+        matches
+          .map(renderMatchRow)
+          .join("");
 
     }
 
 
-    /* -------------------------
-       LEAGUE DATA
-    ------------------------- */
+    /* =========================
+       LOAD LEAGUE
+    ========================= */
 
-    async function loadLeague(leagueKey) {
+    async function loadLeague(
+      leagueKey
+    ) {
 
-      currentLeague = leagueKey;
+      currentLeague =
+        leagueKey;
+
 
       const liveContainer =
-        document.getElementById("liveMatches");
+        document.getElementById(
+          "liveMatches"
+        );
 
       const resultsContainer =
-        document.getElementById("results");
+        document.getElementById(
+          "results"
+        );
 
       const upcomingContainer =
-        document.getElementById("upcoming");
+        document.getElementById(
+          "upcoming"
+        );
 
       const standingsContainer =
-        document.getElementById("standings");
+        document.getElementById(
+          "standings"
+        );
 
 
       liveContainer.innerHTML =
@@ -1362,8 +1602,10 @@
         const live =
           data.live?.matches || [];
 
+
         const results =
           data.results?.matches || [];
+
 
         const upcoming =
           data.upcoming?.matches || [];
@@ -1399,17 +1641,25 @@
         document.getElementById(
           "resultsCount"
         ).textContent =
-          `${Math.min(results.length, 10)} matches`;
+          `${Math.min(
+            results.length,
+            10
+          )} matches`;
 
 
         document.getElementById(
           "upcomingCount"
         ).textContent =
-          `${Math.min(upcoming.length, 10)} matches`;
+          `${Math.min(
+            upcoming.length,
+            10
+          )} matches`;
 
 
         currentTableRows =
-          Array.isArray(data.standings?.TOTAL)
+          Array.isArray(
+            data.standings?.TOTAL
+          )
             ? data.standings.TOTAL
             : [];
 
@@ -1435,17 +1685,21 @@
     }
 
 
-    /* -------------------------
+    /* =========================
        STANDINGS
-    ------------------------- */
+    ========================= */
 
     function renderStandings() {
 
       const container =
-        document.getElementById("standings");
+        document.getElementById(
+          "standings"
+        );
 
 
-      if (!currentTableRows.length) {
+      if (
+        !currentTableRows.length
+      ) {
 
         container.innerHTML =
           `<div class="empty">League table unavailable.</div>`;
@@ -1458,7 +1712,10 @@
       const visibleRows =
         tableExpanded
           ? currentTableRows
-          : currentTableRows.slice(0, 10);
+          : currentTableRows.slice(
+              0,
+              10
+            );
 
 
       let html = `
@@ -1489,80 +1746,106 @@
       `;
 
 
-      visibleRows.forEach((row, index) => {
+      visibleRows.forEach(
+        (row, index) => {
 
-        const position =
-          row.position ??
-          index + 1;
-
-        const team =
-          row.team || {};
+          const position =
+            row.position ??
+            index + 1;
 
 
-        html += `
-
-          <tr>
-
-            <td class="standing-position">
-              ${escapeHtml(position)}
-            </td>
+          const team =
+            row.team || {};
 
 
-            <td>
+          html += `
 
-              <a
-                class="standing-team"
-                href="${escapeHtml(teamUrl(team, currentLeague))}"
-              >
+            <tr>
 
-                ${crest(team)}
-
-                <span class="standing-name">
-                  ${escapeHtml(teamName(team))}
-                </span>
-
-              </a>
-
-            </td>
+              <td class="standing-position">
+                ${escapeHtml(position)}
+              </td>
 
 
-            <td>
-              ${escapeHtml(row.playedGames ?? 0)}
-            </td>
+              <td>
 
-            <td>
-              ${escapeHtml(row.won ?? 0)}
-            </td>
+                <a
+                  class="standing-team"
+                  href="${escapeHtml(
+                    teamUrl(
+                      team,
+                      currentLeague
+                    )
+                  )}"
+                >
 
-            <td>
-              ${escapeHtml(row.draw ?? 0)}
-            </td>
+                  ${crest(team)}
 
-            <td>
-              ${escapeHtml(row.lost ?? 0)}
-            </td>
+                  <span class="standing-name">
+                    ${escapeHtml(
+                      teamName(team)
+                    )}
+                  </span>
 
-            <td>
-              ${escapeHtml(row.goalsFor ?? 0)}
-            </td>
+                </a>
 
-            <td>
-              ${escapeHtml(row.goalsAgainst ?? 0)}
-            </td>
+              </td>
 
-            <td>
-              ${escapeHtml(row.goalDifference ?? 0)}
-            </td>
 
-            <td class="points">
-              ${escapeHtml(row.points ?? 0)}
-            </td>
+              <td>
+                ${escapeHtml(
+                  row.playedGames ?? 0
+                )}
+              </td>
 
-          </tr>
+              <td>
+                ${escapeHtml(
+                  row.won ?? 0
+                )}
+              </td>
 
-        `;
+              <td>
+                ${escapeHtml(
+                  row.draw ?? 0
+                )}
+              </td>
 
-      });
+              <td>
+                ${escapeHtml(
+                  row.lost ?? 0
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  row.goalsFor ?? 0
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  row.goalsAgainst ?? 0
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  row.goalDifference ?? 0
+                )}
+              </td>
+
+              <td class="points">
+                ${escapeHtml(
+                  row.points ?? 0
+                )}
+              </td>
+
+            </tr>
+
+          `;
+
+        }
+      );
 
 
       html += `
@@ -1574,7 +1857,9 @@
       `;
 
 
-      container.innerHTML = html;
+      container.innerHTML =
+        html;
+
 
       updateTableToggle();
 
@@ -1584,22 +1869,29 @@
     function updateTableToggle() {
 
       const button =
-        document.getElementById("tableToggle");
+        document.getElementById(
+          "tableToggle"
+        );
 
 
       if (!button) return;
 
 
-      if (currentTableRows.length <= 10) {
+      if (
+        currentTableRows.length <= 10
+      ) {
 
-        button.style.display = "none";
+        button.style.display =
+          "none";
 
         return;
 
       }
 
 
-      button.style.display = "inline-block";
+      button.style.display =
+        "inline-block";
+
 
       button.textContent =
         tableExpanded
@@ -1610,30 +1902,40 @@
 
 
     document
-      .getElementById("tableToggle")
-      .addEventListener("click", () => {
+      .getElementById(
+        "tableToggle"
+      )
+      .addEventListener(
+        "click",
+        () => {
 
-        tableExpanded =
-          !tableExpanded;
+          tableExpanded =
+            !tableExpanded;
 
-        renderStandings();
+          renderStandings();
 
-      });
+        }
+      );
 
 
-    /* -------------------------
+    /* =========================
        COMPETITIONS
-    ------------------------- */
+    ========================= */
 
     async function loadCompetitions() {
 
       try {
 
         const data =
-          await fetchApi("/api/competitions");
+          await fetchApi(
+            "/api/competitions"
+          );
+
 
         const competitions =
-          Array.isArray(data.competitions)
+          Array.isArray(
+            data.competitions
+          )
             ? data.competitions
             : [];
 
@@ -1659,7 +1961,9 @@
     ) {
 
       const select =
-        document.getElementById("leagueSelect");
+        document.getElementById(
+          "leagueSelect"
+        );
 
 
       const map =
@@ -1667,7 +1971,14 @@
 
 
       FEATURED_LEAGUES.forEach(
-        league => map.set(league.key, league)
+        league => {
+
+          map.set(
+            league.key,
+            league
+          );
+
+        }
       );
 
 
@@ -1678,11 +1989,18 @@
             return;
           }
 
-          if (!map.has(competition.key)) {
+
+          if (
+            !map.has(
+              competition.key
+            )
+          ) {
+
             map.set(
               competition.key,
               competition
             );
+
           }
 
         }
@@ -1690,20 +2008,27 @@
 
 
       const ordered =
-        Array.from(map.values());
+        Array.from(
+          map.values()
+        );
 
 
-      select.innerHTML = "";
+      select.innerHTML =
+        "";
 
 
       ordered.forEach(
         competition => {
 
           const option =
-            document.createElement("option");
+            document.createElement(
+              "option"
+            );
+
 
           option.value =
             competition.key;
+
 
           option.textContent =
             competition.country
@@ -1712,13 +2037,19 @@
 
 
           if (
-            competition.key === currentLeague
+            competition.key ===
+            currentLeague
           ) {
-            option.selected = true;
+
+            option.selected =
+              true;
+
           }
 
 
-          select.appendChild(option);
+          select.appendChild(
+            option
+          );
 
         }
       );
@@ -1727,7 +2058,9 @@
 
 
     document
-      .getElementById("leagueSelect")
+      .getElementById(
+        "leagueSelect"
+      )
       .addEventListener(
         "change",
         event => {
@@ -1735,7 +2068,13 @@
           const league =
             event.target.value;
 
-          loadLeague(league);
+
+          loadLeague(
+            league
+          );
+
+
+          loadScorers();
 
           loadTeamsForSearch();
 
@@ -1743,14 +2082,16 @@
       );
 
 
-    /* -------------------------
+    /* =========================
        TOP SCORERS
-    ------------------------- */
+    ========================= */
 
     async function loadScorers() {
 
       const container =
-        document.getElementById("scorers");
+        document.getElementById(
+          "scorers"
+        );
 
 
       container.innerHTML =
@@ -1766,12 +2107,16 @@
 
 
         const scorers =
-          Array.isArray(data.scorers)
+          Array.isArray(
+            data.scorers
+          )
             ? data.scorers
             : [];
 
 
-        if (!scorers.length) {
+        if (
+          !scorers.length
+        ) {
 
           container.innerHTML =
             `<div class="empty">No scorer data available.</div>`;
@@ -1784,44 +2129,59 @@
         container.innerHTML =
           scorers
             .slice(0, 10)
-            .map((scorer, index) => {
+            .map(
+              (scorer, index) => {
 
-              const player =
-                scorer.player || {};
-
-              const team =
-                scorer.team || {};
+                const player =
+                  scorer.player ||
+                  {};
 
 
-              return `
+                const team =
+                  scorer.team ||
+                  {};
 
-                <div class="scorer-row">
 
-                  <div class="scorer-number">
-                    ${index + 1}
-                  </div>
+                return `
 
-                  <div class="scorer-info">
+                  <div class="scorer-row">
 
-                    <div class="scorer-name">
-                      ${escapeHtml(player.name || "Unknown player")}
+                    <div class="scorer-number">
+                      ${index + 1}
                     </div>
 
-                    <div class="scorer-team">
-                      ${escapeHtml(teamName(team))}
+
+                    <div class="scorer-info">
+
+                      <div class="scorer-name">
+                        ${escapeHtml(
+                          player.name ||
+                          "Unknown player"
+                        )}
+                      </div>
+
+
+                      <div class="scorer-team">
+                        ${escapeHtml(
+                          teamName(team)
+                        )}
+                      </div>
+
+                    </div>
+
+
+                    <div class="scorer-goals">
+                      ${escapeHtml(
+                        scorer.goals ?? 0
+                      )}
                     </div>
 
                   </div>
 
-                  <div class="scorer-goals">
-                    ${escapeHtml(scorer.goals ?? 0)}
-                  </div>
+                `;
 
-                </div>
-
-              `;
-
-            })
+              }
+            )
             .join("");
 
       } catch (error) {
@@ -1834,9 +2194,9 @@
     }
 
 
-    /* -------------------------
+    /* =========================
        TEAM SEARCH
-    ------------------------- */
+    ========================= */
 
     async function loadTeamsForSearch() {
 
@@ -1849,7 +2209,9 @@
 
 
         teamsForSearch =
-          Array.isArray(data.teams)
+          Array.isArray(
+            data.teams
+          )
             ? data.teams
             : [];
 
@@ -1860,7 +2222,9 @@
           error
         );
 
-        teamsForSearch = [];
+
+        teamsForSearch =
+          [];
 
       }
 
@@ -1872,17 +2236,24 @@
     ) {
 
       const container =
-        document.getElementById("searchResults");
+        document.getElementById(
+          "searchResults"
+        );
 
 
       const cleanQuery =
-        query.trim().toLowerCase();
+        query
+          .trim()
+          .toLowerCase();
 
 
       if (!cleanQuery) {
 
-        container.style.display = "none";
-        container.innerHTML = "";
+        container.style.display =
+          "none";
+
+        container.innerHTML =
+          "";
 
         return;
 
@@ -1897,13 +2268,21 @@
               teamName(team)
                 .toLowerCase();
 
+
             const full =
-              String(team.name || "")
+              String(
+                team.name || ""
+              )
                 .toLowerCase();
 
+
             return (
-              name.includes(cleanQuery) ||
-              full.includes(cleanQuery)
+              name.includes(
+                cleanQuery
+              ) ||
+              full.includes(
+                cleanQuery
+              )
             );
 
           })
@@ -1915,7 +2294,8 @@
         container.innerHTML =
           `<div class="empty">No teams found.</div>`;
 
-        container.style.display = "block";
+        container.style.display =
+          "block";
 
         return;
 
@@ -1936,14 +2316,21 @@
 
                 ${crest(team)}
 
+
                 <div>
 
                   <div class="search-result-name">
-                    ${escapeHtml(teamName(team))}
+                    ${escapeHtml(
+                      teamName(team)
+                    )}
                   </div>
 
+
                   <div class="search-result-country">
-                    ${escapeHtml(team.area?.name || "")}
+                    ${escapeHtml(
+                      team.area?.name ||
+                      ""
+                    )}
                   </div>
 
                 </div>
@@ -1956,13 +2343,16 @@
           .join("");
 
 
-      container.style.display = "block";
+      container.style.display =
+        "block";
 
     }
 
 
     document
-      .getElementById("teamSearch")
+      .getElementById(
+        "teamSearch"
+      )
       .addEventListener(
         "input",
         event => {
@@ -1976,7 +2366,9 @@
 
 
     document
-      .getElementById("searchResults")
+      .getElementById(
+        "searchResults"
+      )
       .addEventListener(
         "click",
         event => {
@@ -2016,12 +2408,15 @@
 
         if (
           searchWrap &&
-          !searchWrap.contains(event.target)
+          !searchWrap.contains(
+            event.target
+          )
         ) {
 
           document.getElementById(
             "searchResults"
-          ).style.display = "none";
+          ).style.display =
+            "none";
 
         }
 
@@ -2029,14 +2424,15 @@
     );
 
 
-    /* -------------------------
+    /* =========================
        MATCH MODAL
-    ------------------------- */
+    ========================= */
 
     const modalBackdrop =
       document.getElementById(
         "modalBackdrop"
       );
+
 
     const modalContent =
       document.getElementById(
@@ -2054,7 +2450,9 @@
 
 
     document
-      .getElementById("modalClose")
+      .getElementById(
+        "modalClose"
+      )
       .addEventListener(
         "click",
         closeModal
@@ -2088,14 +2486,18 @@
           );
 
 
-        if (!matchButton) return;
+        if (!matchButton) {
+          return;
+        }
 
 
         const matchId =
           matchButton.dataset.matchId;
 
 
-        if (!matchId) return;
+        if (!matchId) {
+          return;
+        }
 
 
         modalBackdrop.classList.add(
@@ -2130,7 +2532,9 @@
     );
 
 
-    function renderMatchModal(match) {
+    function renderMatchModal(
+      match
+    ) {
 
       if (!match) {
 
@@ -2143,15 +2547,19 @@
 
 
       const home =
-        match.homeTeam || {};
+        match.homeTeam ||
+        {};
+
 
       const away =
-        match.awayTeam || {};
+        match.awayTeam ||
+        {};
 
 
       const homeScore =
         match.score?.fullTime?.home ??
         "-";
+
 
       const awayScore =
         match.score?.fullTime?.away ??
@@ -2159,18 +2567,23 @@
 
 
       let statusText =
-        match.status || "";
+        match.status ||
+        "";
 
 
       if (
-        match.status === "FINISHED"
+        match.status ===
+        "FINISHED"
       ) {
 
-        statusText = "Full time";
+        statusText =
+          "Full time";
 
       } else if (
-        match.status === "IN_PLAY" ||
-        match.status === "LIVE"
+        match.status ===
+          "IN_PLAY" ||
+        match.status ===
+          "LIVE"
       ) {
 
         statusText =
@@ -2199,7 +2612,9 @@
               ${crest(home)}
 
               <div class="modal-team-name">
-                ${escapeHtml(teamName(home))}
+                ${escapeHtml(
+                  teamName(home)
+                )}
               </div>
 
             </div>
@@ -2208,13 +2623,24 @@
             <div>
 
               <div class="modal-score">
-                ${escapeHtml(homeScore)}
+
+                ${escapeHtml(
+                  homeScore
+                )}
+
                 -
-                ${escapeHtml(awayScore)}
+
+                ${escapeHtml(
+                  awayScore
+                )}
+
               </div>
 
+
               <div class="modal-status">
-                ${escapeHtml(statusText)}
+                ${escapeHtml(
+                  statusText
+                )}
               </div>
 
             </div>
@@ -2225,7 +2651,9 @@
               ${crest(away)}
 
               <div class="modal-team-name">
-                ${escapeHtml(teamName(away))}
+                ${escapeHtml(
+                  teamName(away)
+                )}
               </div>
 
             </div>
@@ -2233,8 +2661,20 @@
           </div>
 
 
-          <div style="margin-top:15px;color:var(--muted);font-size:11px;">
-            ${escapeHtml(formatMatchDate(match.utcDate))}
+          <div
+            style="
+              margin-top:15px;
+              color:var(--muted);
+              font-size:11px;
+            "
+          >
+
+            ${escapeHtml(
+              formatMatchDate(
+                match.utcDate
+              )
+            )}
+
           </div>
 
         </div>
@@ -2244,23 +2684,24 @@
     }
 
 
-    /* -------------------------
+    /* =========================
        START
-    ------------------------- */
+    ========================= */
 
     async function start() {
 
       /*
-        Load the Premier League immediately.
-        This prevents the page sitting on
-        "Loading..." while competitions are fetched.
+        Load Premier League immediately.
       */
 
-      await loadLeague("premier");
+      await loadLeague(
+        "premier"
+      );
 
 
       /*
-        These can load independently.
+        Load secondary data
+        independently.
       */
 
       loadCompetitions();
