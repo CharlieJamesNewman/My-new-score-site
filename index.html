@@ -59,6 +59,8 @@
       padding: 24px 0 50px;
     }
 
+    /* HEADER */
+
     .header {
       display: flex;
       justify-content: space-between;
@@ -155,6 +157,8 @@
       margin-top: 2px;
     }
 
+    /* LEAGUE SELECTOR */
+
     .league-selector {
       display: flex;
       align-items: center;
@@ -185,6 +189,8 @@
       border-color: var(--accent);
     }
 
+    /* MAIN LAYOUT */
+
     .page-grid {
       display: grid;
       grid-template-columns: minmax(0, 760px) 420px;
@@ -203,6 +209,8 @@
       width: 100%;
       min-width: 0;
     }
+
+    /* CARDS */
 
     .card {
       background: var(--panel);
@@ -248,7 +256,15 @@
       color: var(--danger);
     }
 
-    /* MATCH ROW */
+    /* MATCHES */
+
+    .match-container {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .match-container:last-child {
+      border-bottom: 0;
+    }
 
     .match-row {
       width: 100%;
@@ -258,18 +274,18 @@
       align-items: center;
       background: transparent;
       border: 0;
-      border-bottom: 1px solid var(--border);
       padding: 13px 14px;
       text-align: left;
       cursor: pointer;
     }
 
-    .match-row:last-child {
-      border-bottom: 0;
-    }
-
     .match-row:hover {
       background: rgba(255, 255, 255, 0.025);
+    }
+
+    .match-row:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.04);
     }
 
     .match-meta {
@@ -356,6 +372,128 @@
 
     .status-finished {
       color: var(--muted);
+    }
+
+    /* EXPANDED MATCH */
+
+    .match-details {
+      display: none;
+      border-top: 1px solid var(--border);
+      background: var(--panel-2);
+      padding: 14px 16px 16px;
+    }
+
+    .match-container.expanded .match-details {
+      display: block;
+    }
+
+    .match-container.expanded .match-row {
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .details-loading,
+    .details-error,
+    .details-empty {
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      padding: 8px;
+    }
+
+    .details-error {
+      color: var(--danger);
+    }
+
+    .events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .event-item {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr) 52px;
+      align-items: center;
+      min-height: 38px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+    }
+
+    .event-item:last-child {
+      border-bottom: 0;
+    }
+
+    .event-time {
+      color: var(--accent);
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .event-home {
+      text-align: right;
+      padding-right: 12px;
+    }
+
+    .event-away {
+      text-align: left;
+      padding-left: 12px;
+    }
+
+    .event-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 30px;
+      padding: 3px 5px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 12px;
+    }
+
+    .event-goal .event-icon {
+      background: rgba(201, 255, 74, 0.1);
+    }
+
+    .event-yellow .event-icon {
+      background: rgba(255, 200, 87, 0.12);
+    }
+
+    .event-red .event-icon {
+      background: rgba(255, 93, 108, 0.12);
+    }
+
+    .event-sub .event-icon {
+      background: rgba(91, 167, 255, 0.12);
+    }
+
+    .event-player {
+      font-weight: 700;
+    }
+
+    .event-assist {
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    .event-empty {
+      padding: 10px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .event-category-title {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin: 12px 0 5px;
+    }
+
+    .event-category-title:first-child {
+      margin-top: 0;
     }
 
     /* STANDINGS */
@@ -503,128 +641,6 @@
       color: var(--accent);
     }
 
-    /* MODAL */
-
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.72);
-      z-index: 1000;
-      padding: 20px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-backdrop.open {
-      display: flex;
-    }
-
-    .modal {
-      width: min(620px, 100%);
-      max-height: 90vh;
-      overflow-y: auto;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 18px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .modal-title {
-      font-size: 15px;
-      font-weight: 900;
-    }
-
-    .modal-close {
-      border: 0;
-      background: transparent;
-      color: var(--muted);
-      font-size: 22px;
-      cursor: pointer;
-    }
-
-    .modal-match {
-      padding: 25px 20px;
-      text-align: center;
-    }
-
-    .modal-teams {
-      display: grid;
-      grid-template-columns: 1fr 100px 1fr;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .modal-team {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .modal-team img {
-      width: 55px;
-      height: 55px;
-      object-fit: contain;
-    }
-
-    .modal-team-name {
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .modal-score {
-      font-size: 28px;
-      font-weight: 900;
-    }
-
-    .modal-status {
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 6px;
-    }
-
-    .events {
-      border-top: 1px solid var(--border);
-    }
-
-    .event-row {
-      display: grid;
-      grid-template-columns: 50px 1fr 1fr;
-      gap: 10px;
-      padding: 10px 15px;
-      border-bottom: 1px solid var(--border);
-      font-size: 11px;
-    }
-
-    .event-time {
-      color: var(--accent);
-      font-weight: 800;
-    }
-
-    .event-home {
-      text-align: left;
-    }
-
-    .event-away {
-      text-align: right;
-    }
-
-    .footer {
-      margin-top: 25px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
     /* RESPONSIVE */
 
     @media (max-width: 1250px) {
@@ -679,6 +695,7 @@
     }
 
     @media (max-width: 650px) {
+
       .app {
         width: calc(100% - 20px);
         padding-top: 15px;
@@ -730,6 +747,23 @@
         font-size: 8px;
       }
 
+      .match-details {
+        padding: 12px 10px;
+      }
+
+      .event-item {
+        grid-template-columns: 42px minmax(0, 1fr) 42px;
+        font-size: 10px;
+      }
+
+      .event-home {
+        padding-right: 7px;
+      }
+
+      .event-away {
+        padding-left: 7px;
+      }
+
       .standings-table th,
       .standings-table td {
         font-size: 9px;
@@ -744,15 +778,6 @@
         width: 19px;
         height: 19px;
         flex-basis: 19px;
-      }
-
-      .modal-teams {
-        grid-template-columns: 1fr 70px 1fr;
-      }
-
-      .modal-team img {
-        width: 45px;
-        height: 45px;
       }
     }
   </style>
@@ -1012,46 +1037,6 @@
   </div>
 
 
-  <div
-    id="modalBackdrop"
-    class="modal-backdrop"
-  >
-
-    <div class="modal">
-
-      <div class="modal-header">
-
-        <div
-          id="modalTitle"
-          class="modal-title"
-        >
-          Match
-        </div>
-
-        <button
-          id="modalClose"
-          class="modal-close"
-          type="button"
-        >
-          ×
-        </button>
-
-      </div>
-
-
-      <div id="modalContent">
-
-        <div class="loading">
-          Loading...
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
   <script>
 
     const API_BASE = "";
@@ -1104,6 +1089,8 @@
     let tableExpanded = false;
 
     let teamsForSearch = [];
+
+    let expandedMatchId = null;
 
 
     function escapeHtml(value) {
@@ -1316,6 +1303,80 @@
     }
 
 
+    function getMatchStatusText(match) {
+
+      const status =
+        match?.status || "";
+
+
+      if (
+        status === "IN_PLAY" ||
+        status === "LIVE"
+      ) {
+
+        return match.minute
+          ? `${match.minute}'`
+          : "LIVE";
+
+      }
+
+
+      if (
+        status === "PAUSED"
+      ) {
+
+        return "HT";
+
+      }
+
+
+      if (
+        status === "FINISHED"
+      ) {
+
+        return "FT";
+
+      }
+
+
+      return formatTime(
+        match?.utcDate
+      );
+
+    }
+
+
+    function getMatchStatusClass(match) {
+
+      const status =
+        match?.status || "";
+
+
+      if (
+        status === "IN_PLAY" ||
+        status === "LIVE" ||
+        status === "PAUSED"
+      ) {
+
+        return "status-live";
+
+      }
+
+
+      if (
+        status === "FINISHED"
+      ) {
+
+        return "status-finished";
+
+      }
+
+
+      return "";
+
+    }
+
+
     function renderMatchRow(match) {
 
       const home =
@@ -1337,138 +1398,126 @@
         "-";
 
 
-      const status =
-        match.status || "";
-
-
-      let statusText = "";
-
-
-      if (
-        status === "IN_PLAY" ||
-        status === "LIVE"
-      ) {
-
-        statusText =
-          match.minute
-            ? `${match.minute}'`
-            : "LIVE";
-
-      } else if (
-        status === "PAUSED"
-      ) {
-
-        statusText =
-          "HT";
-
-      } else if (
-        status === "FINISHED"
-      ) {
-
-        statusText =
-          "FT";
-
-      } else {
-
-        statusText =
-          formatTime(
-            match.utcDate
-          );
-
-      }
+      const statusText =
+        getMatchStatusText(
+          match
+        );
 
 
       const statusClass =
-        status === "IN_PLAY" ||
-        status === "LIVE" ||
-        status === "PAUSED"
-          ? "status-live"
-          : status === "FINISHED"
-            ? "status-finished"
-            : "";
+        getMatchStatusClass(
+          match
+        );
+
+
+      const isExpanded =
+        String(expandedMatchId) ===
+        String(match.id);
 
 
       return `
 
-        <button
-          class="match-row"
-          type="button"
-          data-match-id="${escapeHtml(match.id)}"
+        <div
+          class="match-container ${isExpanded ? "expanded" : ""}"
+          data-match-container="${escapeHtml(match.id)}"
         >
 
-          <div class="match-meta">
+          <button
+            class="match-row"
+            type="button"
+            data-match-id="${escapeHtml(match.id)}"
+            aria-expanded="${isExpanded ? "true" : "false"}"
+          >
 
-            <div class="match-date">
-              ${escapeHtml(
-                formatDate(
-                  match.utcDate
-                )
-              )}
+            <div class="match-meta">
+
+              <div class="match-date">
+                ${escapeHtml(
+                  formatDate(
+                    match.utcDate
+                  )
+                )}
+              </div>
+
+              <div>
+                ${escapeHtml(
+                  match.status === "FINISHED"
+                    ? "Full time"
+                    : formatTime(
+                        match.utcDate
+                      )
+                )}
+              </div>
+
             </div>
 
-            <div>
-              ${escapeHtml(
-                status === "FINISHED"
-                  ? "Full time"
-                  : formatTime(
-                      match.utcDate
-                    )
-              )}
+
+            <div class="match-teams">
+
+              <div class="match-line">
+
+                <div class="match-team home">
+
+                  <span class="team-name">
+                    ${escapeHtml(
+                      teamName(home)
+                    )}
+                  </span>
+
+                  ${crest(home)}
+
+                </div>
+
+
+                <div class="match-score">
+
+                  ${escapeHtml(homeScore)}
+                  -
+                  ${escapeHtml(awayScore)}
+
+                </div>
+
+
+                <div class="match-team away">
+
+                  ${crest(away)}
+
+                  <span class="team-name">
+                    ${escapeHtml(
+                      teamName(away)
+                    )}
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <span
+                class="match-status ${statusClass}"
+              >
+                ${escapeHtml(statusText)}
+              </span>
+
             </div>
+
+          </button>
+
+
+          <div
+            class="match-details"
+            data-match-details="${escapeHtml(match.id)}"
+          >
+
+            ${
+              isExpanded
+                ? `<div class="details-loading">Loading match events...</div>`
+                : ""
+            }
 
           </div>
 
-
-          <div class="match-teams">
-
-            <div class="match-line">
-
-              <div class="match-team home">
-
-                <span class="team-name">
-                  ${escapeHtml(
-                    teamName(home)
-                  )}
-                </span>
-
-                ${crest(home)}
-
-              </div>
-
-
-              <div class="match-score">
-
-                ${escapeHtml(homeScore)}
-                -
-                ${escapeHtml(awayScore)}
-
-              </div>
-
-
-              <div class="match-team away">
-
-                ${crest(away)}
-
-                <span class="team-name">
-                  ${escapeHtml(
-                    teamName(away)
-                  )}
-                </span>
-
-              </div>
-
-            </div>
-
-
-            <span
-              class="match-status ${statusClass}"
-            >
-              ${escapeHtml(statusText)}
-            </span>
-
-          </div>
-
-        </button>
+        </div>
 
       `;
 
@@ -1508,6 +1557,15 @@
           .map(renderMatchRow)
           .join("");
 
+
+      if (expandedMatchId) {
+
+        loadMatchDetails(
+          expandedMatchId
+        );
+
+      }
+
     }
 
 
@@ -1517,6 +1575,10 @@
 
       currentLeague =
         leagueKey;
+
+
+      expandedMatchId =
+        null;
 
 
       const liveContainer =
@@ -2387,57 +2449,13 @@
     );
 
 
-    const modalBackdrop =
-      document.getElementById(
-        "modalBackdrop"
-      );
-
-
-    const modalContent =
-      document.getElementById(
-        "modalContent"
-      );
-
-
-    function closeModal() {
-
-      modalBackdrop.classList.remove(
-        "open"
-      );
-
-    }
-
-
-    document
-      .getElementById(
-        "modalClose"
-      )
-      .addEventListener(
-        "click",
-        closeModal
-      );
-
-
-    modalBackdrop.addEventListener(
-      "click",
-      event => {
-
-        if (
-          event.target ===
-          modalBackdrop
-        ) {
-
-          closeModal();
-
-        }
-
-      }
-    );
-
+    /*
+      MATCH EXPANSION
+    */
 
     document.addEventListener(
       "click",
-      async event => {
+      event => {
 
         const matchButton =
           event.target.closest(
@@ -2459,184 +2477,657 @@
         }
 
 
-        modalBackdrop.classList.add(
-          "open"
+        const container =
+          matchButton.closest(
+            ".match-container"
+          );
+
+
+        if (!container) {
+          return;
+        }
+
+
+        if (
+          String(expandedMatchId) ===
+          String(matchId)
+        ) {
+
+          expandedMatchId =
+            null;
+
+
+          container.classList.remove(
+            "expanded"
+          );
+
+
+          matchButton.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+
+          return;
+
+        }
+
+
+        document
+          .querySelectorAll(
+            ".match-container.expanded"
+          )
+          .forEach(
+            openContainer => {
+
+              openContainer.classList.remove(
+                "expanded"
+              );
+
+
+              const openButton =
+                openContainer.querySelector(
+                  ".match-row"
+                );
+
+
+              if (openButton) {
+
+                openButton.setAttribute(
+                  "aria-expanded",
+                  "false"
+                );
+
+              }
+
+            }
+          );
+
+
+        expandedMatchId =
+          matchId;
+
+
+        container.classList.add(
+          "expanded"
         );
 
 
-        modalContent.innerHTML =
-          `<div class="loading">Loading match...</div>`;
+        matchButton.setAttribute(
+          "aria-expanded",
+          "true"
+        );
 
 
-        try {
-
-          const data =
-            await fetchApi(
-              `/api/match?matchId=${encodeURIComponent(matchId)}`
-            );
-
-
-          renderMatchModal(
-            data.match
+        const details =
+          container.querySelector(
+            ".match-details"
           );
 
-        } catch (error) {
 
-          modalContent.innerHTML =
-            `<div class="error">${escapeHtml(error.message)}</div>`;
+        if (details) {
+
+          details.innerHTML =
+            `<div class="details-loading">Loading match events...</div>`;
 
         }
+
+
+        loadMatchDetails(
+          matchId
+        );
 
       }
     );
 
 
-    function renderMatchModal(
+    /*
+      LOAD MATCH EVENTS
+    */
+
+    async function loadMatchDetails(
+      matchId
+    ) {
+
+      const containers =
+        document.querySelectorAll(
+          `[data-match-details="${CSS.escape(String(matchId))}"]`
+        );
+
+
+      if (!containers.length) {
+        return;
+      }
+
+
+      try {
+
+        const data =
+          await fetchApi(
+            `/api/match?matchId=${encodeURIComponent(matchId)}`
+          );
+
+
+        const match =
+          data.match;
+
+
+        containers.forEach(
+          details => {
+
+            details.innerHTML =
+              renderMatchEvents(
+                match
+              );
+
+          }
+        );
+
+      } catch (error) {
+
+        containers.forEach(
+          details => {
+
+            details.innerHTML = `
+
+              <div class="details-error">
+
+                ${escapeHtml(
+                  error.message ||
+                  "Could not load match events."
+                )}
+
+              </div>
+
+            `;
+
+          }
+        );
+
+      }
+
+    }
+
+
+    function getEventsFromMatch(
       match
     ) {
 
       if (!match) {
-
-        modalContent.innerHTML =
-          `<div class="error">Match data unavailable.</div>`;
-
-        return;
-
+        return [];
       }
-
-
-      const home =
-        match.homeTeam ||
-        {};
-
-
-      const away =
-        match.awayTeam ||
-        {};
-
-
-      const homeScore =
-        match.score?.fullTime?.home ??
-        "-";
-
-
-      const awayScore =
-        match.score?.fullTime?.away ??
-        "-";
-
-
-      let statusText =
-        match.status ||
-        "";
 
 
       if (
-        match.status ===
-        "FINISHED"
+        Array.isArray(
+          match.events
+        )
       ) {
 
-        statusText =
-          "Full time";
-
-      } else if (
-        match.status ===
-          "IN_PLAY" ||
-        match.status ===
-          "LIVE"
-      ) {
-
-        statusText =
-          match.minute
-            ? `${match.minute}'`
-            : "Live";
+        return match.events;
 
       }
 
 
-      document.getElementById(
-        "modalTitle"
-      ).textContent =
-        match.competition?.name ||
-        "Match";
+      if (
+        Array.isArray(
+          match.matchEvents
+        )
+      ) {
+
+        return match.matchEvents;
+
+      }
 
 
-      modalContent.innerHTML = `
+      if (
+        Array.isArray(
+          match.timeline
+        )
+      ) {
 
-        <div class="modal-match">
+        return match.timeline;
 
-          <div class="modal-teams">
+      }
 
-            <div class="modal-team">
 
-              ${crest(home)}
+      return [];
 
-              <div class="modal-team-name">
-                ${escapeHtml(
-                  teamName(home)
-                )}
+    }
+
+
+    function eventType(
+      event
+    ) {
+
+      const raw =
+        String(
+          event?.type ||
+          event?.eventType ||
+          event?.detail ||
+          ""
+        )
+          .toLowerCase();
+
+
+      if (
+        raw.includes("goal") ||
+        raw.includes("score")
+      ) {
+
+        return "goal";
+
+      }
+
+
+      if (
+        raw.includes("sub")
+      ) {
+
+        return "sub";
+
+      }
+
+
+      if (
+        raw.includes("yellow") ||
+        raw.includes("booking")
+      ) {
+
+        return "yellow";
+
+      }
+
+
+      if (
+        raw.includes("red") ||
+        raw.includes("sending")
+      ) {
+
+        return "red";
+
+      }
+
+
+      return "other";
+
+    }
+
+
+    function eventMinute(
+      event
+    ) {
+
+      return (
+        event?.minute ??
+        event?.time?.elapsed ??
+        event?.time?.minute ??
+        event?.clock ??
+        ""
+      );
+
+    }
+
+
+    function eventPlayerName(
+      event
+    ) {
+
+      return (
+        event?.player?.name ||
+        event?.player?.shortName ||
+        event?.playerName ||
+        event?.scorer?.name ||
+        event?.name ||
+        "Player"
+      );
+
+    }
+
+
+    function eventAssistName(
+      event
+    ) {
+
+      return (
+        event?.assist?.name ||
+        event?.assist?.player?.name ||
+        event?.assistName ||
+        event?.assistant?.name ||
+        ""
+      );
+
+    }
+
+
+    function eventTeamId(
+      event
+    ) {
+
+      return (
+        event?.team?.id ??
+        event?.teamId ??
+        event?.side?.id ??
+        null
+      );
+
+    }
+
+
+    function eventIcon(
+      type
+    ) {
+
+      if (type === "goal") {
+        return "⚽";
+      }
+
+      if (type === "sub") {
+        return "🔄";
+      }
+
+      if (type === "yellow") {
+        return "🟨";
+      }
+
+      if (type === "red") {
+        return "🟥";
+      }
+
+      return "•";
+
+    }
+
+
+    function renderEvent(
+      event,
+      match,
+      type
+    ) {
+
+      const homeId =
+        match?.homeTeam?.id;
+
+
+      const awayId =
+        match?.awayTeam?.id;
+
+
+      const teamId =
+        eventTeamId(
+          event
+        );
+
+
+      let side =
+        "home";
+
+
+      if (
+        teamId != null &&
+        awayId != null &&
+        String(teamId) ===
+          String(awayId)
+      ) {
+
+        side = "away";
+
+      } else if (
+        teamId != null &&
+        homeId != null &&
+        String(teamId) ===
+          String(homeId)
+      ) {
+
+        side = "home";
+
+      } else if (
+        event?.isHome === false
+      ) {
+
+        side = "away";
+
+      }
+
+
+      const minute =
+        eventMinute(
+          event
+        );
+
+
+      const player =
+        eventPlayerName(
+          event
+        );
+
+
+      const assist =
+        eventAssistName(
+          event
+        );
+
+
+      const playerHtml = `
+
+        <span class="event-player">
+          ${escapeHtml(player)}
+        </span>
+
+        ${
+          assist
+            ? `
+              <div class="event-assist">
+                Assist: ${escapeHtml(assist)}
               </div>
+            `
+            : ""
+        }
 
-            </div>
-
-
-            <div>
-
-              <div class="modal-score">
-
-                ${escapeHtml(
-                  homeScore
-                )}
-
-                -
-
-                ${escapeHtml(
-                  awayScore
-                )}
-
-              </div>
+      `;
 
 
-              <div class="modal-status">
-                ${escapeHtml(
-                  statusText
-                )}
-              </div>
+      return `
 
-            </div>
+        <div
+          class="event-item event-${escapeHtml(type)}"
+        >
+
+          <div class="event-time">
+            ${escapeHtml(
+              minute !== ""
+                ? `${minute}'`
+                : "-"
+            )}
+          </div>
 
 
-            <div class="modal-team">
+          <div
+            class="${
+              side === "home"
+                ? "event-home"
+                : "event-away"
+            }"
+          >
 
-              ${crest(away)}
-
-              <div class="modal-team-name">
-                ${escapeHtml(
-                  teamName(away)
-                )}
-              </div>
-
-            </div>
+            ${
+              side === "home"
+                ? playerHtml
+                : ""
+            }
 
           </div>
 
 
           <div
-            style="
-              margin-top:15px;
-              color:var(--muted);
-              font-size:11px;
-            "
+            class="${
+              side === "away"
+                ? "event-away"
+                : "event-home"
+            }"
           >
 
-            ${escapeHtml(
-              formatMatchDate(
-                match.utcDate
-              )
-            )}
+            ${
+              side === "away"
+                ? playerHtml
+                : ""
+            }
 
           </div>
 
         </div>
+
+      `;
+
+    }
+
+
+    function renderEventCategory(
+      title,
+      events,
+      match,
+      type
+    ) {
+
+      if (!events.length) {
+        return "";
+      }
+
+
+      return `
+
+        <div class="event-category-title">
+          ${escapeHtml(title)}
+        </div>
+
+
+        <div class="events-list">
+
+          ${
+            events
+              .map(
+                event =>
+                  renderEvent(
+                    event,
+                    match,
+                    type
+                  )
+              )
+              .join("")
+          }
+
+        </div>
+
+      `;
+
+    }
+
+
+    function renderMatchEvents(
+      match
+    ) {
+
+      if (!match) {
+
+        return `
+
+          <div class="details-error">
+            Match data unavailable.
+          </div>
+
+        `;
+
+      }
+
+
+      const events =
+        getEventsFromMatch(
+          match
+        );
+
+
+      const goals =
+        events.filter(
+          event =>
+            eventType(event) ===
+            "goal"
+        );
+
+
+      const substitutions =
+        events.filter(
+          event =>
+            eventType(event) ===
+            "sub"
+        );
+
+
+      const yellowCards =
+        events.filter(
+          event =>
+            eventType(event) ===
+            "yellow"
+        );
+
+
+      const redCards =
+        events.filter(
+          event =>
+            eventType(event) ===
+            "red"
+        );
+
+
+      if (
+        !goals.length &&
+        !substitutions.length &&
+        !yellowCards.length &&
+        !redCards.length
+      ) {
+
+        return `
+
+          <div class="event-empty">
+            No goals, substitutions or cards recorded for this match.
+          </div>
+
+        `;
+
+      }
+
+
+      return `
+
+        ${renderEventCategory(
+          "Goals",
+          goals,
+          match,
+          "goal"
+        )}
+
+
+        ${renderEventCategory(
+          "Substitutions",
+          substitutions,
+          match,
+          "sub"
+        )}
+
+
+        ${renderEventCategory(
+          "Yellow cards",
+          yellowCards,
+          match,
+          "yellow"
+        )}
+
+
+        ${renderEventCategory(
+          "Red cards",
+          redCards,
+          match,
+          "red"
+        )}
 
       `;
 
