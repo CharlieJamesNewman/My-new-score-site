@@ -64,10 +64,6 @@
       padding: 24px 0 50px;
     }
 
-    /* =====================================================
-       HEADER
-    ===================================================== */
-
     header {
       display: flex;
       align-items: center;
@@ -99,10 +95,6 @@
       margin-top: 7px;
       letter-spacing: .4px;
     }
-
-    /* =====================================================
-       SEARCH
-    ===================================================== */
 
     .search-wrap {
       position: relative;
@@ -178,10 +170,6 @@
       margin-left: auto;
     }
 
-    /* =====================================================
-       LEAGUE SELECTOR
-    ===================================================== */
-
     .league-selector-row {
       display: flex;
       align-items: center;
@@ -206,21 +194,15 @@
     #league-select {
       appearance: none;
       -webkit-appearance: none;
-
       width: 100%;
       height: 46px;
-
       padding: 0 42px 0 15px;
-
       background: var(--panel);
       color: var(--text);
-
       border: 1px solid var(--border);
       border-radius: 10px;
-
       outline: none;
       cursor: pointer;
-
       font-size: 13px;
       font-weight: 800;
     }
@@ -254,19 +236,12 @@
       color: var(--text);
     }
 
-    /* =====================================================
-       GRID
-    ===================================================== */
-
     .dashboard-grid {
       display: grid;
-
       grid-template-columns:
         minmax(0, 1.55fr)
         minmax(350px, .85fr);
-
       gap: 20px;
-
       align-items: start;
     }
 
@@ -279,10 +254,6 @@
       position: sticky;
       top: 15px;
     }
-
-    /* =====================================================
-       SECTIONS
-    ===================================================== */
 
     .section {
       margin-bottom: 20px;
@@ -329,10 +300,6 @@
       color: var(--danger);
     }
 
-    /* =====================================================
-       LIVE
-    ===================================================== */
-
     .live-badge {
       display: inline-flex;
       align-items: center;
@@ -359,31 +326,18 @@
       border-bottom: 0;
     }
 
-    /*
-      Horizontal score layout:
-
-      Chelsea     [badge]   1 – 0   [badge]     PSG
-    */
-
     .match-main {
       display: grid;
-
       grid-template-columns:
         75px
         minmax(0, 1fr)
         130px
         minmax(0, 1fr);
-
       align-items: center;
-
       min-height: 74px;
-
       padding: 10px 15px;
-
       cursor: pointer;
-
-      transition:
-        background .15s;
+      transition: background .15s;
     }
 
     .match-main:hover {
@@ -427,7 +381,6 @@
     .match-team-name {
       font-size: 13px;
       font-weight: 800;
-
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -442,10 +395,8 @@
       align-items: center;
       justify-content: center;
       gap: 9px;
-
       font-size: 17px;
       font-weight: 950;
-
       white-space: nowrap;
     }
 
@@ -470,26 +421,16 @@
       border-top: 1px solid var(--border);
     }
 
-    /* =====================================================
-       FIXTURES / RESULTS
-    ===================================================== */
-
     .fixture-row {
       display: grid;
-
       grid-template-columns:
         78px
         minmax(0, 1fr)
         180px;
-
       align-items: center;
-
       gap: 10px;
-
       padding: 12px 15px;
-
       border-bottom: 1px solid var(--border);
-
       min-height: 66px;
     }
 
@@ -503,23 +444,14 @@
       line-height: 1.35;
     }
 
-    /*
-      Same horizontal presentation
-      as live matches.
-    */
-
     .fixture-match {
       display: grid;
-
       grid-template-columns:
         minmax(0, 1fr)
         100px
         minmax(0, 1fr);
-
       align-items: center;
-
       gap: 9px;
-
       min-width: 0;
     }
 
@@ -550,7 +482,6 @@
     .fixture-team a {
       font-size: 12px;
       font-weight: 800;
-
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -565,10 +496,8 @@
       align-items: center;
       justify-content: center;
       gap: 7px;
-
       font-size: 14px;
       font-weight: 950;
-
       white-space: nowrap;
     }
 
@@ -592,10 +521,6 @@
       font-weight: 900;
     }
 
-    /* =====================================================
-       STORY
-    ===================================================== */
-
     .story-card {
       padding: 17px;
     }
@@ -613,10 +538,6 @@
       font-size: 13px;
     }
 
-    /* =====================================================
-       TABLE
-    ===================================================== */
-
     .table-controls {
       display: flex;
       gap: 5px;
@@ -626,19 +547,12 @@
 
     .table-mode {
       flex: 1;
-
       border: 1px solid var(--border);
-
       background: transparent;
-
       color: var(--muted);
-
       border-radius: 7px;
-
       padding: 7px 5px;
-
       cursor: pointer;
-
       font-size: 10px;
       font-weight: 800;
     }
@@ -684,7 +598,6 @@
       text-align: center;
       border-bottom:
         1px solid rgba(37,44,52,.7);
-
       font-weight: 700;
     }
 
@@ -745,16 +658,11 @@
       display: block;
       width: 100%;
       padding: 11px;
-
       border: 0;
       border-top: 1px solid var(--border);
-
       background: transparent;
-
       color: var(--accent);
-
       cursor: pointer;
-
       font-size: 11px;
       font-weight: 900;
     }
@@ -763,24 +671,15 @@
       background: var(--panel-2);
     }
 
-    /* =====================================================
-       TOP SCORERS
-    ===================================================== */
-
     .scorer {
       display: grid;
-
       grid-template-columns:
         30px
         minmax(0, 1fr)
         42px;
-
       align-items: center;
-
       gap: 10px;
-
       padding: 11px 13px;
-
       border-bottom: 1px solid var(--border);
     }
 
@@ -798,43 +697,31 @@
       min-width: 0;
     }
 
-    /*
-      Player identity:
-
-      🇳🇴 [badge] Erling Haaland
-    */
-
     .scorer-identity {
       display: flex;
       align-items: center;
       gap: 7px;
-
       min-width: 0;
     }
 
     .scorer-flag {
       width: 21px;
       min-width: 21px;
-
       font-size: 16px;
       line-height: 1;
-
       text-align: center;
     }
 
     .scorer-club-badge {
       width: 23px;
       height: 23px;
-
       object-fit: contain;
-
       flex: 0 0 auto;
     }
 
     .scorer-name {
       font-size: 12px;
       font-weight: 850;
-
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -844,11 +731,9 @@
       color: var(--muted);
       font-size: 10px;
       margin-top: 3px;
-
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-
       padding-left: 55px;
     }
 
@@ -875,10 +760,6 @@
       font-size: 10px;
       text-align: center;
     }
-
-    /* =====================================================
-       MOBILE
-    ===================================================== */
 
     @media (max-width: 950px) {
 
@@ -935,11 +816,6 @@
         width: 100%;
       }
 
-      /*
-        Mobile live match:
-        status / home / score / away
-      */
-
       .match-main {
         grid-template-columns:
           48px
@@ -972,10 +848,6 @@
       .match-details {
         padding-left: 55px;
       }
-
-      /*
-        Results and upcoming on mobile
-      */
 
       .fixture-row {
         grid-template-columns:
@@ -1046,10 +918,6 @@
 
 <div class="page">
 
-  <!-- ===================================================
-       HEADER
-  ==================================================== -->
-
   <header>
 
     <div class="brand">
@@ -1063,7 +931,6 @@
       </div>
 
     </div>
-
 
     <div class="search-wrap">
 
@@ -1080,10 +947,6 @@
 
   </header>
 
-
-  <!-- ===================================================
-       LEAGUE SELECTOR
-  ==================================================== -->
 
   <div class="league-selector-row">
 
@@ -1110,21 +973,11 @@
   </div>
 
 
-  <!-- ===================================================
-       DASHBOARD
-  ==================================================== -->
-
   <div class="dashboard-grid">
 
 
-    <!-- =================================================
-         LEFT COLUMN
-    ================================================== -->
-
     <main class="main-column">
 
-
-      <!-- LIVE MATCHES -->
 
       <section class="section">
 
@@ -1158,8 +1011,6 @@
       </section>
 
 
-      <!-- RECENT RESULTS -->
-
       <section class="section">
 
         <div class="section-header">
@@ -1188,8 +1039,6 @@
       </section>
 
 
-      <!-- UPCOMING -->
-
       <section class="section">
 
         <div class="section-header">
@@ -1217,8 +1066,6 @@
 
       </section>
 
-
-      <!-- STORY -->
 
       <section class="section">
 
@@ -1253,14 +1100,8 @@
     </main>
 
 
-    <!-- =================================================
-         RIGHT COLUMN
-    ================================================== -->
-
     <aside class="side-column">
 
-
-      <!-- LEAGUE TABLE -->
 
       <section class="section">
 
@@ -1361,8 +1202,6 @@
       </section>
 
 
-      <!-- TOP SCORERS -->
-
       <section class="section">
 
         <div class="section-header">
@@ -1410,11 +1249,6 @@
 
   const API_BASE = "";
 
-
-  /* =====================================================
-     FEATURED LEAGUES
-  ===================================================== */
-
   const FEATURED = [
 
     {
@@ -1449,34 +1283,25 @@
 
   ];
 
-
-  let competitions =
-    [...FEATURED];
-
+  let competitions = [...FEATURED];
 
   let currentCompetition =
     FEATURED[0];
 
-
-  let leagueBundle =
-    null;
-
+  let leagueBundle = null;
 
   let currentTableMode =
     "overall";
-
 
   const teamSearchInput =
     document.getElementById(
       "team-search"
     );
 
-
   const searchResults =
     document.getElementById(
       "team-search-results"
     );
-
 
   const leagueSelect =
     document.getElementById(
@@ -1488,9 +1313,7 @@
      API
   ===================================================== */
 
-  async function fetchApi(
-    path
-  ) {
+  async function fetchApi(path) {
 
     const response =
       await fetch(
@@ -1500,9 +1323,7 @@
         }
       );
 
-
     let data = null;
-
 
     try {
 
@@ -1517,7 +1338,6 @@
 
     }
 
-
     if (!response.ok) {
 
       throw new Error(
@@ -1528,19 +1348,16 @@
 
     }
 
-
     return data;
 
   }
 
 
   /* =====================================================
-     BASIC HELPERS
+     HELPERS
   ===================================================== */
 
-  function teamName(
-    team
-  ) {
+  function teamName(team) {
 
     if (!team) {
       return "Unknown team";
@@ -1556,9 +1373,7 @@
   }
 
 
-  function crest(
-    team
-  ) {
+  function crest(team) {
 
     if (!team) {
       return "";
@@ -1574,40 +1389,21 @@
   }
 
 
-  function escapeHtml(
-    value
-  ) {
+  function escapeHtml(value) {
 
     return String(
       value ?? ""
     )
-      .replaceAll(
-        "&",
-        "&amp;"
-      )
-      .replaceAll(
-        "<",
-        "&lt;"
-      )
-      .replaceAll(
-        ">",
-        "&gt;"
-      )
-      .replaceAll(
-        '"',
-        "&quot;"
-      )
-      .replaceAll(
-        "'",
-        "&#039;"
-      );
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
 
   }
 
 
-  function formatDate(
-    value
-  ) {
+  function formatDate(value) {
 
     if (!value) {
       return "";
@@ -1635,9 +1431,7 @@
   }
 
 
-  function formatTime(
-    value
-  ) {
+  function formatTime(value) {
 
     if (!value) {
       return "";
@@ -1665,10 +1459,7 @@
   }
 
 
-  function score(
-    match,
-    side
-  ) {
+  function score(match, side) {
 
     const fullTime =
       match?.score?.fullTime;
@@ -1696,19 +1487,15 @@
   }
 
 
-  function liveTime(
-    match
-  ) {
+  function liveTime(match) {
 
     if (!match) {
       return "";
     }
 
     if (
-      match.status ===
-        "IN_PLAY" ||
-      match.status ===
-        "LIVE"
+      match.status === "IN_PLAY" ||
+      match.status === "LIVE"
     ) {
 
       if (
@@ -1722,16 +1509,12 @@
     }
 
     if (
-      match.status ===
-      "PAUSED"
+      match.status === "PAUSED"
     ) {
       return "HT";
     }
 
-    return (
-      match.status ||
-      ""
-    );
+    return match.status || "";
 
   }
 
@@ -1740,263 +1523,69 @@
      COUNTRY FLAGS
   ===================================================== */
 
-  /*
-    football-data.org can provide a full
-    nationality such as "Norway", or an
-    ISO-style country code.
-
-    This mapping covers the countries
-    most commonly encountered in European
-    football and can be expanded later.
-  */
-
   const COUNTRY_CODES = {
 
-    "afghanistan": "AF",
-    "albania": "AL",
-    "algeria": "DZ",
-    "andorra": "AD",
-    "angola": "AO",
-    "argentina": "AR",
-    "armenia": "AM",
-    "australia": "AU",
-    "austria": "AT",
-    "azerbaijan": "AZ",
-
-    "belarus": "BY",
-    "belgium": "BE",
-    "benin": "BJ",
-    "bolivia": "BO",
-    "bosnia and herzegovina": "BA",
-    "bosnia-herzegovina": "BA",
-    "brazil": "BR",
-    "bulgaria": "BG",
-    "burkina faso": "BF",
-
-    "cameroon": "CM",
-    "canada": "CA",
-    "cape verde": "CV",
-    "chile": "CL",
-    "china": "CN",
-    "colombia": "CO",
-    "congo": "CG",
-    "costa rica": "CR",
-    "croatia": "HR",
-    "cuba": "CU",
-    "cyprus": "CY",
-    "czech republic": "CZ",
-    "czechia": "CZ",
-
-    "denmark": "DK",
-    "ecuador": "EC",
-    "egypt": "EG",
-    "england": "GB-ENG",
-    "equatorial guinea": "GQ",
-    "estonia": "EE",
-    "ethiopia": "ET",
-
-    "finland": "FI",
-    "france": "FR",
-
-    "gabon": "GA",
-    "gambia": "GM",
-    "georgia": "GE",
-    "germany": "DE",
-    "ghana": "GH",
-    "greece": "GR",
-    "guinea": "GN",
-    "guinea-bissau": "GW",
-
-    "haiti": "HT",
-    "honduras": "HN",
-    "hungary": "HU",
-
-    "iceland": "IS",
-    "india": "IN",
-    "indonesia": "ID",
-    "iran": "IR",
-    "iraq": "IQ",
-    "ireland": "IE",
-    "israel": "IL",
-    "italy": "IT",
-    "ivory coast": "CI",
-
-    "jamaica": "JM",
-    "japan": "JP",
-    "jordan": "JO",
-
-    "kazakhstan": "KZ",
-    "kenya": "KE",
-    "kosovo": "XK",
-
-    "latvia": "LV",
-    "lebanon": "LB",
-    "liberia": "LR",
-    "libya": "LY",
-    "lithuania": "LT",
-    "luxembourg": "LU",
-
-    "madagascar": "MG",
-    "malaysia": "MY",
-    "mali": "ML",
-    "malta": "MT",
-    "mauritania": "MR",
-    "mexico": "MX",
-    "moldova": "MD",
-    "montenegro": "ME",
-    "morocco": "MA",
-    "mozambique": "MZ",
-
-    "netherlands": "NL",
-    "new zealand": "NZ",
-    "nigeria": "NG",
-    "north macedonia": "MK",
-    "norway": "NO",
-
-    "panama": "PA",
-    "paraguay": "PY",
-    "peru": "PE",
-    "philippines": "PH",
-    "poland": "PL",
-    "portugal": "PT",
-
-    "qatar": "QA",
-
-    "romania": "RO",
-    "russia": "RU",
-    "rwanda": "RW",
-
-    "scotland": "GB-SCT",
-    "senegal": "SN",
-    "serbia": "RS",
-    "sierra leone": "SL",
-    "slovakia": "SK",
-    "slovenia": "SI",
-    "south africa": "ZA",
-    "south korea": "KR",
-    "south korea republic": "KR",
-    "spain": "ES",
-    "sudan": "SD",
-    "sweden": "SE",
-    "switzerland": "CH",
-
-    "tanzania": "TZ",
-    "thailand": "TH",
-    "togo": "TG",
-    "tunisia": "TN",
-    "turkey": "TR",
-
-    "ukraine": "UA",
-    "united arab emirates": "AE",
-    "united states": "US",
-    "usa": "US",
-    "uruguay": "UY",
-    "uzbekistan": "UZ",
-
-    "venezuela": "VE",
-    "vietnam": "VN",
-
-    "wales": "GB-WLS",
-
-    "zambia": "ZM",
-    "zimbabwe": "ZW"
+    argentina: "AR",
+    australia: "AU",
+    austria: "AT",
+    belgium: "BE",
+    brazil: "BR",
+    cameroon: "CM",
+    canada: "CA",
+    chile: "CL",
+    colombia: "CO",
+    croatia: "HR",
+    denmark: "DK",
+    ecuador: "EC",
+    egypt: "EG",
+    england: "GB",
+    finland: "FI",
+    france: "FR",
+    georgia: "GE",
+    germany: "DE",
+    ghana: "GH",
+    greece: "GR",
+    hungary: "HU",
+    iceland: "IS",
+    ireland: "IE",
+    italy: "IT",
+    ivory coast: "CI",
+    japan: "JP",
+    mexico: "MX",
+    morocco: "MA",
+    netherlands: "NL",
+    new zealand: "NZ",
+    nigeria: "NG",
+    norway: "NO",
+    paraguay: "PY",
+    peru: "PE",
+    poland: "PL",
+    portugal: "PT",
+    romania: "RO",
+    scotland: "GB",
+    senegal: "SN",
+    serbia: "RS",
+    slovakia: "SK",
+    slovenia: "SI",
+    south africa: "ZA",
+    south korea: "KR",
+    spain: "ES",
+    sweden: "SE",
+    switzerland: "CH",
+    turkey: "TR",
+    ukraine: "UA",
+    united states: "US",
+    usa: "US",
+    uruguay: "UY",
+    wales: "GB"
 
   };
 
 
-  function countryFlag(
-    nationality
-  ) {
-
-    if (!nationality) {
-      return "";
-    }
-
-    let value =
-      String(
-        nationality
-      )
-        .trim();
-
-    if (!value) {
-      return "";
-    }
-
-    /*
-      If the API gives an ISO
-      two-letter country code.
-    */
+  function isoToFlag(code) {
 
     if (
-      /^[A-Za-z]{2}$/.test(
-        value
-      )
-    ) {
-
-      const code =
-        value.toUpperCase();
-
-      return isoToFlag(
-        code
-      );
-
-    }
-
-    const key =
-      value
-        .toLowerCase()
-        .replace(
-          /\s+/g,
-          " "
-        );
-
-    const code =
-      COUNTRY_CODES[key];
-
-    if (!code) {
-      return "";
-    }
-
-    /*
-      Special handling for
-      England, Scotland and Wales.
-      Emoji support varies by device,
-      so GB-ENG etc may not render everywhere.
-    */
-
-    if (
-      code === "GB-ENG"
-    ) {
-      return "🏴";
-    }
-
-    if (
-      code === "GB-SCT"
-    ) {
-      return "🏴";
-    }
-
-    if (
-      code === "GB-WLS"
-    ) {
-      return "🏴";
-    }
-
-    return isoToFlag(
-      code
-    );
-
-  }
-
-
-  function isoToFlag(
-    code
-  ) {
-
-    if (
-      !/^[A-Z]{2}$/.test(
-        code
-      )
+      !/^[A-Z]{2}$/.test(code)
     ) {
       return "";
     }
@@ -2012,13 +1601,45 @@
   }
 
 
+  function countryFlag(value) {
+
+    if (!value) {
+      return "";
+    }
+
+    const text =
+      String(value)
+        .trim();
+
+    if (
+      /^[A-Za-z]{2}$/.test(
+        text
+      )
+    ) {
+
+      return isoToFlag(
+        text.toUpperCase()
+      );
+
+    }
+
+    const code =
+      COUNTRY_CODES[
+        text.toLowerCase()
+      ];
+
+    return code
+      ? isoToFlag(code)
+      : "";
+
+  }
+
+
   /* =====================================================
-     DATA NORMALISATION
+     DATA
   ===================================================== */
 
-  function getLiveMatches(
-    data
-  ) {
+  function getLiveMatches(data) {
 
     return Array.isArray(
       data?.live?.matches
@@ -2029,9 +1650,7 @@
   }
 
 
-  function getResults(
-    data
-  ) {
+  function getResults(data) {
 
     return Array.isArray(
       data?.results?.matches
@@ -2042,9 +1661,7 @@
   }
 
 
-  function getUpcoming(
-    data
-  ) {
+  function getUpcoming(data) {
 
     return Array.isArray(
       data?.upcoming?.matches
@@ -2054,6 +1671,25 @@
 
   }
 
+
+  /*
+    THIS IS THE IMPORTANT TABLE FIX.
+
+    football-data.org returns standings
+    as:
+
+      {
+        TOTAL: [...],
+        HOME: [...],
+        AWAY: [...]
+      }
+
+    We explicitly select the requested
+    section.
+
+    We also support a raw standings
+    array in case the API format changes.
+  */
 
   function getTableRows(
     standings,
@@ -2065,20 +1701,63 @@
         standings
       )
     ) {
+
       return standings;
+
     }
 
-    const key =
+    if (!standings) {
+      return [];
+    }
+
+    const modeKey =
       String(
-        mode
+        mode || "overall"
       ).toUpperCase();
 
     if (
       Array.isArray(
-        standings?.[key]
+        standings[modeKey]
       )
     ) {
-      return standings[key];
+
+      return standings[modeKey];
+
+    }
+
+    /*
+      If the selected mode doesn't
+      exist, fall back to TOTAL.
+    */
+
+    if (
+      Array.isArray(
+        standings.TOTAL
+      )
+    ) {
+
+      return standings.TOTAL;
+
+    }
+
+    /*
+      Some API responses can contain
+      a lowercase key.
+    */
+
+    const lowerKey =
+      String(
+        mode || "overall"
+      ).toLowerCase();
+
+    if (
+      Array.isArray(
+        standings[lowerKey]
+      )
+    ) {
+
+      return standings[lowerKey];
+
     }
 
     return [];
@@ -2118,11 +1797,6 @@
             continue;
           }
 
-          /*
-            Only display league
-            competitions.
-          */
-
           if (
             item.type &&
             item.type !== "LEAGUE"
@@ -2144,10 +1818,8 @@
               {
                 ...featured,
                 ...item,
-                key:
-                  featured.key,
-                name:
-                  featured.name
+                key: featured.key,
+                name: featured.name
               }
             );
 
@@ -2179,11 +1851,6 @@
           }
 
         }
-
-        /*
-          Always keep the five
-          featured leagues.
-        */
 
         for (
           const featured
@@ -2266,16 +1933,10 @@
 
     }
 
-    /*
-      Premier League remains
-      the default.
-    */
-
     currentCompetition =
       competitions.find(
         item =>
-          item.key ===
-          "premier"
+          item.key === "premier"
       ) ||
       FEATURED[0];
 
@@ -2392,8 +2053,7 @@
       const found =
         competitions.find(
           item =>
-            item.key ===
-            key
+            item.key === key
         );
 
       if (!found) {
@@ -2412,11 +2072,13 @@
         )
         .forEach(
           button => {
+
             button.classList.toggle(
               "active",
               button.dataset.mode ===
                 "overall"
             );
+
           }
         );
 
@@ -2438,9 +2100,7 @@
      LOAD LEAGUE
   ===================================================== */
 
-  async function loadLeague(
-    key
-  ) {
+  async function loadLeague(key) {
 
     try {
 
@@ -2468,6 +2128,12 @@
         getUpcoming(data)
       );
 
+      /*
+        Pass the complete API response
+        into renderStandings so it can
+        see standingsAvailable.
+      */
+
       renderStandings(
         data?.standings || {},
         data
@@ -2487,12 +2153,6 @@
         "League loading error:",
         error
       );
-
-      /*
-        Only show a complete error
-        when the essential matches
-        endpoint itself failed.
-      */
 
       showError(
         error.message ||
@@ -2554,14 +2214,10 @@
   }
 
 
-  function showError(
-    message
-  ) {
+  function showError(message) {
 
     const safe =
-      escapeHtml(
-        message
-      );
+      escapeHtml(message);
 
     document.getElementById(
       "matches"
@@ -2610,9 +2266,7 @@
      TEAM LINKS
   ===================================================== */
 
-  function teamUrl(
-    team
-  ) {
+  function teamUrl(team) {
 
     if (!team?.id) {
       return "#";
@@ -2628,10 +2282,6 @@
 
   }
 
-
-  /* =====================================================
-     TEAM BADGE HTML
-  ===================================================== */
 
   function badgeHtml(
     team,
@@ -2665,9 +2315,7 @@
      LIVE MATCHES
   ===================================================== */
 
-  function renderMatches(
-    matches
-  ) {
+  function renderMatches(matches) {
 
     const container =
       document.getElementById(
@@ -2677,12 +2325,9 @@
     const live =
       matches.filter(
         match =>
-          match.status ===
-            "IN_PLAY" ||
-          match.status ===
-            "LIVE" ||
-          match.status ===
-            "PAUSED"
+          match.status === "IN_PLAY" ||
+          match.status === "LIVE" ||
+          match.status === "PAUSED"
       );
 
     if (!live.length) {
@@ -2709,9 +2354,7 @@
   }
 
 
-  function matchRow(
-    match
-  ) {
+  function matchRow(match) {
 
     const home =
       match.homeTeam ||
@@ -2733,7 +2376,8 @@
 
           <div
             class="match-status ${
-              status === "LIVE"
+              match.status === "IN_PLAY" ||
+              match.status === "LIVE"
                 ? "live"
                 : ""
             }"
@@ -2742,7 +2386,6 @@
               status
             )}
           </div>
-
 
           <div class="match-team home">
 
@@ -2757,13 +2400,9 @@
               )}
             </a>
 
-            ${badgeHtml(
-              home,
-              ""
-            )}
+            ${badgeHtml(home)}
 
           </div>
-
 
           <div class="match-score">
 
@@ -2791,13 +2430,9 @@
 
           </div>
 
-
           <div class="match-team away">
 
-            ${badgeHtml(
-              away,
-              ""
-            )}
+            ${badgeHtml(away)}
 
             <a
               class="match-team-name"
@@ -2813,7 +2448,6 @@
           </div>
 
         </div>
-
 
         <div class="match-details">
 
@@ -2843,17 +2477,13 @@
             event => {
 
               if (
-                event.target.closest(
-                  "a"
-                )
+                event.target.closest("a")
               ) {
                 return;
               }
 
               const match =
-                row.closest(
-                  ".match"
-                );
+                row.closest(".match");
 
               match.classList.toggle(
                 "open"
@@ -2907,9 +2537,7 @@
      RESULTS
   ===================================================== */
 
-  function renderResults(
-    results
-  ) {
+  function renderResults(results) {
 
     const container =
       document.getElementById(
@@ -2929,10 +2557,7 @@
 
     container.innerHTML =
       results
-        .slice(
-          0,
-          10
-        )
+        .slice(0, 10)
         .map(
           match =>
             fixtureRow(
@@ -2949,9 +2574,7 @@
      UPCOMING
   ===================================================== */
 
-  function renderUpcoming(
-    fixtures
-  ) {
+  function renderUpcoming(fixtures) {
 
     const container =
       document.getElementById(
@@ -2971,10 +2594,7 @@
 
     container.innerHTML =
       fixtures
-        .slice(
-          0,
-          10
-        )
+        .slice(0, 10)
         .map(
           match =>
             fixtureRow(
@@ -3043,7 +2663,6 @@
 
         </div>
 
-
         <div class="fixture-match">
 
           <div class="fixture-team home">
@@ -3058,12 +2677,9 @@
               )}
             </a>
 
-            ${badgeHtml(
-              home
-            )}
+            ${badgeHtml(home)}
 
           </div>
-
 
           <div
             class="fixture-centre ${
@@ -3101,12 +2717,9 @@
 
           </div>
 
-
           <div class="fixture-team away">
 
-            ${badgeHtml(
-              away
-            )}
+            ${badgeHtml(away)}
 
             <a
               href="${escapeHtml(
@@ -3122,28 +2735,20 @@
 
         </div>
 
+        <div
+          class="fixture-date"
+          style="text-align:right;"
+        >
 
-        ${
-          upcoming
-            ? `
-              <div
-                class="fixture-date"
-                style="text-align:right;"
-              >
-                ${escapeHtml(
+          ${
+            upcoming
+              ? escapeHtml(
                   formatTime(date)
-                )}
-              </div>
-            `
-            : `
-              <div
-                class="fixture-date"
-                style="text-align:right;"
-              >
-                FULL TIME
-              </div>
-            `
-        }
+                )
+              : "FULL TIME"
+          }
+
+        </div>
 
       </div>
     `;
@@ -3155,9 +2760,7 @@
      STORY
   ===================================================== */
 
-  function renderStory(
-    data
-  ) {
+  function renderStory(data) {
 
     const title =
       document.getElementById(
@@ -3211,7 +2814,7 @@
 
 
   /* =====================================================
-     STANDINGS
+     LEAGUE TABLE
   ===================================================== */
 
   function renderStandings(
@@ -3237,36 +2840,62 @@
     leagueName.textContent =
       currentCompetition.name;
 
-    const rows =
+    /*
+      Always attempt to get the
+      selected standings section.
+    */
+
+    let rows =
       getTableRows(
-        standings
+        standings,
+        currentTableMode
       );
+
+    /*
+      IMPORTANT:
+      If HOME/AWAY isn't returned,
+      don't leave the table blank.
+      Fall back to TOTAL.
+    */
+
+    if (
+      !rows.length &&
+      currentTableMode !== "overall"
+    ) {
+
+      rows =
+        getTableRows(
+          standings,
+          "overall"
+        );
+
+    }
 
     if (!rows.length) {
 
-      const unavailable =
+      let message =
+        "No league table data available.";
+
+      if (
         data &&
-        data.standingsAvailable ===
-          false;
+        data.standingsAvailable === false
+      ) {
+
+        message =
+          "League table data is not available on the current API plan.";
+
+      }
 
       tbody.innerHTML =
         `<tr>
 
           <td
             colspan="8"
-            class="${
-              unavailable
-                ? "empty"
-                : "loading"
-            }"
+            class="table-empty"
           >
-
-            ${
-              unavailable
-                ? "League table data is not available on the current API plan."
-                : "No league table data available."
-            }
-
+            ${escapeHtml(
+              message
+            )}
           </td>
 
         </tr>`;
@@ -3370,14 +2999,11 @@
           )}
         </td>
 
-
         <td>
 
           <div class="club-cell">
 
-            ${badgeHtml(
-              team
-            )}
+            ${badgeHtml(team)}
 
             <a
               href="${escapeHtml(
@@ -3393,13 +3019,11 @@
 
         </td>
 
-
         <td>
           ${escapeHtml(
             played
           )}
         </td>
-
 
         <td>
           ${escapeHtml(
@@ -3407,13 +3031,11 @@
           )}
         </td>
 
-
         <td>
           ${escapeHtml(
             draw
           )}
         </td>
-
 
         <td>
           ${escapeHtml(
@@ -3421,13 +3043,11 @@
           )}
         </td>
 
-
         <td>
           ${escapeHtml(
             gd
           )}
         </td>
-
 
         <td class="points">
           ${escapeHtml(
@@ -3453,8 +3073,21 @@
         "#table-body tr"
       );
 
+    /*
+      Don't count the special
+      empty/error row.
+    */
+
+    const actualRows =
+      [...rows].filter(
+        row =>
+          !row.querySelector(
+            ".table-empty"
+          )
+      );
+
     if (
-      rows.length <= 10
+      actualRows.length <= 10
     ) {
 
       button.style.display =
@@ -3516,10 +3149,6 @@
     );
 
 
-  /* =====================================================
-     SHOW MORE
-  ===================================================== */
-
   document
     .getElementById(
       "table-more"
@@ -3546,14 +3175,6 @@
   /* =====================================================
      PLAYER IDENTITY
   ===================================================== */
-
-  /*
-    Reusable player identity component.
-
-    Future stats lists can call this
-    same function so every player has
-    the same presentation.
-  */
 
   function playerIdentityHtml(
     person,
@@ -3619,9 +3240,7 @@
      TOP SCORERS
   ===================================================== */
 
-  async function renderScorers(
-    key
-  ) {
+  async function renderScorers(key) {
 
     const container =
       document.getElementById(
@@ -3670,10 +3289,7 @@
 
       container.innerHTML =
         scorers
-          .slice(
-            0,
-            10
-          )
+          .slice(0, 10)
           .map(
             (item, index) => {
 
@@ -3696,14 +3312,12 @@
                     ${index + 1}
                   </div>
 
-
                   <div class="scorer-player">
 
                     ${playerIdentityHtml(
                       person,
                       team
                     )}
-
 
                     <div class="scorer-team">
 
@@ -3714,7 +3328,6 @@
                     </div>
 
                   </div>
-
 
                   <div class="scorer-goals">
 
@@ -3780,9 +3393,7 @@
     ) {
 
       if (
-        key.startsWith(
-          prefix
-        )
+        key.startsWith(prefix)
       ) {
 
         alreadyLoaded =
@@ -3853,17 +3464,9 @@
 
   async function loadTeamsForSearch() {
 
-    /*
-      Load the five featured leagues
-      first.
-    */
-
     for (
       const competition
-      of competitions.slice(
-        0,
-        5
-      )
+      of competitions.slice(0, 5)
     ) {
 
       await addTeamsForCompetition(
@@ -3872,16 +3475,9 @@
 
     }
 
-    /*
-      Load remaining competitions
-      in the background.
-    */
-
     for (
       const competition
-      of competitions.slice(
-        5
-      )
+      of competitions.slice(5)
     ) {
 
       addTeamsForCompetition(
@@ -3893,9 +3489,7 @@
   }
 
 
-  function renderSearchResults(
-    value
-  ) {
+  function renderSearchResults(value) {
 
     const query =
       value
@@ -3929,10 +3523,7 @@
                 teamName(b)
               )
         )
-        .slice(
-          0,
-          8
-        );
+        .slice(0, 8);
 
     if (!matches.length) {
 
@@ -3980,22 +3571,16 @@
                     : ""
                 }
 
-
                 <span class="search-result-name">
-
                   ${escapeHtml(
                     teamName(team)
                   )}
-
                 </span>
 
-
                 <span class="search-result-league">
-
                   ${escapeHtml(
                     team._leagueName
                   )}
-
                 </span>
 
               </a>
@@ -4049,11 +3634,6 @@
   async function start() {
 
     await loadCompetitions();
-
-    /*
-      Continue loading search
-      teams in the background.
-    */
 
     loadTeamsForSearch();
 
