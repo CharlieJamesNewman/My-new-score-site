@@ -55,6 +55,12 @@ const CACHE_TTL = {
 
 const inFlight = new Map();
 
+/*
+  ------------------------------------------------------------
+  RESPONSE
+  ------------------------------------------------------------
+*/
+
 function jsonResponse(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
@@ -66,19 +72,42 @@ function jsonResponse(data, status = 200, extraHeaders = {}) {
   });
 }
 
+/*
+  ------------------------------------------------------------
+  DATE HELPERS
+  ------------------------------------------------------------
+*/
+
 function getTodayString() {
   return new Date().toISOString().slice(0, 10);
 }
 
 function addDays(dateString, days) {
   const date = new Date(`${dateString}T00:00:00Z`);
-  date.setUTCDate(date.getUTCDate() + days);
+
+  date.setUTCDate(
+    date.getUTCDate() + days
+  );
+
   return date.toISOString().slice(0, 10);
 }
 
+/*
+  ------------------------------------------------------------
+  CACHE
+  ------------------------------------------------------------
+*/
+
 function cacheUrlFor(path) {
+  /*
+    Versioned cache namespace.
+
+    Changing /v3 to /v4 gives us a fresh cache namespace
+    without having to manually clear Cloudflare's cache.
+  */
+
   return new Request(
-    `https://score-dash-cache.invalid${path}`,
+    `https://score-dash-cache.invalid/v4${path}`,
     {
       method: "GET"
     }
@@ -104,25 +133,34 @@ async function footballDataRequest(
   }
 
   const cache = caches.default;
-  const cacheRequest = cacheUrlFor(path);
 
-  const cached = await cache.match(cacheRequest);
+  const cacheRequest =
+    cacheUrlFor(path);
+
+  const cached =
+    await cache.match(cacheRequest);
 
   if (cached) {
     return cached;
   }
 
-  const response = await fetch(
-    `${FOOTBALL_DATA_API}${path}`,
-    {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": env.FootballDataToken,
-        "Accept": "application/json",
-        ...extraHeaders
+  const response =
+    await fetch(
+      `${FOOTBALL_DATA_API}${path}`,
+      {
+        method: "GET",
+
+        headers: {
+          "X-Auth-Token":
+            env.FootballDataToken,
+
+          "Accept":
+            "application/json",
+
+          ...extraHeaders
+        }
       }
-    }
-  );
+    );
 
   if (!response.ok) {
     let message =
@@ -133,31 +171,45 @@ async function footballDataRequest(
         await response.clone().json();
 
       if (errorBody?.message) {
-        message = errorBody.message;
+        message =
+          errorBody.message;
       } else if (errorBody?.error) {
-        message = errorBody.error;
+        message =
+          errorBody.error;
       }
     } catch (_) {}
 
-    const error = new Error(message);
-    error.status = response.status;
+    const error =
+      new Error(message);
+
+    error.status =
+      response.status;
 
     throw error;
   }
 
-  const body = await response.arrayBuffer();
+  const body =
+    await response.arrayBuffer();
 
-  const cachedResponse = new Response(body, {
-    status: response.status,
-    headers: {
-      "Content-Type":
-        response.headers.get("Content-Type") ||
-        "application/json; charset=utf-8",
+  const cachedResponse =
+    new Response(
+      body,
+      {
+        status:
+          response.status,
 
-      "Cache-Control":
-        `public, max-age=${cacheTtl}`
-    }
-  });
+        headers: {
+          "Content-Type":
+            response.headers.get(
+              "Content-Type"
+            ) ||
+            "application/json; charset=utf-8",
+
+          "Cache-Control":
+            `public, max-age=${cacheTtl}`
+        }
+      }
+    );
 
   await cache.put(
     cacheRequest,
@@ -229,15 +281,26 @@ async function resolveCompetition(
   }
 
   const alias =
-    featuredCompetitionFromKey(input);
+    featuredCompetitionFromKey(
+      input
+    );
 
   if (alias) {
     return {
-      key: normaliseKey(input),
-      code: alias.code,
-      name: alias.name,
-      shortName: alias.shortName,
-      country: alias.country
+      key:
+        normaliseKey(input),
+
+      code:
+        alias.code,
+
+      name:
+        alias.name,
+
+      shortName:
+        alias.shortName,
+
+      country:
+        alias.country
     };
   }
 
@@ -245,9 +308,10 @@ async function resolveCompetition(
     input.toUpperCase();
 
   /*
-    First try it as a football-data.org
-    competition code.
+    First try it as a direct
+    football-data.org competition code.
   */
+
   try {
     const competition =
       await footballDataJson(
@@ -259,10 +323,11 @@ async function resolveCompetition(
       );
 
     return {
-      key: slugify(
-        competition.code ||
-        competition.name
-      ),
+      key:
+        slugify(
+          competition.code ||
+          competition.name
+        ),
 
       code:
         competition.code ||
@@ -284,10 +349,12 @@ async function resolveCompetition(
         competition.emblem ||
         null
     };
+
   } catch (_) {
+
     /*
-      If it isn't a direct code, search the
-      available competitions.
+      If it isn't a direct code,
+      search the available competitions.
     */
 
     const competitions =
@@ -297,7 +364,7 @@ async function resolveCompetition(
 
     const found =
       competitions.find(
-        (competition) =>
+        competition =>
           normaliseKey(
             competition.key
           ) ===
@@ -343,7 +410,10 @@ async function getAvailableCompetitions(
 
   const result = [];
 
-  for (const competition of competitions) {
+  for (
+    const competition
+    of competitions
+  ) {
     if (!competition?.code) {
       continue;
     }
@@ -358,7 +428,8 @@ async function getAvailableCompetitions(
       const [
         alias,
         config
-      ] of Object.entries(
+      ]
+      of Object.entries(
         FEATURED_COMPETITIONS
       )
     ) {
@@ -407,19 +478,21 @@ async function getAvailableCompetitions(
   }
 
   /*
-    Keep the five featured leagues available.
+    Always retain the five featured leagues.
   */
+
   for (
     const [
       key,
       config
-    ] of Object.entries(
+    ]
+    of Object.entries(
       FEATURED_COMPETITIONS
     )
   ) {
     const exists =
       result.some(
-        (item) =>
+        item =>
           item.code ===
           config.code
       );
@@ -427,65 +500,85 @@ async function getAvailableCompetitions(
     if (!exists) {
       result.push({
         key,
-        code: config.code,
-        name: config.name,
+
+        code:
+          config.code,
+
+        name:
+          config.name,
+
         shortName:
           config.shortName,
+
         country:
           config.country,
-        areaCode: "",
-        type: "LEAGUE",
-        emblem: null,
-        plan: null
+
+        areaCode:
+          "",
+
+        type:
+          "LEAGUE",
+
+        emblem:
+          null,
+
+        plan:
+          null
       });
     }
   }
 
   /*
-    Featured leagues first,
-    everything else alphabetically.
+    Featured leagues first.
+    Everything else alphabetically.
   */
+
   const featuredOrder =
     Object.keys(
       FEATURED_COMPETITIONS
     );
 
-  result.sort((a, b) => {
-    const aIndex =
-      featuredOrder.indexOf(
-        a.key
+  result.sort(
+    (a, b) => {
+      const aIndex =
+        featuredOrder.indexOf(
+          a.key
+        );
+
+      const bIndex =
+        featuredOrder.indexOf(
+          b.key
+        );
+
+      const aFeatured =
+        aIndex !== -1;
+
+      const bFeatured =
+        bIndex !== -1;
+
+      if (
+        aFeatured &&
+        bFeatured
+      ) {
+        return (
+          aIndex -
+          bIndex
+        );
+      }
+
+      if (aFeatured) {
+        return -1;
+      }
+
+      if (bFeatured) {
+        return 1;
+      }
+
+      return a.name.localeCompare(
+        b.name
       );
-
-    const bIndex =
-      featuredOrder.indexOf(
-        b.key
-      );
-
-    const aFeatured =
-      aIndex !== -1;
-
-    const bFeatured =
-      bIndex !== -1;
-
-    if (
-      aFeatured &&
-      bFeatured
-    ) {
-      return aIndex - bIndex;
     }
-
-    if (aFeatured) {
-      return -1;
-    }
-
-    if (bFeatured) {
-      return 1;
-    }
-
-    return a.name.localeCompare(
-      b.name
-    );
-  });
+  );
 
   return result;
 }
@@ -502,7 +595,8 @@ function simplifyTeam(team) {
   }
 
   return {
-    id: team.id,
+    id:
+      team.id,
 
     name:
       team.name ||
@@ -534,23 +628,67 @@ function simplifyTeam(team) {
       team.founded ||
       null,
 
-    area: team.area
-      ? {
-          id:
-            team.area.id ||
-            null,
+    area:
+      team.area
+        ? {
+            id:
+              team.area.id ||
+              null,
 
-          name:
-            team.area.name ||
-            "",
+            name:
+              team.area.name ||
+              "",
 
-          code:
-            team.area.code ||
-            ""
-        }
-      : null
+            code:
+              team.area.code ||
+              ""
+          }
+        : null
   };
 }
+
+/*
+  ------------------------------------------------------------
+  PLAYER HELPER
+  ------------------------------------------------------------
+*/
+
+function simplifyPlayer(player) {
+  if (!player) {
+    return {
+      id: null,
+      name: "Unknown player",
+      nationality: null
+    };
+  }
+
+  return {
+    id:
+      player.id ||
+      null,
+
+    name:
+      player.name ||
+      "Unknown player",
+
+    /*
+      football-data.org may return
+      nationality depending on the
+      available player data.
+    */
+
+    nationality:
+      player.nationality ||
+      player.country ||
+      null
+  };
+}
+
+/*
+  ------------------------------------------------------------
+  SCORE
+  ------------------------------------------------------------
+*/
 
 function simplifyScore(score) {
   if (!score) {
@@ -602,9 +740,16 @@ function simplifyScore(score) {
   };
 }
 
+/*
+  ------------------------------------------------------------
+  MATCH
+  ------------------------------------------------------------
+*/
+
 function simplifyMatch(match) {
   return {
-    id: match.id,
+    id:
+      match.id,
 
     utcDate:
       match.utcDate ||
@@ -648,8 +793,7 @@ function simplifyMatch(match) {
               match.competition.code,
 
             emblem:
-              match.competition
-                .emblem ||
+              match.competition.emblem ||
               null
           }
         : null,
@@ -740,7 +884,8 @@ function simplifyStandings(
       : [];
 
   for (
-    const section of standings
+    const section
+    of standings
   ) {
     const type =
       section.type;
@@ -811,22 +956,78 @@ async function getLeagueData(
       competition.code
     )}/standings`;
 
-  const [
-    matchesData,
-    standingsData
-  ] = await Promise.all([
-    footballDataJson(
-      env,
-      matchesPath,
-      CACHE_TTL.leagueData
-    ),
+  /*
+    IMPORTANT FIX:
 
-    footballDataJson(
-      env,
-      standingsPath,
-      CACHE_TTL.standings
-    )
-  ]);
+    Matches and standings are now
+    requested independently.
+
+    If standings fail because of
+    subscription permissions, matches
+    can still be displayed.
+  */
+
+  const [
+    matchesResult,
+    standingsResult
+  ] =
+    await Promise.allSettled([
+      footballDataJson(
+        env,
+        matchesPath,
+        CACHE_TTL.leagueData
+      ),
+
+      footballDataJson(
+        env,
+        standingsPath,
+        CACHE_TTL.standings
+      )
+    ]);
+
+  /*
+    Matches are the essential part.
+    If matches fail, the league request
+    itself should fail.
+  */
+
+  if (
+    matchesResult.status ===
+    "rejected"
+  ) {
+    throw matchesResult.reason;
+  }
+
+  const matchesData =
+    matchesResult.value;
+
+  /*
+    Standings are optional.
+
+    If the API rejects the standings
+    request, keep the rest of the page
+    working.
+  */
+
+  const standingsData =
+    standingsResult.status ===
+    "fulfilled"
+      ? standingsResult.value
+      : null;
+
+  const standingsAvailable =
+    standingsResult.status ===
+    "fulfilled";
+
+  const standingsError =
+    standingsResult.status ===
+    "rejected"
+      ? (
+          standingsResult.reason
+            ?.message ||
+          "Standings unavailable."
+        )
+      : null;
 
   const matches =
     Array.isArray(
@@ -844,8 +1045,7 @@ async function getLeagueData(
     new Set([
       "IN_PLAY",
       "LIVE",
-      "PAUSED",
-      "SUSPENDED"
+      "PAUSED"
     ]);
 
   const finishedStatuses =
@@ -862,10 +1062,11 @@ async function getLeagueData(
 
   const live =
     simplifiedMatches
-      .filter((match) =>
-        liveStatuses.has(
-          match.status
-        )
+      .filter(
+        match =>
+          liveStatuses.has(
+            match.status
+          )
       )
       .sort(
         (a, b) =>
@@ -879,10 +1080,11 @@ async function getLeagueData(
 
   const results =
     simplifiedMatches
-      .filter((match) =>
-        finishedStatuses.has(
-          match.status
-        )
+      .filter(
+        match =>
+          finishedStatuses.has(
+            match.status
+          )
       )
       .sort(
         (a, b) =>
@@ -897,7 +1099,7 @@ async function getLeagueData(
   const upcoming =
     simplifiedMatches
       .filter(
-        (match) =>
+        match =>
           !liveStatuses.has(
             match.status
           ) &&
@@ -982,7 +1184,11 @@ async function getLeagueData(
     standings:
       simplifyStandings(
         standingsData
-      )
+      ),
+
+    standingsAvailable,
+
+    standingsError
   };
 }
 
@@ -998,20 +1204,18 @@ async function getLeagueDataCached(
   if (
     inFlight.has(key)
   ) {
-    return inFlight.get(
-      key
-    );
+    return inFlight.get(key);
   }
 
   const promise =
     getLeagueData(
       env,
       league
-    ).finally(() => {
-      inFlight.delete(
-        key
-      );
-    });
+    ).finally(
+      () => {
+        inFlight.delete(key);
+      }
+    );
 
   inFlight.set(
     key,
@@ -1449,25 +1653,18 @@ async function handleTeamScorers(
     )
       ? data.scorers
           .filter(
-            (item) =>
+            item =>
               Number(
                 item.team?.id
               ) ===
               Number(teamId)
           )
           .map(
-            (item) => ({
-              player: {
-                id:
+            item => ({
+              player:
+                simplifyPlayer(
                   item.player
-                    ?.id ||
-                  null,
-
-                name:
-                  item.player
-                    ?.name ||
-                  "Unknown player"
-              },
+                ),
 
               team:
                 simplifyTeam(
@@ -1553,18 +1750,11 @@ async function handleScorers(
       data?.scorers
     )
       ? data.scorers.map(
-          (item) => ({
-            player: {
-              id:
+          item => ({
+            player:
+              simplifyPlayer(
                 item.player
-                  ?.id ||
-                null,
-
-              name:
-                item.player
-                  ?.name ||
-                "Unknown player"
-            },
+              ),
 
             team:
               simplifyTeam(
@@ -1710,15 +1900,17 @@ async function handleTest(
 function friendlyError(
   error
 ) {
+  const status =
+    Number(
+      error?.status ||
+      0
+    );
+
   const message =
     error?.message ||
     "Unknown error";
 
-  if (
-    message.includes(
-      "403"
-    )
-  ) {
+  if (status === 403) {
     return {
       message:
         "This competition or resource is not available on the current football-data.org plan."
@@ -1726,9 +1918,7 @@ function friendlyError(
   }
 
   if (
-    message.includes(
-      "429"
-    )
+    status === 429
   ) {
     return {
       message:
@@ -1773,6 +1963,7 @@ export default {
       );
 
     try {
+
       if (
         url.pathname ===
         "/api/test-football-data"
@@ -1911,6 +2102,7 @@ export default {
       );
 
     } catch (error) {
+
       console.error(
         error
       );
