@@ -55,8 +55,14 @@ header {
 }
 
 .logo {
+  display: inline-block;
   font-size: 27px;
   font-weight: 800;
+  cursor: pointer;
+}
+
+.logo:hover {
+  opacity: 0.9;
 }
 
 .logo b {
@@ -295,9 +301,13 @@ td:nth-child(2) {
 
   <div class="header-inner">
 
-    <div class="logo">
+    <a
+      class="logo"
+      href="index.html"
+      aria-label="Go to SCOREdash homepage"
+    >
       SCORE<b>DASH</b>
-    </div>
+    </a>
 
     <a
       class="back"
