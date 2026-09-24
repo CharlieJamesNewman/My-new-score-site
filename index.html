@@ -58,10 +58,6 @@
       padding: 24px 0 50px;
     }
 
-    /* =========================
-       HEADER
-    ========================== */
-
     header {
       display: flex;
       align-items: center;
@@ -94,9 +90,7 @@
       letter-spacing: .4px;
     }
 
-    /* =========================
-       SEARCH
-    ========================== */
+    /* SEARCH */
 
     .search-wrap {
       position: relative;
@@ -171,9 +165,7 @@
       margin-left: auto;
     }
 
-    /* =========================
-       LEAGUE DROPDOWN
-    ========================== */
+    /* LEAGUE DROPDOWN */
 
     .league-selector-row {
       display: flex;
@@ -193,7 +185,7 @@
 
     .league-select-wrap {
       position: relative;
-      width: min(390px, 100%);
+      width: min(360px, 100%);
     }
 
     #league-select {
@@ -203,7 +195,7 @@
       width: 100%;
       height: 46px;
 
-      padding: 0 44px 0 15px;
+      padding: 0 42px 0 15px;
 
       background: var(--panel);
       color: var(--text);
@@ -226,6 +218,16 @@
       border-color: var(--accent);
     }
 
+    .league-select-arrow {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--accent);
+      font-size: 14px;
+    }
+
     #league-select optgroup {
       background: #11151a;
       color: var(--muted);
@@ -237,19 +239,7 @@
       color: var(--text);
     }
 
-    .league-select-arrow {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-      color: var(--accent);
-      font-size: 12px;
-    }
-
-    /* =========================
-       PAGE GRID
-    ========================== */
+    /* GRID */
 
     .dashboard-grid {
       display: grid;
@@ -271,9 +261,7 @@
       top: 15px;
     }
 
-    /* =========================
-       SECTIONS
-    ========================== */
+    /* SECTIONS */
 
     .section {
       margin-bottom: 20px;
@@ -320,9 +308,7 @@
       color: var(--danger);
     }
 
-    /* =========================
-       LIVE MATCHES
-    ========================== */
+    /* LIVE */
 
     .live-badge {
       display: inline-flex;
@@ -431,9 +417,7 @@
       border-top: 1px solid var(--border);
     }
 
-    /* =========================
-       RESULTS / UPCOMING
-    ========================== */
+    /* FIXTURES */
 
     .fixture-row {
       display: grid;
@@ -472,7 +456,6 @@
       width: 21px;
       height: 21px;
       object-fit: contain;
-      flex: 0 0 auto;
     }
 
     .fixture-team a {
@@ -499,9 +482,7 @@
       font-weight: 700;
     }
 
-    /* =========================
-       STORY
-    ========================== */
+    /* STORY */
 
     .story-card {
       padding: 17px;
@@ -520,9 +501,7 @@
       font-size: 13px;
     }
 
-    /* =========================
-       TABLE
-    ========================== */
+    /* TABLE */
 
     .table-controls {
       display: flex;
@@ -656,9 +635,7 @@
       background: var(--panel-2);
     }
 
-    /* =========================
-       TOP SCORERS
-    ========================== */
+    /* SCORERS */
 
     .scorer {
       display: grid;
@@ -715,10 +692,6 @@
       text-transform: uppercase;
     }
 
-    /* =========================
-       FOOTER
-    ========================== */
-
     footer {
       margin-top: 25px;
       padding-top: 18px;
@@ -728,9 +701,7 @@
       text-align: center;
     }
 
-    /* =========================
-       MOBILE
-    ========================== */
+    /* MOBILE */
 
     @media (max-width: 950px) {
 
@@ -749,6 +720,7 @@
       .side-column {
         order: 2;
       }
+
     }
 
     @media (max-width: 700px) {
@@ -802,15 +774,15 @@
       .club-cell a {
         max-width: 125px;
       }
+
     }
+
   </style>
 </head>
 
 <body>
 
 <div class="page">
-
-  <!-- HEADER -->
 
   <header>
 
@@ -826,8 +798,6 @@
 
     </div>
 
-
-    <!-- TEAM SEARCH -->
 
     <div class="search-wrap">
 
@@ -856,31 +826,9 @@
     <div class="league-select-wrap">
 
       <select id="league-select">
-
-        <optgroup label="Popular leagues">
-
-          <option value="premier" selected>
-            Premier League
-          </option>
-
-          <option value="laliga">
-            LaLiga
-          </option>
-
-          <option value="seriea">
-            Serie A
-          </option>
-
-          <option value="bundesliga">
-            Bundesliga
-          </option>
-
-          <option value="ligue1">
-            Ligue 1
-          </option>
-
-        </optgroup>
-
+        <option value="premier">
+          Premier League
+        </option>
       </select>
 
       <div class="league-select-arrow">
@@ -892,17 +840,15 @@
   </div>
 
 
-  <!-- DASHBOARD -->
-
   <div class="dashboard-grid">
 
 
-    <!-- LEFT COLUMN -->
+    <!-- LEFT -->
 
     <main class="main-column">
 
 
-      <!-- LIVE MATCHES -->
+      <!-- LIVE -->
 
       <section class="section">
 
@@ -919,7 +865,10 @@
 
         </div>
 
-        <div id="matches" class="card">
+        <div
+          id="matches"
+          class="card"
+        >
 
           <div class="loading">
             Loading live matches...
@@ -930,7 +879,7 @@
       </section>
 
 
-      <!-- RECENT RESULTS -->
+      <!-- RESULTS -->
 
       <section class="section">
 
@@ -946,7 +895,10 @@
 
         </div>
 
-        <div id="results-list" class="card">
+        <div
+          id="results-list"
+          class="card"
+        >
 
           <div class="loading">
             Loading results...
@@ -957,7 +909,7 @@
       </section>
 
 
-      <!-- UPCOMING FIXTURES -->
+      <!-- UPCOMING -->
 
       <section class="section">
 
@@ -973,7 +925,10 @@
 
         </div>
 
-        <div id="upcoming-list" class="card">
+        <div
+          id="upcoming-list"
+          class="card"
+        >
 
           <div class="loading">
             Loading fixtures...
@@ -984,7 +939,7 @@
       </section>
 
 
-      <!-- AROUND THE LEAGUE -->
+      <!-- STORY -->
 
       <section class="section">
 
@@ -1019,12 +974,12 @@
     </main>
 
 
-    <!-- RIGHT COLUMN -->
+    <!-- RIGHT -->
 
     <aside class="side-column">
 
 
-      <!-- LEAGUE TABLE -->
+      <!-- TABLE -->
 
       <section class="section">
 
@@ -1042,6 +997,7 @@
           </div>
 
         </div>
+
 
         <div class="card">
 
@@ -1070,6 +1026,7 @@
 
           </div>
 
+
           <div class="table-scroll">
 
             <table id="table">
@@ -1077,6 +1034,7 @@
               <thead>
 
                 <tr>
+
                   <th>#</th>
                   <th>Team</th>
                   <th>PL</th>
@@ -1085,9 +1043,11 @@
                   <th>L</th>
                   <th>GD</th>
                   <th>Pts</th>
+
                 </tr>
 
               </thead>
+
 
               <tbody id="table-body">
 
@@ -1108,6 +1068,7 @@
 
           </div>
 
+
           <button
             id="table-more"
             class="show-more"
@@ -1120,7 +1081,7 @@
       </section>
 
 
-      <!-- TOP SCORERS -->
+      <!-- SCORERS -->
 
       <section class="section">
 
@@ -1138,6 +1099,7 @@
           </div>
 
         </div>
+
 
         <div
           id="scorers"
@@ -1170,7 +1132,7 @@
 
 
   /* =========================
-     POPULAR LEAGUES
+     FEATURED LEAGUES
   ========================== */
 
   const FEATURED = [
@@ -1208,17 +1170,20 @@
   ];
 
 
-  /*
-    Premier League is always
-    the default.
-  */
-
-  let currentCompetition =
-    FEATURED[0];
+  const FEATURED_CODES =
+    new Set(
+      FEATURED.map(
+        item => item.code
+      )
+    );
 
 
   let competitions =
     [...FEATURED];
+
+
+  let currentCompetition =
+    FEATURED[0];
 
 
   let leagueBundle =
@@ -1248,7 +1213,7 @@
 
 
   /* =========================
-     API HELPER
+     API
   ========================== */
 
   async function fetchApi(path) {
@@ -1262,7 +1227,7 @@
       );
 
 
-    let data;
+    let data = null;
 
 
     try {
@@ -1270,7 +1235,7 @@
       data =
         await response.json();
 
-    } catch {
+    } catch (error) {
 
       throw new Error(
         "The server returned an invalid response."
@@ -1331,12 +1296,23 @@
   }
 
 
+  function escapeHtml(value) {
+
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  }
+
+
   function formatDate(value) {
 
     if (!value) {
       return "";
     }
-
 
     const date =
       new Date(value);
@@ -1347,9 +1323,7 @@
         date.getTime()
       )
     ) {
-
       return "";
-
     }
 
 
@@ -1370,7 +1344,6 @@
       return "";
     }
 
-
     const date =
       new Date(value);
 
@@ -1380,9 +1353,7 @@
         date.getTime()
       )
     ) {
-
       return "";
-
     }
 
 
@@ -1397,78 +1368,37 @@
   }
 
 
-  function escapeHtml(value) {
+  function score(
+    match,
+    team
+  ) {
 
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-
-  }
-
-
-  /*
-    Handles the football-data.org
-    score structure.
-  */
-
-  function score(match, side) {
-
-    const fullTime =
+    const goals =
       match?.score?.fullTime;
 
 
-    if (
-      fullTime &&
-      fullTime[side] != null
-    ) {
-
-      return fullTime[side];
-
-    }
-
-
-    /*
-      Also support simplified
-      API responses.
-    */
-
-    if (
-      side === "home" &&
-      match?.homeScore != null
-    ) {
-
-      return match.homeScore;
-
+    if (!goals) {
+      return "-";
     }
 
 
     if (
-      side === "away" &&
-      match?.awayScore != null
+      team === "home" &&
+      goals.home != null
     ) {
+      return goals.home;
+    }
 
-      return match.awayScore;
 
+    if (
+      team === "away" &&
+      goals.away != null
+    ) {
+      return goals.away;
     }
 
 
     return "-";
-
-  }
-
-
-  function getMatchDate(match) {
-
-    return (
-      match?.utcDate ||
-      match?.date ||
-      match?.kickoff ||
-      match?.startTime ||
-      ""
-    );
 
   }
 
@@ -1481,9 +1411,17 @@
 
 
     if (
-      match.status ===
-      "IN_PLAY"
+      match.status === "IN_PLAY" ||
+      match.status === "LIVE"
     ) {
+
+      if (
+        match.minute != null
+      ) {
+
+        return `${match.minute}'`;
+
+      }
 
       return "LIVE";
 
@@ -1491,8 +1429,7 @@
 
 
     if (
-      match.status ===
-      "PAUSED"
+      match.status === "PAUSED"
     ) {
 
       return "HT";
@@ -1500,10 +1437,146 @@
     }
 
 
-    return (
-      match.status ||
-      ""
-    );
+    return match.status || "";
+
+  }
+
+
+  /* =========================
+     DATA NORMALISATION
+  ========================== */
+
+  /*
+    The worker returns:
+
+      live.matches
+      results.matches
+      upcoming.matches
+      standings.TOTAL
+      standings.HOME
+      standings.AWAY
+
+    These functions make sure
+    the page always receives arrays.
+  */
+
+  function getLiveMatches(data) {
+
+    if (
+      Array.isArray(
+        data?.live?.matches
+      )
+    ) {
+
+      return data.live.matches;
+
+    }
+
+    return [];
+
+  }
+
+
+  function getResults(data) {
+
+    if (
+      Array.isArray(
+        data?.results?.matches
+      )
+    ) {
+
+      return data.results.matches;
+
+    }
+
+    return [];
+
+  }
+
+
+  function getUpcoming(data) {
+
+    if (
+      Array.isArray(
+        data?.upcoming?.matches
+      )
+    ) {
+
+      return data.upcoming.matches;
+
+    }
+
+    return [];
+
+  }
+
+
+  function getStandings(data) {
+
+    if (
+      Array.isArray(
+        data?.standings
+      )
+    ) {
+
+      return data.standings;
+
+    }
+
+
+    if (
+      Array.isArray(
+        data?.standings?.TOTAL
+      )
+    ) {
+
+      return data.standings;
+
+    }
+
+
+    return [];
+
+  }
+
+
+  function getTableRows(
+    standings,
+    mode = currentTableMode
+  ) {
+
+    /*
+      If the worker ever returns
+      a simple array, support that too.
+    */
+
+    if (
+      Array.isArray(
+        standings
+      )
+    ) {
+
+      return standings;
+
+    }
+
+
+    const key =
+      mode.toUpperCase();
+
+
+    if (
+      Array.isArray(
+        standings?.[key]
+      )
+    ) {
+
+      return standings[key];
+
+    }
+
+
+    return [];
 
   }
 
@@ -1522,90 +1595,83 @@
         );
 
 
-      const returned =
+      if (
         Array.isArray(
           data?.competitions
-        )
-          ? data.competitions
-          : [];
-
-
-      if (
-        returned.length
+        ) &&
+        data.competitions.length
       ) {
 
+        const returned =
+          data.competitions;
+
+
+        const byCode =
+          new Map();
+
+
         /*
-          Build the five popular
-          leagues first.
+          Put all returned competitions
+          into the map.
         */
 
-        const popular = [];
-
-
         for (
-          const featured
-          of FEATURED
+          const item
+          of returned
         ) {
 
-          const found =
-            returned.find(
-              item =>
-                item.code ===
-                featured.code
+          if (
+            !item?.code
+          ) {
+            continue;
+          }
+
+
+          /*
+            Keep league competitions.
+            If the API does not provide
+            a type, keep them as well.
+          */
+
+          if (
+            item.type &&
+            item.type !== "LEAGUE"
+          ) {
+            continue;
+          }
+
+
+          const featured =
+            FEATURED.find(
+              league =>
+                league.code ===
+                item.code
             );
 
 
-          if (found) {
+          if (featured) {
 
-            popular.push({
+            byCode.set(
+              item.code,
+              {
+                ...featured,
+                ...item,
+                key:
+                  featured.key,
+                name:
+                  featured.name
+              }
+            );
 
-              ...found,
+          } else {
 
-              key:
-                featured.key,
-
-              code:
-                featured.code,
-
-              name:
-                featured.name
-
-            });
-
-          }
-
-        }
-
-
-        /*
-          Everything else returned
-          by the API goes underneath.
-        */
-
-        const featuredCodes =
-          new Set(
-            FEATURED.map(
-              item =>
-                item.code
-            )
-          );
-
-
-        const others =
-          returned
-            .filter(
-              item =>
-                !featuredCodes.has(
-                  item.code
-                )
-            )
-            .map(
-              item => ({
-
+            byCode.set(
+              item.code,
+              {
                 key:
                   item.key ||
                   String(
-                    item.code || ""
+                    item.code
                   ).toLowerCase(),
 
                 code:
@@ -1613,16 +1679,87 @@
 
                 name:
                   item.name ||
-                  item.code ||
-                  "Competition"
+                  item.code,
 
-              })
+                country:
+                  item.country ||
+                  ""
+
+              }
+            );
+
+          }
+
+        }
+
+
+        /*
+          Make sure the five featured
+          leagues are available in the
+          dropdown.
+        */
+
+        for (
+          const featured
+          of FEATURED
+        ) {
+
+          if (
+            !byCode.has(
+              featured.code
+            )
+          ) {
+
+            byCode.set(
+              featured.code,
+              featured
+            );
+
+          }
+
+        }
+
+
+        const all =
+          [...byCode.values()];
+
+
+        const popular =
+          FEATURED
+            .map(
+              featured =>
+                all.find(
+                  item =>
+                    item.code ===
+                    featured.code
+                )
+            )
+            .filter(Boolean);
+
+
+        const popularCodes =
+          new Set(
+            popular.map(
+              item =>
+                item.code
+            )
+          );
+
+
+        const others =
+          all
+            .filter(
+              item =>
+                !popularCodes.has(
+                  item.code
+                )
             )
             .sort(
               (a, b) =>
-                a.name.localeCompare(
-                  b.name
-                )
+                String(a.name)
+                  .localeCompare(
+                    String(b.name)
+                  )
             );
 
 
@@ -1636,16 +1773,10 @@
     } catch (error) {
 
       console.warn(
-        "Could not load competitions:",
+        "Competition loading failed:",
         error
       );
 
-
-      /*
-        Keep the five popular
-        leagues if the endpoint
-        temporarily fails.
-      */
 
       competitions =
         [...FEATURED];
@@ -1654,14 +1785,14 @@
 
 
     /*
-      Premier League MUST remain
-      the initial competition.
+      Premier League is always
+      the default page.
     */
 
     currentCompetition =
       competitions.find(
-        competition =>
-          competition.key ===
+        item =>
+          item.key ===
           "premier"
       ) ||
       FEATURED[0];
@@ -1674,10 +1805,10 @@
       currentCompetition.key;
 
 
-    /*
-      Load the main league data
-      immediately.
-    */
+    await addTeamsForCompetition(
+      currentCompetition
+    );
+
 
     await loadLeague(
       currentCompetition.key
@@ -1686,45 +1817,39 @@
   }
 
 
-  /* =========================
-     LEAGUE DROPDOWN
-  ========================== */
-
   function renderLeagueDropdown() {
 
-    const popularKeys =
-      new Set(
-        FEATURED.map(
-          item =>
-            item.key
-        )
+    const popular =
+      FEATURED.filter(
+        featured =>
+          competitions.some(
+            competition =>
+              competition.code ===
+              featured.code
+          )
       );
 
 
-    const popular =
-      competitions.filter(
-        competition =>
-          popularKeys.has(
-            competition.key
-          )
+    const popularCodes =
+      new Set(
+        popular.map(
+          item =>
+            item.code
+        )
       );
 
 
     const others =
       competitions.filter(
-        competition =>
-          !popularKeys.has(
-            competition.key
+        item =>
+          !popularCodes.has(
+            item.code
           )
       );
 
 
     let html = "";
 
-
-    /*
-      POPULAR
-    */
 
     if (popular.length) {
 
@@ -1753,14 +1878,10 @@
     }
 
 
-    /*
-      ALL OTHER LEAGUES
-    */
-
     if (others.length) {
 
       html +=
-        `<optgroup label="All other leagues">`;
+        `<optgroup label="All leagues">`;
 
 
       html +=
@@ -1794,10 +1915,6 @@
   }
 
 
-  /* =========================
-     CHANGE LEAGUE
-  ========================== */
-
   leagueSelect.addEventListener(
     "change",
     async event => {
@@ -1806,36 +1923,29 @@
         event.target.value;
 
 
-      const selected =
+      const found =
         competitions.find(
-          competition =>
-            competition.key ===
+          item =>
+            item.key ===
             key
         );
 
 
-      if (!selected) {
+      if (!found) {
         return;
       }
 
 
       currentCompetition =
-        selected;
-
-
-      leagueBundle =
-        null;
-
-
-      currentTableMode =
-        "overall";
-
-
-      leagueSelect.value =
-        currentCompetition.key;
+        found;
 
 
       showLoading();
+
+
+      await addTeamsForCompetition(
+        currentCompetition
+      );
 
 
       await loadLeague(
@@ -1857,10 +1967,6 @@
       showLoading();
 
 
-      /*
-        Main league endpoint.
-      */
-
       const data =
         await fetchApi(
           `/api/league-data?league=${encodeURIComponent(
@@ -1874,32 +1980,29 @@
 
 
       /*
-        Render each section.
+        IMPORTANT:
+
+        These now match the
+        actual worker response.
       */
 
       renderMatches(
-        data?.matches ||
-        []
+        getLiveMatches(data)
       );
 
 
       renderResults(
-        data?.recentResults ||
-        data?.results ||
-        []
+        getResults(data)
       );
 
 
       renderUpcoming(
-        data?.upcoming ||
-        data?.fixtures ||
-        []
+        getUpcoming(data)
       );
 
 
       renderStandings(
-        data?.standings ||
-        []
+        data?.standings || {}
       );
 
 
@@ -1909,14 +2012,11 @@
 
 
       /*
-        Scorers are deliberately
-        loaded separately.
-
-        If scorers fail, the
-        rest of the page remains.
+        Top scorers are loaded
+        separately.
       */
 
-      renderScorers(
+      await renderScorers(
         key
       );
 
@@ -1937,10 +2037,6 @@
 
   }
 
-
-  /* =========================
-     LOADING STATE
-  ========================== */
 
   function showLoading() {
 
@@ -1991,11 +2087,9 @@
   }
 
 
-  /* =========================
-     ERROR STATE
-  ========================== */
-
-  function showError(message) {
+  function showError(
+    message
+  ) {
 
     const safe =
       escapeHtml(message);
@@ -2041,8 +2135,8 @@
     document.getElementById(
       "scorers"
     ).innerHTML =
-      `<div class="empty">
-        Top scorer data is not available.
+      `<div class="error">
+        ${safe}
       </div>`;
 
   }
@@ -2052,7 +2146,9 @@
      LIVE MATCHES
   ========================== */
 
-  function renderMatches(matches) {
+  function renderMatches(
+    matches
+  ) {
 
     const container =
       document.getElementById(
@@ -2066,9 +2162,9 @@
           match.status ===
             "IN_PLAY" ||
           match.status ===
-            "PAUSED" ||
+            "LIVE" ||
           match.status ===
-            "SUSPENDED"
+            "PAUSED"
       );
 
 
@@ -2098,7 +2194,9 @@
   }
 
 
-  function matchRow(match) {
+  function matchRow(
+    match
+  ) {
 
     const home =
       match.homeTeam ||
@@ -2151,6 +2249,7 @@
                   : ""
               }
 
+
               <a
                 class="team-name"
                 href="team.html?teamId=${encodeURIComponent(
@@ -2181,6 +2280,7 @@
                   `
                   : ""
               }
+
 
               <a
                 class="team-name"
@@ -2286,18 +2386,7 @@
 
     const competition =
       match.competition?.name ||
-      match.league?.name ||
       currentCompetition.name;
-
-
-    const venue =
-      match.venue?.name ||
-      match.venue ||
-      "";
-
-
-    const date =
-      getMatchDate(match);
 
 
     return `
@@ -2309,25 +2398,14 @@
       </div>
 
       ${
-        venue
-          ? `
-            <div class="detail-row">
-              Venue:
-              ${escapeHtml(
-                venue
-              )}
-            </div>
-          `
-          : ""
-      }
-
-      ${
-        date
+        match.utcDate
           ? `
             <div class="detail-row">
               Kick-off:
               ${escapeHtml(
-                formatTime(date)
+                formatTime(
+                  match.utcDate
+                )
               )}
             </div>
           `
@@ -2339,10 +2417,12 @@
 
 
   /* =========================
-     RECENT RESULTS
+     RESULTS
   ========================== */
 
-  function renderResults(results) {
+  function renderResults(
+    results
+  ) {
 
     const container =
       document.getElementById(
@@ -2350,8 +2430,7 @@
       );
 
 
-    if (!Array.isArray(results) ||
-        !results.length) {
+    if (!results.length) {
 
       container.innerHTML =
         `<div class="empty">
@@ -2392,10 +2471,7 @@
       );
 
 
-    if (
-      !Array.isArray(fixtures) ||
-      !fixtures.length
-    ) {
+    if (!fixtures.length) {
 
       container.innerHTML =
         `<div class="empty">
@@ -2422,10 +2498,6 @@
   }
 
 
-  /* =========================
-     FIXTURE ROW
-  ========================== */
-
   function fixtureRow(
     match,
     upcoming
@@ -2444,7 +2516,8 @@
 
 
     const date =
-      getMatchDate(match);
+      match.utcDate ||
+      match.date;
 
 
     return `
@@ -2486,6 +2559,7 @@
                 : ""
             }
 
+
             <a
               href="team.html?teamId=${encodeURIComponent(
                 home.id || ""
@@ -2515,6 +2589,7 @@
                 `
                 : ""
             }
+
 
             <a
               href="team.html?teamId=${encodeURIComponent(
@@ -2577,7 +2652,9 @@
      STORY
   ========================== */
 
-  function renderStory(data) {
+  function renderStory(
+    data
+  ) {
 
     const title =
       document.getElementById(
@@ -2595,23 +2672,21 @@
       currentCompetition.name;
 
 
-    const standings =
-      data?.standings || [];
+    const table =
+      getTableRows(
+        data?.standings || {},
+        "overall"
+      );
 
 
-    if (
-      Array.isArray(
-        standings
-      ) &&
-      standings.length
-    ) {
+    if (table.length) {
 
       const leader =
-        standings[0];
+        table[0];
 
 
       const leaderTeam =
-        leader?.team ||
+        leader.team ||
         leader;
 
 
@@ -2622,8 +2697,8 @@
 
 
       const points =
-        leader?.points ??
-        leader?.pts ??
+        leader.points ??
+        leader.pts ??
         "-";
 
 
@@ -2670,21 +2745,24 @@
       currentCompetition.name;
 
 
-    if (
-      !Array.isArray(
+    const rows =
+      getTableRows(
         standings
-      ) ||
-      !standings.length
-    ) {
+      );
+
+
+    if (!rows.length) {
 
       tbody.innerHTML =
         `<tr>
+
           <td
             colspan="8"
             class="loading"
           >
             No league table data available.
           </td>
+
         </tr>`;
 
 
@@ -2697,26 +2775,6 @@
       return;
 
     }
-
-
-    /*
-      football-data.org can return
-      standings in a few different
-      shapes.
-
-      Flatten them if necessary.
-    */
-
-    let rows =
-      flattenStandings(
-        standings
-      );
-
-
-    rows =
-      getTableRows(
-        rows
-      );
 
 
     tbody.innerHTML =
@@ -2756,181 +2814,51 @@
   }
 
 
-  function flattenStandings(
-    standings
-  ) {
-
-    /*
-      Already-flat format.
-    */
-
-    if (
-      standings[0]?.team
-    ) {
-
-      return standings;
-
-    }
-
-
-    /*
-      football-data.org format:
-
-      [
-        {
-          type: "TOTAL",
-          table: [...]
-        }
-      ]
-    */
-
-    const flattened = [];
-
-
-    for (
-      const group
-      of standings
-    ) {
-
-      if (
-        Array.isArray(
-          group?.table
-        )
-      ) {
-
-        flattened.push(
-          ...group.table
-        );
-
-      }
-
-    }
-
-
-    if (flattened.length) {
-      return flattened;
-    }
-
-
-    return standings;
-
-  }
-
-
-  function getTableRows(
-    standings
-  ) {
-
-    if (
-      currentTableMode ===
-      "overall"
-    ) {
-
-      return standings;
-
-    }
-
-
-    return standings.map(
-      item => {
-
-        const source =
-          currentTableMode ===
-            "home"
-            ? item.home
-            : item.away;
-
-
-        if (!source) {
-          return item;
-        }
-
-
-        return {
-
-          ...item,
-
-          position:
-            source.position ??
-            item.position,
-
-          playedGames:
-            source.playedGames ??
-            item.playedGames,
-
-          won:
-            source.won ??
-            item.won,
-
-          draw:
-            source.draw ??
-            item.draw,
-
-          lost:
-            source.lost ??
-            item.lost,
-
-          goalDifference:
-            source.goalDifference ??
-            item.goalDifference,
-
-          points:
-            source.points ??
-            item.points
-
-        };
-
-      }
-    );
-
-  }
-
-
   function renderTableRow(
     item,
     index
   ) {
 
     const team =
-      item?.team ||
+      item.team ||
       item;
 
 
     const position =
-      item?.position ??
+      item.position ??
       index + 1;
 
 
     const played =
-      item?.playedGames ??
-      item?.played ??
+      item.playedGames ??
+      item.played ??
       0;
 
 
     const won =
-      item?.won ??
+      item.won ??
       0;
 
 
     const draw =
-      item?.draw ??
+      item.draw ??
       0;
 
 
     const lost =
-      item?.lost ??
+      item.lost ??
       0;
 
 
     const gd =
-      item?.goalDifference ??
-      item?.gd ??
+      item.goalDifference ??
+      item.gd ??
       0;
 
 
     const points =
-      item?.points ??
-      item?.pts ??
+      item.points ??
+      item.pts ??
       0;
 
 
@@ -2967,9 +2895,10 @@
                 : ""
             }
 
+
             <a
               href="team.html?teamId=${encodeURIComponent(
-                team?.id || ""
+                team.id || ""
               )}&league=${encodeURIComponent(
                 currentCompetition.key
               )}"
@@ -2990,11 +2919,13 @@
           )}
         </td>
 
+
         <td>
           ${escapeHtml(
             won
           )}
         </td>
+
 
         <td>
           ${escapeHtml(
@@ -3002,17 +2933,20 @@
           )}
         </td>
 
+
         <td>
           ${escapeHtml(
             lost
           )}
         </td>
 
+
         <td>
           ${escapeHtml(
             gd
           )}
         </td>
+
 
         <td class="points">
           ${escapeHtml(
@@ -3070,9 +3004,7 @@
   }
 
 
-  /* =========================
-     TABLE MODE BUTTONS
-  ========================== */
+  /* TABLE MODE */
 
   document
     .querySelectorAll(
@@ -3088,13 +3020,11 @@
             button.dataset.mode;
 
 
-          if (
-            leagueBundle
-          ) {
+          if (leagueBundle) {
 
             renderStandings(
               leagueBundle.standings ||
-              []
+              {}
             );
 
           }
@@ -3104,6 +3034,8 @@
 
     });
 
+
+  /* SHOW MORE */
 
   document
     .getElementById(
@@ -3178,9 +3110,7 @@
           : [];
 
 
-      if (
-        !scorers.length
-      ) {
+      if (!scorers.length) {
 
         container.innerHTML =
           `<div class="empty">
@@ -3199,18 +3129,17 @@
             (player, index) => {
 
               const person =
-                player?.player ||
+                player.player ||
                 player;
 
 
               const team =
-                player?.team ||
+                player.team ||
                 {};
 
 
               const goals =
-                player?.goals ??
-                player?.goalsScored ??
+                player.goals ??
                 0;
 
 
@@ -3226,10 +3155,11 @@
 
                     <div class="scorer-name">
                       ${escapeHtml(
-                        person?.name ||
+                        person.name ||
                         "Unknown player"
                       )}
                     </div>
+
 
                     <div class="scorer-team">
                       ${escapeHtml(
@@ -3289,12 +3219,8 @@
     competition
   ) {
 
-    if (
-      !competition?.key
-    ) {
-
+    if (!competition?.key) {
       return;
-
     }
 
 
@@ -3302,10 +3228,9 @@
       `${competition.key}:`;
 
 
-    /*
-      Don't download the same
-      competition twice.
-    */
+    let alreadyLoaded =
+      false;
+
 
     for (
       const key
@@ -3318,10 +3243,18 @@
         )
       ) {
 
-        return;
+        alreadyLoaded =
+          true;
+
+        break;
 
       }
 
+    }
+
+
+    if (alreadyLoaded) {
+      return;
     }
 
 
@@ -3355,9 +3288,7 @@
 
         searchTeams.set(
           `${competition.key}:${team.id}`,
-
           {
-
             ...team,
 
             _league:
@@ -3383,48 +3314,32 @@
   }
 
 
-  /*
-    Load the five popular
-    competitions for search.
-  */
+  async function loadTeamsForSearch() {
 
-  async function loadPopularTeams() {
-
-    const popular =
-      competitions.slice(
-        0,
-        5
-      );
-
-
-    await Promise.all(
-      popular.map(
-        competition =>
-          addTeamsForCompetition(
-            competition
-          )
-      )
-    );
-
-  }
-
-
-  /*
-    Load remaining competitions
-    in the background.
-  */
-
-  function loadRemainingTeams() {
-
-    const remaining =
-      competitions.slice(
-        5
-      );
-
+    /*
+      Load the popular five first.
+    */
 
     for (
       const competition
-      of remaining
+      of competitions.slice(0, 5)
+    ) {
+
+      await addTeamsForCompetition(
+        competition
+      );
+
+    }
+
+
+    /*
+      Then load the remaining
+      competitions in the background.
+    */
+
+    for (
+      const competition
+      of competitions.slice(5)
     ) {
 
       addTeamsForCompetition(
@@ -3593,32 +3508,15 @@
 
   async function start() {
 
-    /*
-      1. Load competitions.
-      2. Premier League loads
-         immediately.
-    */
-
     await loadCompetitions();
 
 
     /*
-      3. Load popular teams
-         separately so the search
-         doesn't delay the page.
+      Continue loading teams
+      for search in background.
     */
 
-    loadPopularTeams()
-      .then(
-        loadRemainingTeams
-      )
-      .catch(
-        error =>
-          console.warn(
-            "Team search loading error:",
-            error
-          )
-      );
+    loadTeamsForSearch();
 
   }
 
