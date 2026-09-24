@@ -278,6 +278,215 @@ header:after{
 }
 
 
+
+/* =========================================================
+   TEAM SEARCH
+   ========================================================= */
+
+.team-search{
+  padding:18px 0 2px;
+}
+
+.search-box{
+  position:relative;
+  max-width:620px;
+}
+
+.search-input-wrap{
+  position:relative;
+}
+
+.search-input{
+  width:100%;
+  height:44px;
+
+  padding:
+    0 44px 0 15px;
+
+  border:
+    1px solid #ffffff18;
+
+  border-radius:10px;
+
+  outline:none;
+
+  background:
+    linear-gradient(
+      180deg,
+      #151d31,
+      #101728
+    );
+
+  color:#fff;
+
+  font:
+    500 12px
+    "DM Sans",
+    system-ui,
+    sans-serif;
+
+  box-shadow:
+    0 8px 24px #00000018;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.search-input::placeholder{
+  color:#6f7a96;
+}
+
+.search-input:focus{
+  border-color:#ffffff35;
+
+  box-shadow:
+    0 0 0 3px #c9ff4a12,
+    0 10px 28px #00000022;
+}
+
+.search-icon{
+  position:absolute;
+
+  right:14px;
+  top:50%;
+
+  transform:
+    translateY(-50%);
+
+  color:#7f89a4;
+
+  font-size:15px;
+
+  pointer-events:none;
+}
+
+.search-results{
+  position:absolute;
+
+  z-index:50;
+
+  left:0;
+  right:0;
+  top:50px;
+
+  display:none;
+
+  overflow:hidden;
+
+  border:
+    1px solid #ffffff18;
+
+  border-radius:10px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #151d31,
+      #0f1626
+    );
+
+  box-shadow:
+    0 18px 45px #00000045;
+}
+
+.search-results.open{
+  display:block;
+}
+
+.search-result{
+  width:100%;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:11px;
+
+  padding:
+    10px 13px;
+
+  border:0;
+
+  border-bottom:
+    1px solid var(--line);
+
+  background:transparent;
+
+  color:#fff;
+
+  text-align:left;
+
+  cursor:pointer;
+
+  font:inherit;
+
+  transition:
+    background .18s ease;
+}
+
+.search-result:last-child{
+  border-bottom:0;
+}
+
+.search-result:hover,
+.search-result:focus-visible{
+  background:#ffffff08;
+
+  outline:none;
+}
+
+.search-result .crest{
+  width:30px;
+  height:30px;
+}
+
+.search-result .crest img{
+  width:30px;
+  height:30px;
+}
+
+.search-result-text{
+  min-width:0;
+
+  flex:1;
+}
+
+.search-result-name{
+  display:block;
+
+  font-size:11px;
+
+  font-weight:700;
+}
+
+.search-result-league{
+  display:block;
+
+  margin-top:3px;
+
+  color:#7f89a4;
+
+  font:
+    500 8px
+    "DM Mono";
+
+  text-transform:uppercase;
+}
+
+.search-message{
+  padding:
+    13px;
+
+  color:#7f89a4;
+
+  font:
+    500 9px
+    "DM Mono";
+
+  text-align:center;
+}
+
 /* =========================================================
    MAIN GRID
    ========================================================= */
@@ -1105,6 +1314,15 @@ tbody tr:hover td{
     height:25px
   }
 
+
+  .team-search{
+    padding-top:14px;
+  }
+
+  .search-input{
+    height:42px;
+  }
+
   .panel{
     border-radius:13px
   }
@@ -1156,6 +1374,50 @@ tbody tr:hover td{
 
 
 <main class="wrap">
+
+
+
+  <!-- =====================================================
+       TEAM SEARCH
+       ===================================================== -->
+
+  <section class="team-search">
+
+    <div class="search-box">
+
+      <div class="search-input-wrap">
+
+        <input
+          id="team-search"
+          class="search-input"
+          type="search"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Search for a team..."
+          aria-label="Search for a team"
+          aria-controls="team-search-results"
+          aria-expanded="false"
+        >
+
+        <span
+          class="search-icon"
+          aria-hidden="true"
+        >
+          🔍
+        </span>
+
+      </div>
+
+      <div
+        id="team-search-results"
+        class="search-results"
+        role="listbox"
+        aria-label="Team search results"
+      ></div>
+
+    </div>
+
+  </section>
 
 
   <!-- =====================================================
@@ -1525,6 +1787,565 @@ tbody tr:hover td{
    ========================================================= */
 
 const API_BASE = "";
+
+
+/* =========================================================
+   TEAM SEARCH
+   ========================================================= */
+
+const teamSearchInput =
+  q("#team-search");
+
+const teamSearchResults =
+  q("#team-search-results");
+
+const teamSearchCache =
+  new Map();
+
+let teamSearchAllLoaded =
+  false;
+
+let teamSearchLoading =
+  false;
+
+
+const searchLeagueNames = {
+
+  premier:
+    "Premier League",
+
+  laliga:
+    "LaLiga",
+
+  seriea:
+    "Serie A",
+
+  bundesliga:
+    "Bundesliga",
+
+  ligue1:
+    "Ligue 1"
+
+};
+
+
+function teamSearchName(
+  team
+){
+
+  return (
+    team?.name ||
+    team?.shortName ||
+    "Unknown team"
+  );
+
+}
+
+
+function teamSearchMatches(
+  query,
+  teams
+){
+
+  const text =
+    query
+      .trim()
+      .toLowerCase();
+
+  if(!text){
+    return [];
+  }
+
+
+  return teams
+    .filter(
+      item => {
+
+        const name =
+          teamSearchName(
+            item.team
+          ).toLowerCase();
+
+        const shortName =
+          (
+            item.team?.shortName ||
+            ""
+          ).toLowerCase();
+
+        return (
+          name.includes(text) ||
+          shortName.includes(text)
+        );
+
+      }
+    )
+    .sort(
+      (a,b) => {
+
+        const aName =
+          teamSearchName(
+            a.team
+          ).toLowerCase();
+
+        const bName =
+          teamSearchName(
+            b.team
+          ).toLowerCase();
+
+        const aStarts =
+          aName.startsWith(text);
+
+        const bStarts =
+          bName.startsWith(text);
+
+        if(aStarts !== bStarts){
+          return aStarts ? -1 : 1;
+        }
+
+        return aName.localeCompare(
+          bName
+        );
+
+      }
+    )
+    .slice(0,8);
+
+}
+
+
+function getTeamsFromLeagueData(
+  key,
+  data
+){
+
+  const rows =
+    Array.isArray(
+      data?.standings?.TOTAL
+    )
+      ? data.standings.TOTAL
+      : [];
+
+  return rows
+    .map(
+      row => {
+
+        const team =
+          row?.team;
+
+        if(!team?.id){
+          return null;
+        }
+
+        return {
+          team,
+          league:key
+        };
+
+      }
+    )
+    .filter(Boolean);
+
+}
+
+
+async function loadTeamsForSearch(){
+
+  if(teamSearchAllLoaded){
+    return Array.from(
+      teamSearchCache.values()
+    ).flat();
+
+  }
+
+
+  if(teamSearchLoading){
+
+    while(teamSearchLoading){
+
+      await new Promise(
+        resolve =>
+          setTimeout(
+            resolve,
+            50
+          )
+      );
+
+    }
+
+    return Array.from(
+      teamSearchCache.values()
+    ).flat();
+
+  }
+
+
+  teamSearchLoading = true;
+
+
+  try{
+
+    const keys =
+      Object.keys(
+        leagues
+      );
+
+
+    await Promise.all(
+      keys.map(
+        async key => {
+
+          if(
+            teamSearchCache.has(
+              key
+            )
+          ){
+
+            return;
+
+          }
+
+
+          try{
+
+            const cached =
+              getCachedLeague(
+                key
+              );
+
+
+            if(cached?.data){
+
+              teamSearchCache.set(
+                key,
+                getTeamsFromLeagueData(
+                  key,
+                  cached.data
+                )
+              );
+
+              return;
+
+            }
+
+
+            const data =
+              await fetchApi(
+                `/api/league-data?league=${encodeURIComponent(key)}`
+              );
+
+
+            saveLeague(
+              key,
+              data
+            );
+
+
+            teamSearchCache.set(
+              key,
+              getTeamsFromLeagueData(
+                key,
+                data
+              )
+            );
+
+          }catch(error){
+
+            console.error(
+              `Team search load error for ${key}:`,
+              error
+            );
+
+          }
+
+        }
+      )
+    );
+
+
+    teamSearchAllLoaded = true;
+
+
+    return Array.from(
+      teamSearchCache.values()
+    ).flat();
+
+  }finally{
+
+    teamSearchLoading = false;
+
+  }
+
+}
+
+
+function closeTeamSearch(){
+
+  teamSearchResults.classList.remove(
+    "open"
+  );
+
+  teamSearchInput.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+}
+
+
+function openTeamSearch(){
+
+  teamSearchResults.classList.add(
+    "open"
+  );
+
+  teamSearchInput.setAttribute(
+    "aria-expanded",
+    "true"
+  );
+
+}
+
+
+function renderTeamSearchResults(
+  results
+){
+
+  if(!results.length){
+
+    teamSearchResults.innerHTML = `
+      <div class="search-message">
+        No teams found.
+      </div>
+    `;
+
+    openTeamSearch();
+
+    return;
+
+  }
+
+
+  teamSearchResults.innerHTML =
+    results
+      .map(
+        item => {
+
+          const team =
+            item.team;
+
+          const name =
+            teamSearchName(
+              team
+            );
+
+          const badge =
+            crest(team);
+
+          const leagueName =
+            searchLeagueNames[
+              item.league
+            ] ||
+            item.league;
+
+          return `
+
+            <button
+              class="search-result"
+              type="button"
+              data-team-id="${escapeHtml(team.id)}"
+              data-team-league="${escapeHtml(item.league)}"
+            >
+
+              ${badge}
+
+              <span
+                class="search-result-text"
+              >
+
+                <span
+                  class="search-result-name"
+                >
+                  ${escapeHtml(name)}
+                </span>
+
+                <span
+                  class="search-result-league"
+                >
+                  ${escapeHtml(leagueName)}
+                </span>
+
+              </span>
+
+            </button>
+
+          `;
+
+        }
+      )
+      .join("");
+
+
+  openTeamSearch();
+
+}
+
+
+async function updateTeamSearch(){
+
+  const query =
+    teamSearchInput.value.trim();
+
+
+  if(!query){
+
+    closeTeamSearch();
+
+    teamSearchResults.innerHTML =
+      "";
+
+    return;
+
+  }
+
+
+  teamSearchResults.innerHTML = `
+    <div class="search-message">
+      Searching teams…
+    </div>
+  `;
+
+  openTeamSearch();
+
+
+  const teams =
+    await loadTeamsForSearch();
+
+
+  const results =
+    teamSearchMatches(
+      query,
+      teams
+    );
+
+
+  /*
+    Only replace the results if the
+    user has not already changed
+    the search text while the API
+    was loading.
+  */
+
+  if(
+    teamSearchInput.value.trim() !==
+    query
+  ){
+
+    return;
+
+  }
+
+
+  renderTeamSearchResults(
+    results
+  );
+
+}
+
+
+teamSearchInput.addEventListener(
+  "input",
+  updateTeamSearch
+);
+
+
+teamSearchInput.addEventListener(
+  "focus",
+  () => {
+
+    if(
+      teamSearchInput.value.trim()
+    ){
+
+      updateTeamSearch();
+
+    }
+
+  }
+);
+
+
+teamSearchResults.addEventListener(
+  "click",
+  event => {
+
+    const button =
+      event.target.closest(
+        ".search-result"
+      );
+
+    if(!button){
+      return;
+    }
+
+
+    const teamId =
+      button.dataset.teamId;
+
+    const teamLeague =
+      button.dataset.teamLeague ||
+      league;
+
+
+    if(!teamId){
+      return;
+    }
+
+
+    window.location.href =
+      `team.html?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(teamLeague)}`;
+
+  }
+);
+
+
+document.addEventListener(
+  "click",
+  event => {
+
+    if(
+      !event.target.closest(
+        ".search-box"
+      )
+    ){
+
+      closeTeamSearch();
+
+    }
+
+  }
+);
+
+
+teamSearchInput.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.key ===
+      "Escape"
+    ){
+
+      closeTeamSearch();
+
+      teamSearchInput.blur();
+
+    }
+
+  }
+);
+
+
+
 
 
 /* =========================================================
