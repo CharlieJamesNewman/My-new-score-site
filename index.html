@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,10 +59,6 @@
       padding: 24px 0 50px;
     }
 
-    /* =========================
-       HEADER
-    ========================= */
-
     .header {
       display: flex;
       justify-content: space-between;
@@ -91,10 +88,6 @@
       align-items: center;
       gap: 10px;
     }
-
-    /* =========================
-       SEARCH
-    ========================= */
 
     .search-wrap {
       position: relative;
@@ -162,10 +155,6 @@
       margin-top: 2px;
     }
 
-    /* =========================
-       LEAGUE SELECTOR
-    ========================= */
-
     .league-selector {
       display: flex;
       align-items: center;
@@ -196,10 +185,6 @@
       border-color: var(--accent);
     }
 
-    /* =========================
-       MAIN GRID
-    ========================= */
-
     .page-grid {
       display: grid;
       grid-template-columns: minmax(0, 760px) 420px;
@@ -218,10 +203,6 @@
       width: 100%;
       min-width: 0;
     }
-
-    /* =========================
-       CARDS
-    ========================= */
 
     .card {
       background: var(--panel);
@@ -267,20 +248,18 @@
       color: var(--danger);
     }
 
-    /* =========================
-       MATCH ROWS
-    ========================= */
+    /* MATCH ROW */
 
     .match-row {
       width: 100%;
       display: grid;
-      grid-template-columns: 85px minmax(0, 1fr) 65px;
-      gap: 10px;
+      grid-template-columns: 82px minmax(0, 1fr);
+      gap: 12px;
       align-items: center;
       background: transparent;
       border: 0;
       border-bottom: 1px solid var(--border);
-      padding: 12px 14px;
+      padding: 13px 14px;
       text-align: left;
       cursor: pointer;
     }
@@ -297,30 +276,52 @@
       color: var(--muted);
       font-size: 10px;
       line-height: 1.5;
+      text-align: left;
     }
 
     .match-date {
       font-weight: 700;
       color: var(--text);
+      white-space: nowrap;
     }
 
     .match-teams {
       min-width: 0;
+      width: 100%;
     }
 
-    .team-line {
+    .match-line {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .match-team {
       display: flex;
       align-items: center;
       gap: 7px;
       min-width: 0;
-      margin: 3px 0;
+      flex: 1 1 0;
     }
 
-    .team-line img {
-      width: 21px;
-      height: 21px;
+    .match-team.home {
+      justify-content: flex-end;
+      text-align: right;
+    }
+
+    .match-team.away {
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    .match-team img {
+      width: 23px;
+      height: 23px;
       object-fit: contain;
-      flex: 0 0 21px;
+      flex: 0 0 23px;
     }
 
     .team-name {
@@ -332,14 +333,18 @@
     }
 
     .match-score {
-      text-align: right;
+      flex: 0 0 auto;
+      min-width: 62px;
+      text-align: center;
+      font-size: 15px;
       font-weight: 900;
-      line-height: 1.8;
+      white-space: nowrap;
     }
 
     .match-status {
-      display: inline-block;
-      margin-top: 1px;
+      display: block;
+      margin-top: 5px;
+      text-align: center;
       color: var(--muted);
       font-size: 9px;
       font-weight: 700;
@@ -353,9 +358,7 @@
       color: var(--muted);
     }
 
-    /* =========================
-       STANDINGS
-    ========================= */
+    /* STANDINGS */
 
     .standings-wrap {
       padding: 0 8px 4px;
@@ -454,9 +457,7 @@
       cursor: pointer;
     }
 
-    /* =========================
-       TOP SCORERS
-    ========================= */
+    /* SCORERS */
 
     .scorer-row {
       display: grid;
@@ -502,9 +503,7 @@
       color: var(--accent);
     }
 
-    /* =========================
-       MODAL
-    ========================= */
+    /* MODAL */
 
     .modal-backdrop {
       display: none;
@@ -619,10 +618,6 @@
       text-align: right;
     }
 
-    /* =========================
-       FOOTER
-    ========================= */
-
     .footer {
       margin-top: 25px;
       text-align: center;
@@ -630,12 +625,9 @@
       font-size: 11px;
     }
 
-    /* =========================
-       RESPONSIVE
-    ========================= */
+    /* RESPONSIVE */
 
     @media (max-width: 1250px) {
-
       .page-grid {
         grid-template-columns: minmax(0, 1fr) 400px;
       }
@@ -643,11 +635,9 @@
       .left-column {
         max-width: 700px;
       }
-
     }
 
     @media (max-width: 1050px) {
-
       .page-grid {
         grid-template-columns: minmax(0, 1fr) 380px;
       }
@@ -659,11 +649,9 @@
       .search-wrap {
         width: 240px;
       }
-
     }
 
     @media (max-width: 850px) {
-
       .header {
         flex-direction: column;
         align-items: stretch;
@@ -688,11 +676,9 @@
       .right-column {
         max-width: 760px;
       }
-
     }
 
     @media (max-width: 650px) {
-
       .app {
         width: calc(100% - 20px);
         padding-top: 15px;
@@ -708,17 +694,40 @@
       }
 
       .match-row {
-        grid-template-columns: 62px minmax(0, 1fr) 48px;
-        gap: 7px;
-        padding: 11px 10px;
+        grid-template-columns: 60px minmax(0, 1fr);
+        gap: 8px;
+        padding: 11px 9px;
       }
 
       .match-meta {
         font-size: 9px;
       }
 
+      .match-line {
+        gap: 5px;
+      }
+
+      .match-team {
+        gap: 4px;
+      }
+
+      .match-team img {
+        width: 19px;
+        height: 19px;
+        flex-basis: 19px;
+      }
+
       .team-name {
-        font-size: 11px;
+        font-size: 10px;
+      }
+
+      .match-score {
+        min-width: 52px;
+        font-size: 13px;
+      }
+
+      .match-status {
+        font-size: 8px;
       }
 
       .standings-table th,
@@ -745,7 +754,6 @@
         width: 45px;
         height: 45px;
       }
-
     }
   </style>
 </head>
@@ -753,8 +761,6 @@
 <body>
 
   <div class="app">
-
-    <!-- HEADER -->
 
     <header class="header">
 
@@ -786,8 +792,6 @@
 
     </header>
 
-
-    <!-- LEAGUE SELECTOR -->
 
     <div class="league-selector">
 
@@ -825,15 +829,9 @@
     </div>
 
 
-    <!-- MAIN GRID -->
-
     <main class="page-grid">
 
-      <!-- LEFT COLUMN -->
-
       <section class="left-column">
-
-        <!-- LIVE MATCHES -->
 
         <div class="card">
 
@@ -866,8 +864,6 @@
         </div>
 
 
-        <!-- RECENT RESULTS -->
-
         <div class="card">
 
           <div class="card-header">
@@ -898,8 +894,6 @@
 
         </div>
 
-
-        <!-- UPCOMING -->
 
         <div class="card">
 
@@ -934,11 +928,7 @@
       </section>
 
 
-      <!-- RIGHT COLUMN -->
-
       <aside class="right-column">
-
-        <!-- LEAGUE TABLE -->
 
         <div class="card">
 
@@ -985,8 +975,6 @@
         </div>
 
 
-        <!-- TOP SCORERS -->
-
         <div class="card">
 
           <div class="card-header">
@@ -1023,8 +1011,6 @@
 
   </div>
 
-
-  <!-- MATCH MODAL -->
 
   <div
     id="modalBackdrop"
@@ -1119,10 +1105,6 @@
 
     let teamsForSearch = [];
 
-
-    /* =========================
-       HELPERS
-    ========================= */
 
     function escapeHtml(value) {
 
@@ -1334,17 +1316,15 @@
     }
 
 
-    /* =========================
-       MATCH RENDERING
-    ========================= */
-
     function renderMatchRow(match) {
 
       const home =
-        match.homeTeam;
+        match.homeTeam ||
+        {};
 
       const away =
-        match.awayTeam;
+        match.awayTeam ||
+        {};
 
 
       const homeScore =
@@ -1378,13 +1358,15 @@
         status === "PAUSED"
       ) {
 
-        statusText = "HT";
+        statusText =
+          "HT";
 
       } else if (
         status === "FINISHED"
       ) {
 
-        statusText = "FT";
+        statusText =
+          "FT";
 
       } else {
 
@@ -1439,43 +1421,44 @@
 
           <div class="match-teams">
 
-            <div class="team-line">
+            <div class="match-line">
 
-              ${crest(home)}
+              <div class="match-team home">
 
-              <span class="team-name">
-                ${escapeHtml(
-                  teamName(home)
-                )}
-              </span>
+                <span class="team-name">
+                  ${escapeHtml(
+                    teamName(home)
+                  )}
+                </span>
+
+                ${crest(home)}
+
+              </div>
+
+
+              <div class="match-score">
+
+                ${escapeHtml(homeScore)}
+                -
+                ${escapeHtml(awayScore)}
+
+              </div>
+
+
+              <div class="match-team away">
+
+                ${crest(away)}
+
+                <span class="team-name">
+                  ${escapeHtml(
+                    teamName(away)
+                  )}
+                </span>
+
+              </div>
 
             </div>
 
-
-            <div class="team-line">
-
-              ${crest(away)}
-
-              <span class="team-name">
-                ${escapeHtml(
-                  teamName(away)
-                )}
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <div class="match-score">
-
-            <div>
-              ${escapeHtml(homeScore)}
-            </div>
-
-            <div>
-              ${escapeHtml(awayScore)}
-            </div>
 
             <span
               class="match-status ${statusClass}"
@@ -1527,10 +1510,6 @@
 
     }
 
-
-    /* =========================
-       LOAD LEAGUE
-    ========================= */
 
     async function loadLeague(
       leagueKey
@@ -1684,10 +1663,6 @@
 
     }
 
-
-    /* =========================
-       STANDINGS
-    ========================= */
 
     function renderStandings() {
 
@@ -1918,10 +1893,6 @@
       );
 
 
-    /* =========================
-       COMPETITIONS
-    ========================= */
-
     async function loadCompetitions() {
 
       try {
@@ -2082,10 +2053,6 @@
       );
 
 
-    /* =========================
-       TOP SCORERS
-    ========================= */
-
     async function loadScorers() {
 
       const container =
@@ -2193,10 +2160,6 @@
 
     }
 
-
-    /* =========================
-       TEAM SEARCH
-    ========================= */
 
     async function loadTeamsForSearch() {
 
@@ -2423,10 +2386,6 @@
       }
     );
 
-
-    /* =========================
-       MATCH MODAL
-    ========================= */
 
     const modalBackdrop =
       document.getElementById(
@@ -2684,25 +2643,11 @@
     }
 
 
-    /* =========================
-       START
-    ========================= */
-
     async function start() {
-
-      /*
-        Load Premier League immediately.
-      */
 
       await loadLeague(
         "premier"
       );
-
-
-      /*
-        Load secondary data
-        independently.
-      */
 
       loadCompetitions();
 
@@ -2719,3 +2664,4 @@
 
 </body>
 </html>
+```
