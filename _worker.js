@@ -1,3168 +1,1275 @@
-const SPORTMONKS_API =
-  "https://api.sportmonks.com/v3/football";
+const FOOTBALL_DATA_API = "https://api.football-data.org/v4";
+
+/*
+  ------------------------------------------------------------
+  SCORE DASH — FOOTBALL-DATA.ORG CONFIGURATION
+  ------------------------------------------------------------
+
+  These are the five leagues currently shown on the site.
+
+  IMPORTANT:
+  The website can also discover additional competitions through
+  /api/competitions once your football-data.org plan gives access
+  to them.
+
+  The aliases below are deliberately kept stable so existing
+  links such as:
+
+      ?league=premier
+
+  continue to work.
+*/
+
+const FEATURED_COMPETITIONS = {
+  premier: {
+    code: "PL",
+    name: "Premier League",
+    shortName: "Premier League",
+    country: "England"
+  },
+
+  laliga: {
+    code: "PD",
+    name: "LaLiga",
+    shortName: "LaLiga",
+    country: "Spain"
+  },
+
+  seriea: {
+    code: "SA",
+    name: "Serie A",
+    shortName: "Serie A",
+    country: "Italy"
+  },
+
+  bundesliga: {
+    code: "BL1",
+    name: "Bundesliga",
+    shortName: "Bundesliga",
+    country: "Germany"
+  },
+
+  ligue1: {
+    code: "FL1",
+    name: "Ligue 1",
+    shortName: "Ligue 1",
+    country: "France"
+  }
+};
 
 const CACHE_TTL = {
-  competitions: 21600,
-  competition: 21600,
+  competitions: 3600,
   leagueData: 60,
   standings: 300,
   match: 120,
   team: 3600,
   teamMatches: 120,
-  teamScorers: 300,
-  teamSearch: 300
+  teamScorers: 300
 };
 
 const inFlight = new Map();
 
+function jsonResponse(data, status = 200, extraHeaders = {}) {
+  return new Response(JSON.stringify(data, null, 2), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store",
+      ...extraHeaders
+    }
+  });
+}
 
-/* =========================================================
-   BASIC HELPERS
-   ========================================================= */
+function getTodayString() {
+  return new Date().toISOString().slice(0, 10);
+}
 
-function jsonResponse(
-  data,
-  status = 200,
-  extraHeaders = {}
-) {
-  return new Response(
-    JSON.stringify(data),
+function addDays(dateString, days) {
+  const date = new Date(`${dateString}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+/*
+  Convert a URL/cache path into a stable cache URL.
+*/
+function cacheUrlFor(path) {
+  return new Request(
+    `https://score-dash-cache.invalid${path}`,
     {
-      status,
-
-      headers: {
-        "Content-Type":
-          "application/json; charset=utf-8",
-
-        "Cache-Control":
-          "no-store",
-
-        ...extraHeaders
-      }
+      method: "GET"
     }
   );
 }
 
-
-function getToken(env) {
-
-  const token =
-    env.footballScoresToken;
-
-  if (!token) {
-    throw new Error(
-      "footballScoresToken is not configured."
-    );
-  }
-
-  return String(token).trim();
-}
-
-
-function getTodayString() {
-
-  return new Date()
-    .toISOString()
-    .slice(0, 10);
-
-}
-
-
-function addDays(
-  dateString,
-  days
-) {
-
-  const date =
-    new Date(
-      `${dateString}T00:00:00Z`
-    );
-
-  date.setUTCDate(
-    date.getUTCDate() + days
-  );
-
-  return date
-    .toISOString()
-    .slice(0, 10);
-
-}
-
-
-function slugify(
-  value
-) {
-
-  return String(
-    value || ""
-  )
-
-    .toLowerCase()
-
-    .normalize("NFD")
-    .replace(
-      /[\u0300-\u036f]/g,
-      ""
-    )
-
-    .replace(
-      /[^a-z0-9]+/g,
-      "-"
-    )
-
-    .replace(
-      /^-+|-+$/g,
-      "");
-
-}
-
-
-/* =========================================================
-   SPORTMONKS REQUEST
-   ========================================================= */
-
-async function sportmonksRequest(
+/*
+  Main football-data.org request helper.
+*/
+async function footballDataRequest(
   env,
   path,
-  cacheTtl = 300
+  cacheTtl = 300,
+  extraHeaders = {}
 ) {
+  if (!env.FootballDataToken) {
+    throw new Error("FootballDataToken is not configured.");
+  }
 
-  const token =
-    getToken(env);
+  const cache = caches.default;
+  const cacheRequest = cacheUrlFor(path);
 
-  const cache =
-    caches.default;
-
-
-  /*
-    The cache key deliberately does NOT
-    contain the API token.
-  */
-
-  const cacheUrl =
-    `https://score-dash-cache.local${path}`;
-
-  const cacheRequest =
-    new Request(
-      cacheUrl,
-      {
-        method: "GET"
-      }
-    );
-
-
-  const cached =
-    await cache.match(
-      cacheRequest
-    );
-
+  const cached = await cache.match(cacheRequest);
 
   if (cached) {
     return cached;
   }
 
-
-  const url =
-    `${SPORTMONKS_API}${path}`;
-
-
-  const response =
-    await fetch(
-      url,
-      {
-        method: "GET",
-
-        headers: {
-          "Authorization":
-            token,
-
-          "Accept":
-            "application/json"
-        }
+  const response = await fetch(
+    `${FOOTBALL_DATA_API}${path}`,
+    {
+      method: "GET",
+      headers: {
+        "X-Auth-Token": env.FootballDataToken,
+        "Accept": "application/json",
+        ...extraHeaders
       }
-    );
-
-
-  const body =
-    await response.arrayBuffer();
-
+    }
+  );
 
   if (!response.ok) {
-
-    let details = "";
+    let message = `football-data.org returned HTTP ${response.status}`;
 
     try {
+      const errorBody = await response.clone().json();
 
-      details =
-        new TextDecoder()
-          .decode(body);
-
-    } catch {
-
-      details =
-        `HTTP ${response.status}`;
-
-    }
-
-
-    return new Response(
-      JSON.stringify({
-        error:
-          "Sportmonks request failed.",
-
-        status:
-          response.status,
-
-        details
-      }),
-
-      {
-        status:
-          response.status,
-
-        headers: {
-          "Content-Type":
-            "application/json; charset=utf-8",
-
-          "Cache-Control":
-            "no-store"
-        }
+      if (errorBody?.message) {
+        message = errorBody.message;
+      } else if (errorBody?.error) {
+        message = errorBody.error;
       }
-    );
+    } catch (_) {}
 
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
   }
 
+  const body = await response.arrayBuffer();
 
-  const headers =
-    new Headers(
-      response.headers
-    );
+  const cachedResponse = new Response(body, {
+    status: response.status,
+    headers: {
+      "Content-Type":
+        response.headers.get("Content-Type") ||
+        "application/json; charset=utf-8",
+      "Cache-Control": `public, max-age=${cacheTtl}`
+    }
+  });
 
-
-  headers.set(
-    "Content-Type",
-    "application/json; charset=utf-8"
-  );
-
-
-  headers.set(
-    "Cache-Control",
-    `public, max-age=${cacheTtl}, stale-while-revalidate=60`
-  );
-
-
-  const cachedResponse =
-    new Response(
-      body,
-      {
-        status:
-          response.status,
-
-        headers
-      }
-    );
-
-
-  await cache.put(
-    cacheRequest,
-    cachedResponse.clone()
-  );
-
+  await cache.put(cacheRequest, cachedResponse.clone());
 
   return cachedResponse;
-
 }
 
-
-async function sportmonksJson(
-  env,
-  path,
-  cacheTtl = 300
-) {
-
-  const response =
-    await sportmonksRequest(
-      env,
-      path,
-      cacheTtl
-    );
-
-
-  const text =
-    await response.text();
-
-
-  let data;
-
-
-  try {
-
-    data =
-      JSON.parse(text);
-
-  } catch {
-
-    throw new Error(
-      "Sportmonks returned invalid JSON."
-    );
-
-  }
-
-
-  if (!response.ok) {
-
-    throw new Error(
-      data?.message ||
-      data?.error ||
-      `Sportmonks returned HTTP ${response.status}.`
-    );
-
-  }
-
-
-  return data;
-
-}
-
-
-/* =========================================================
-   PAGINATION
-   ========================================================= */
-
-async function sportmonksPaginated(
+async function footballDataJson(
   env,
   path,
   cacheTtl = 300,
-  maxPages = 20
+  extraHeaders = {}
 ) {
+  const response = await footballDataRequest(
+    env,
+    path,
+    cacheTtl,
+    extraHeaders
+  );
 
-  const all = [];
-
-
-  for (
-    let page = 1;
-    page <= maxPages;
-    page++
-  ) {
-
-    const separator =
-      path.includes("?")
-        ? "&"
-        : "?";
-
-
-    const pagePath =
-      `${path}${separator}page=${page}`;
-
-
-    const data =
-      await sportmonksJson(
-        env,
-        pagePath,
-        cacheTtl
-      );
-
-
-    const rows =
-      Array.isArray(
-        data?.data
-      )
-        ? data.data
-        : [];
-
-
-    all.push(
-      ...rows
-    );
-
-
-    const hasMore =
-      Boolean(
-        data?.meta?.pagination?.has_more
-      );
-
-
-    if (
-      !hasMore ||
-      rows.length === 0
-    ) {
-
-      break;
-
-    }
-
-  }
-
-
-  return all;
-
+  return response.json();
 }
 
+/*
+  ------------------------------------------------------------
+  COMPETITION RESOLUTION
+  ------------------------------------------------------------
+*/
 
-/* =========================================================
-   TEAM SIMPLIFICATION
-   ========================================================= */
+function normaliseKey(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase();
+}
 
-function simplifyTeam(
-  team
-) {
+function slugify(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
+function featuredCompetitionFromKey(key) {
+  const normalised = normaliseKey(key);
+
+  return FEATURED_COMPETITIONS[normalised] || null;
+}
+
+/*
+  Allows:
+
+      premier
+      laliga
+      seriea
+      bundesliga
+      ligue1
+
+  as well as an actual football-data.org code such as:
+
+      PL
+      PD
+      SA
+      BL1
+      FL1
+
+  This means future competitions can be selected without
+  rewriting the backend.
+*/
+async function resolveCompetition(env, value) {
+  const input = String(value || "").trim();
+
+  if (!input) {
+    throw new Error("A competition is required.");
+  }
+
+  const alias = featuredCompetitionFromKey(input);
+
+  if (alias) {
+    return {
+      key: normaliseKey(input),
+      code: alias.code,
+      name: alias.name,
+      shortName: alias.shortName,
+      country: alias.country
+    };
+  }
+
+  const upper = input.toUpperCase();
+
+  /*
+    If the value looks like a football-data.org competition code,
+    try to resolve it directly.
+  */
+  try {
+    const competition = await footballDataJson(
+      env,
+      `/competitions/${encodeURIComponent(upper)}`,
+      CACHE_TTL.competitions
+    );
+
+    return {
+      key: slugify(competition.code || competition.name),
+      code: competition.code || upper,
+      name: competition.name || upper,
+      shortName: competition.name || upper,
+      country: competition.area?.name || "",
+      emblem: competition.emblem || null
+    };
+  } catch (_) {
+    /*
+      If it wasn't a valid competition code, allow a slug/key
+      to be passed and return a useful error later.
+    */
+
+    const competitions = await getAvailableCompetitions(env);
+
+    const found = competitions.find((competition) => {
+      return (
+        normaliseKey(competition.key) === normaliseKey(input) ||
+        normaliseKey(competition.code) === normaliseKey(input)
+      );
+    });
+
+    if (found) {
+      return found;
+    }
+
+    throw new Error(`Competition "${input}" was not found.`);
+  }
+}
+
+/*
+  ------------------------------------------------------------
+  AVAILABLE COMPETITIONS
+  ------------------------------------------------------------
+
+  This is the important future-proofing part.
+
+  football-data.org's /competitions endpoint gives us the
+  competitions available to the authenticated account.
+
+  When your plan gains access to more competitions, the website
+  can discover them automatically.
+*/
+
+async function getAvailableCompetitions(env) {
+  const data = await footballDataJson(
+    env,
+    "/competitions",
+    CACHE_TTL.competitions
+  );
+
+  const competitions = Array.isArray(data?.competitions)
+    ? data.competitions
+    : [];
+
+  const result = [];
+
+  for (const competition of competitions) {
+    if (!competition?.code) {
+      continue;
+    }
+
+    const code = competition.code;
+
+    let key = slugify(code);
+
+    for (const [alias, config] of Object.entries(
+      FEATURED_COMPETITIONS
+    )) {
+      if (config.code === code) {
+        key = alias;
+        break;
+      }
+    }
+
+    result.push({
+      key,
+      code,
+      name: competition.name || code,
+      shortName: competition.name || code,
+      country: competition.area?.name || "",
+      areaCode: competition.area?.code || "",
+      type: competition.type || "",
+      emblem: competition.emblem || null,
+      plan: competition.plan || null
+    });
+  }
+
+  /*
+    Make sure our five featured competitions remain available
+    in the selector even if /competitions has unusual filtering.
+  */
+  for (const [key, config] of Object.entries(
+    FEATURED_COMPETITIONS
+  )) {
+    const exists = result.some(
+      (item) => item.code === config.code
+    );
+
+    if (!exists) {
+      result.push({
+        key,
+        code: config.code,
+        name: config.name,
+        shortName: config.shortName,
+        country: config.country,
+        areaCode: "",
+        type: "LEAGUE",
+        emblem: null,
+        plan: null
+      });
+    }
+  }
+
+  /*
+    Featured competitions first.
+  */
+  result.sort((a, b) => {
+    const aFeatured = FEATURED_COMPETITIONS[a.key] ? 0 : 1;
+    const bFeatured = FEATURED_COMPETITIONS[b.key] ? 0 : 1;
+
+    if (aFeatured !== bFeatured) {
+      return aFeatured - bFeatured;
+    }
+
+    return a.name.localeCompare(b.name);
+  });
+
+  return result;
+}
+
+/*
+  ------------------------------------------------------------
+  TEAM / MATCH SIMPLIFIERS
+  ------------------------------------------------------------
+*/
+
+function simplifyTeam(team) {
   if (!team) {
     return null;
   }
 
+  return {
+    id: team.id,
+    name: team.name || "Unknown team",
+    shortName: team.shortName || team.name || "Unknown",
+    tla: team.tla || "",
+    crest:
+      team.crest ||
+      team.crestURI ||
+      null,
+    website: team.website || null,
+    venue: team.venue || null,
+    founded: team.founded || null,
+    area: team.area
+      ? {
+          id: team.area.id || null,
+          name: team.area.name || "",
+          code: team.area.code || ""
+        }
+      : null
+  };
+}
+
+function simplifyScore(score) {
+  if (!score) {
+    return {
+      winner: null,
+      duration: null,
+      fullTime: {
+        home: null,
+        away: null
+      },
+      halfTime: {
+        home: null,
+        away: null
+      }
+    };
+  }
 
   return {
-
-    id:
-      team.id ??
-      null,
-
-    name:
-      team.name ??
-      "",
-
-    shortName:
-      team.short_code ??
-      team.name ??
-      "",
-
-    tla:
-      team.short_code ??
-      "",
-
-    crest:
-      team.image_path ??
-      "",
-
-    venue:
-      team.venue?.name ??
-      "",
-
-    founded:
-      team.founded ??
-      null
-
+    winner: score.winner || null,
+    duration: score.duration || null,
+    fullTime: {
+      home: score.fullTime?.home ?? null,
+      away: score.fullTime?.away ?? null
+    },
+    halfTime: {
+      home: score.halfTime?.home ?? null,
+      away: score.halfTime?.away ?? null
+    }
   };
-
 }
 
+function simplifyMatch(match) {
+  return {
+    id: match.id,
+    utcDate: match.utcDate,
+    status: match.status,
+    minute: match.minute ?? null,
+    injuryTime: match.injuryTime ?? null,
+    matchday: match.matchday ?? null,
+    stage: match.stage ?? null,
+    group: match.group ?? null,
 
-/* =========================================================
-   SCORE SIMPLIFICATION
-   ========================================================= */
+    competition: match.competition
+      ? {
+          id: match.competition.id,
+          name: match.competition.name,
+          code: match.competition.code,
+          emblem: match.competition.emblem || null
+        }
+      : null,
 
-function simplifyScores(
-  scores
-) {
+    homeTeam: simplifyTeam(match.homeTeam),
+    awayTeam: simplifyTeam(match.awayTeam),
 
-  const result = {
-    home: null,
-    away: null
+    score: simplifyScore(match.score)
+  };
+}
+
+function simplifyStandingRow(row) {
+  return {
+    position: row.position,
+    team: simplifyTeam(row.team),
+    playedGames: row.playedGames ?? 0,
+    won: row.won ?? 0,
+    draw: row.draw ?? 0,
+    lost: row.lost ?? 0,
+    points: row.points ?? 0,
+    goalsFor: row.goalsFor ?? 0,
+    goalsAgainst: row.goalsAgainst ?? 0,
+    goalDifference: row.goalDifference ?? 0
+  };
+}
+
+function simplifyStandings(data) {
+  const output = {
+    TOTAL: [],
+    HOME: [],
+    AWAY: []
   };
 
+  const standings = Array.isArray(data?.standings)
+    ? data.standings
+    : [];
 
-  if (
-    !Array.isArray(
-      scores
-    )
-  ) {
-
-    return result;
-
-  }
-
-
-  for (
-    const item of scores
-  ) {
+  for (const section of standings) {
+    const type = section.type;
 
     if (
-      String(
-        item?.description ||
-        ""
-      ).toUpperCase() !==
-      "CURRENT"
+      type !== "TOTAL" &&
+      type !== "HOME" &&
+      type !== "AWAY"
     ) {
-
       continue;
-
     }
 
-
-    const participant =
-      String(
-        item?.score?.participant ||
-        ""
-      ).toLowerCase();
-
-
-    const goals =
-      item?.score?.goals;
-
-
-    if (
-      participant === "home" &&
-      typeof goals ===
-        "number"
-    ) {
-
-      result.home =
-        goals;
-
+    if (!Array.isArray(section.table)) {
+      continue;
     }
 
-
-    if (
-      participant === "away" &&
-      typeof goals ===
-        "number"
-    ) {
-
-      result.away =
-        goals;
-
-    }
-
+    output[type] = section.table.map(
+      simplifyStandingRow
+    );
   }
 
-
-  return result;
-
+  return output;
 }
 
+/*
+  ------------------------------------------------------------
+  LEAGUE DATA
+  ------------------------------------------------------------
+*/
 
-/* =========================================================
-   STATE
-   ========================================================= */
-
-function getStateName(
-  fixture
-) {
-
-  return String(
-    fixture?.state?.short_name ||
-    fixture?.state?.developer_name ||
-    fixture?.state?.name ||
-    ""
-  ).toUpperCase();
-
-}
-
-
-function isFinished(
-  fixture
-) {
-
-  const state =
-    getStateName(
-      fixture
-    );
-
-
-  return (
-    state === "FT" ||
-    state === "AET" ||
-    state === "PEN" ||
-    state === "FINISHED"
+async function getLeagueData(env, league) {
+  const competition = await resolveCompetition(
+    env,
+    league
   );
 
-}
+  const today = getTodayString();
+  const dateFrom = addDays(today, -30);
+  const dateTo = addDays(today, 30);
 
+  const matchesPath =
+    `/competitions/${encodeURIComponent(
+      competition.code
+    )}/matches?dateFrom=${dateFrom}&dateTo=${dateTo}`;
 
-function isLive(
-  fixture
-) {
-
-  const state =
-    getStateName(
-      fixture
-    );
-
-
-  return (
-    state.includes("LIVE") ||
-    state === "HT" ||
-    state === "1H" ||
-    state === "2H" ||
-    state === "ET" ||
-    state === "P"
-  );
-
-}
-
-
-/* =========================================================
-   FIXTURE SIMPLIFICATION
-   ========================================================= */
-
-function simplifyFixture(
-  fixture
-) {
-
-  const participants =
-    Array.isArray(
-      fixture?.participants
-    )
-      ? fixture.participants
-      : [];
-
-
-  let home =
-    participants.find(
-      team =>
-        String(
-          team?.meta?.location ||
-          ""
-        ).toLowerCase() ===
-        "home"
-    );
-
-
-  let away =
-    participants.find(
-      team =>
-        String(
-          team?.meta?.location ||
-          ""
-        ).toLowerCase() ===
-        "away"
-    );
-
+  const standingsPath =
+    `/competitions/${encodeURIComponent(
+      competition.code
+    )}/standings`;
 
   /*
-    Fallback if meta.location is not
-    included for some reason.
+    Fetch matches and standings in parallel.
   */
-
-  if (
-    !home &&
-    participants.length >= 1
-  ) {
-
-    home =
-      participants[0];
-
-  }
-
-
-  if (
-    !away &&
-    participants.length >= 2
-  ) {
-
-    away =
-      participants[1];
-
-  }
-
-
-  const score =
-    simplifyScores(
-      fixture?.scores
-    );
-
-
-  const state =
-    getStateName(
-      fixture
-    );
-
-
-  return {
-
-    id:
-      fixture?.id ??
-      null,
-
-    utcDate:
-      fixture?.starting_at
-        ? new Date(
-            fixture.starting_at
-          ).toISOString()
-        : null,
-
-    status:
-      isFinished(
-        fixture
-      )
-        ? "FINISHED"
-
-        : isLive(
-            fixture
-          )
-            ? "LIVE"
-
-            : "SCHEDULED",
-
-    state:
-      state,
-
-    minute:
-      fixture?.periods?.find?.(
-        period =>
-          period?.started_at
-      )?.minutes ??
-      null,
-
-    homeTeam:
-      simplifyTeam(
-        home
-      ),
-
-    awayTeam:
-      simplifyTeam(
-        away
-      ),
-
-    score: {
-
-      winner:
-        null,
-
-      duration:
-        null,
-
-      fullTime: {
-
-        home:
-          score.home,
-
-        away:
-          score.away
-
-      },
-
-      halfTime: {
-
-        home:
-          null,
-
-        away:
-          null
-
-      }
-
-    },
-
-    competition:
-      fixture?.league
-        ? {
-
-            id:
-              fixture.league.id ??
-              null,
-
-            name:
-              fixture.league.name ??
-              "",
-
-            code:
-              fixture.league.short_code ??
-              ""
-
-          }
-
-        : null,
-
-    round:
-      fixture?.round
-        ? {
-
-            id:
-              fixture.round.id ??
-              null,
-
-            name:
-              fixture.round.name ??
-              ""
-
-          }
-
-        : null,
-
-    resultInfo:
-      fixture?.result_info ??
-      "",
-
-    events:
-      Array.isArray(
-        fixture?.events
-      )
-        ? fixture.events
-        : []
-
-  };
-
-}
-
-
-/* =========================================================
-   EVENT SIMPLIFICATION
-   ========================================================= */
-
-function simplifyEvents(
-  events
-) {
-
-  if (
-    !Array.isArray(
-      events
-    )
-  ) {
-
-    return {
-      goals: [],
-      bookings: []
-    };
-
-  }
-
-
-  const goals = [];
-  const bookings = [];
-
-
-  for (
-    const event of events
-  ) {
-
-    const typeText =
-      String(
-        event?.type?.developer_name ||
-        event?.type?.name ||
-        event?.sub_type?.name ||
-        ""
-      ).toUpperCase();
-
-
-    const minute =
-      event?.minute ??
-      event?.period?.minutes ??
-      null;
-
-
-    const playerName =
-      event?.player?.name ??
-      "";
-
-
-    const relatedPlayer =
-      event?.relatedPlayer?.name ??
-      "";
-
-
-    const participant =
-      event?.participant_id ??
-      null;
-
-
-    if (
-      typeText.includes(
-        "GOAL"
-      )
-    ) {
-
-      goals.push({
-
-        minute,
-
-        player:
-          playerName,
-
-        assist:
-          relatedPlayer,
-
-        participantId:
-          participant
-
-      });
-
-    }
-
-
-    if (
-      typeText.includes(
-        "CARD"
-      ) ||
-      typeText.includes(
-        "YELLOW"
-      ) ||
-      typeText.includes(
-        "RED"
-      )
-    ) {
-
-      bookings.push({
-
-        minute,
-
-        player:
-          playerName,
-
-        card:
-          typeText.includes(
-            "RED"
-          )
-            ? "RED"
-            : "YELLOW",
-
-        participantId:
-          participant
-
-      });
-
-    }
-
-  }
-
-
-  return {
-    goals,
-    bookings
-  };
-
-}
-
-
-/* =========================================================
-   LEAGUE LOOKUP
-   ========================================================= */
-
-async function getLeague(
-  env,
-  leagueId
-) {
-
-  const id =
-    Number(
-      leagueId
-    );
-
-
-  if (
-    !Number.isFinite(id)
-  ) {
-
-    throw new Error(
-      "A valid Sportmonks league ID is required."
-    );
-
-  }
-
-
-  const data =
-    await sportmonksJson(
-      env,
-
-      `/leagues/${id}?include=currentSeason;country`,
-
-      CACHE_TTL.competition
-    );
-
-
-  return data?.data ||
-    null;
-
-}
-
-
-/* =========================================================
-   COMPETITIONS
-   ========================================================= */
-
-async function handleCompetitions(
-  env
-) {
-
-  try {
-
-    const leagues =
-      await sportmonksPaginated(
+  const [matchesData, standingsData] =
+    await Promise.all([
+      footballDataJson(
         env,
-
-        `/leagues?include=country&per_page=50`,
-
-        CACHE_TTL.competitions,
-
-        20
-      );
-
-
-    const competitions =
-      leagues
-
-        .filter(
-          league =>
-            league &&
-            league.id
-        )
-
-        .map(
-          league => ({
-
-            id:
-              league.id,
-
-            name:
-              league.name ||
-              "Competition",
-
-            slug:
-              slugify(
-                league.name
-              ),
-
-            shortCode:
-              league.short_code ||
-              "",
-
-            country:
-              league.country?.name ||
-              "",
-
-            countryId:
-              league.country_id ??
-              null,
-
-            image:
-              league.image_path ||
-              "",
-
-            active:
-              league.active !== false,
-
-            type:
-              league.type ||
-              "",
-
-            subType:
-              league.sub_type ||
-              ""
-
-          })
-        )
-
-        .sort(
-          (a,b) =>
-            `${a.country} ${a.name}`
-              .localeCompare(
-                `${b.country} ${b.name}`
-              )
-        );
-
-
-    return jsonResponse({
-
-      count:
-        competitions.length,
-
-      competitions
-
-    },
-
-    200,
-
-    {
-      "Cache-Control":
-        `public, max-age=${CACHE_TTL.competitions}, stale-while-revalidate=3600`
-    });
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "competitions error:",
-      error
-    );
-
-
-    return jsonResponse(
-      {
-
-        error:
-          "Unable to load competitions.",
-
-        message:
-          error?.message ||
-          String(error)
-
-      },
-
-      502
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   STANDINGS HELPERS
-   ========================================================= */
-
-function detailText(
-  detail
-) {
-
-  return String(
-
-    detail?.type?.developer_name ||
-
-    detail?.type?.code ||
-
-    detail?.type?.name ||
-
-    ""
-
-  ).toUpperCase();
-
-}
-
-
-function getStandingValue(
-  row,
-  keywords
-) {
-
-  const details =
-    Array.isArray(
-      row?.details
-    )
-      ? row.details
-      : [];
-
-
-  for (
-    const detail of details
-  ) {
-
-    const text =
-      detailText(
-        detail
-      );
-
-
-    if (
-      keywords.some(
-        keyword =>
-          text.includes(
-            keyword
-          )
-      )
-    ) {
-
-      const value =
-        Number(
-          detail?.value
-        );
-
-
-      if (
-        Number.isFinite(
-          value
-        )
-      ) {
-
-        return value;
-
-      }
-
-    }
-
-  }
-
-
-  return 0;
-
-}
-
-
-function simplifyStanding(
-  row
-) {
-
-  const participant =
-    row?.participant;
-
-
-  return {
-
-    position:
-      row?.position ??
-      null,
-
-    team:
-      simplifyTeam(
-        participant
+        matchesPath,
+        CACHE_TTL.leagueData
       ),
 
-    playedGames:
-      getStandingValue(
-        row,
-        [
-          "MATCHES",
-          "PLAYED"
-        ]
-      ),
-
-    form:
-      row?.form ||
-      "",
-
-    won:
-      getStandingValue(
-        row,
-        [
-          "WON"
-        ]
-      ),
-
-    draw:
-      getStandingValue(
-        row,
-        [
-          "DRAW"
-        ]
-      ),
-
-    lost:
-      getStandingValue(
-        row,
-        [
-          "LOST"
-        ]
-      ),
-
-    points:
-      Number(
-        row?.points ??
-        0
-      ),
-
-    goalsFor:
-      getStandingValue(
-        row,
-        [
-          "GOALS_FOR",
-          "GOALS SCORED",
-          "GOALS_SCORED"
-        ]
-      ),
-
-    goalsAgainst:
-      getStandingValue(
-        row,
-        [
-          "GOALS_AGAINST",
-          "GOALS CONCEDED",
-          "GOALS_CONCEDED"
-        ]
-      ),
-
-    goalDifference:
-      getStandingValue(
-        row,
-        [
-          "GOAL_DIFFERENCE",
-          "GOAL DIFFERENCE",
-          "GOAL_DIFF"
-        ]
-      )
-
-  };
-
-}
-
-
-/* =========================================================
-   STANDINGS
-   ========================================================= */
-
-async function getStandings(
-  env,
-  seasonId
-) {
-
-  if (
-    !seasonId
-  ) {
-
-    return [];
-
-  }
-
-
-  const data =
-    await sportmonksJson(
-
-      env,
-
-      `/standings/seasons/${encodeURIComponent(
-        seasonId
-      )}?include=participant;details.type&per_page=50`,
-
-      CACHE_TTL.standings
-
-    );
-
-
-  const rows =
-    Array.isArray(
-      data?.data
-    )
-      ? data.data
-      : [];
-
-
-  return rows
-    .map(
-      simplifyStanding
-    )
-
-    .sort(
-      (a,b) =>
-        Number(
-          a.position ||
-          999
-        ) -
-        Number(
-          b.position ||
-          999
-        )
-    );
-
-}
-
-
-/* =========================================================
-   LEAGUE DATA
-   ========================================================= */
-
-async function getLeagueData(
-  env,
-  leagueId
-) {
-
-  const league =
-    await getLeague(
-      env,
-      leagueId
-    );
-
-
-  if (!league) {
-
-    throw new Error(
-      "Sportmonks did not return the requested league."
-    );
-
-  }
-
-
-  const season =
-    league?.currentSeason ||
-    league?.currentseason ||
-    league?.currentSeason?.data ||
-    null;
-
-
-  const seasonId =
-    season?.id ??
-    null;
-
-
-  const today =
-    getTodayString();
-
-
-  const dateFrom =
-    addDays(
-      today,
-      -30
-    );
-
-
-  const dateTo =
-    addDays(
-      today,
-      30
-    );
-
-
-  const fixturePath =
-    `/fixtures/between/${dateFrom}/${dateTo}` +
-    `?filters=fixtureLeagues:${encodeURIComponent(
-      leagueId
-    )}` +
-    `&include=participants;scores;state;league;round;events` +
-    `&per_page=50`;
-
-
-  const livePath =
-    `/livescores/inplay` +
-    `?filters=fixtureLeagues:${encodeURIComponent(
-      leagueId
-    )}` +
-    `&include=participants;scores;state;league;round;events`;
-
-
-  const [
-    fixturesResult,
-    liveResult,
-    standingsResult
-  ] =
-    await Promise.allSettled([
-
-      sportmonksPaginated(
+      footballDataJson(
         env,
-        fixturePath,
-        CACHE_TTL.leagueData,
-        10
-      ),
-
-      sportmonksJson(
-        env,
-        livePath,
-        CACHE_TTL.live ||
-        30
-      ),
-
-      getStandings(
-        env,
-        seasonId
+        standingsPath,
+        CACHE_TTL.standings
       )
-
     ]);
 
+  const matches = Array.isArray(
+    matchesData?.matches
+  )
+    ? matchesData.matches
+    : [];
 
-  const rawFixtures =
-    fixturesResult.status ===
-      "fulfilled"
+  const simplifiedMatches =
+    matches.map(simplifyMatch);
 
-      ? fixturesResult.value
+  const liveStatuses = new Set([
+    "IN_PLAY",
+    "LIVE",
+    "PAUSED"
+  ]);
 
-      : [];
+  const finishedStatuses = new Set([
+    "FINISHED"
+  ]);
 
-
-  const rawLive =
-    liveResult.status ===
-      "fulfilled"
-
-      ? (
-          Array.isArray(
-            liveResult.value?.data
-          )
-            ? liveResult.value.data
-            : []
-        )
-
-      : [];
-
-
-  const standings =
-    standingsResult.status ===
-      "fulfilled"
-
-      ? standingsResult.value
-
-      : [];
-
-
-  const fixtures =
-    rawFixtures.map(
-      fixture =>
-        simplifyFixture(
-          fixture
-        )
+  const live = simplifiedMatches
+    .filter((match) =>
+      liveStatuses.has(match.status)
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.utcDate) -
+        new Date(b.utcDate)
     );
 
-
-  const liveFromApi =
-    rawLive.map(
-      fixture =>
-        simplifyFixture(
-          fixture
-        )
+  const results = simplifiedMatches
+    .filter((match) =>
+      finishedStatuses.has(match.status)
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.utcDate) -
+        new Date(a.utcDate)
     );
 
-
-  const liveMap =
-    new Map();
-
-
-  for (
-    const match of
-      liveFromApi
-  ) {
-
-    liveMap.set(
-      String(
-        match.id
-      ),
-      match
+  const upcoming = simplifiedMatches
+    .filter(
+      (match) =>
+        !liveStatuses.has(match.status) &&
+        !finishedStatuses.has(match.status) &&
+        ![
+          "POSTPONED",
+          "CANCELLED",
+          "SUSPENDED"
+        ].includes(match.status)
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.utcDate) -
+        new Date(b.utcDate)
     );
-
-  }
-
-
-  /*
-    Some plans / fixtures may not return
-    exactly the same live feed. Add any
-    live-looking fixtures from the date
-    range as a fallback.
-  */
-
-  for (
-    const match of
-      fixtures
-  ) {
-
-    if (
-      match.status ===
-      "LIVE"
-    ) {
-
-      liveMap.set(
-        String(
-          match.id
-        ),
-        match
-      );
-
-    }
-
-  }
-
-
-  const live =
-    Array.from(
-      liveMap.values()
-    );
-
-
-  const liveIds =
-    new Set(
-      live.map(
-        match =>
-          String(
-            match.id
-          )
-      )
-    );
-
-
-  const results =
-    fixtures
-
-      .filter(
-        match =>
-          match.status ===
-            "FINISHED" &&
-          !liveIds.has(
-            String(
-              match.id
-            )
-          )
-      )
-
-      .sort(
-        (a,b) =>
-          new Date(
-            b.utcDate
-          ) -
-          new Date(
-            a.utcDate
-          )
-      );
-
-
-  const upcoming =
-    fixtures
-
-      .filter(
-        match => {
-
-          if (
-            liveIds.has(
-              String(
-                match.id
-              )
-            )
-          ) {
-
-            return false;
-
-          }
-
-
-          if (
-            match.status !==
-            "SCHEDULED"
-          ) {
-
-            return false;
-
-          }
-
-
-          return (
-            new Date(
-              match.utcDate
-            ).getTime() >=
-            Date.now()
-          );
-
-        }
-      )
-
-      .sort(
-        (a,b) =>
-          new Date(
-            a.utcDate
-          ) -
-          new Date(
-            b.utcDate
-          )
-      );
-
-
-  const total =
-    standings;
-
 
   return {
+    league: competition.key,
+    code: competition.code,
 
-    league: {
-
-      id:
-        league.id,
-
-      name:
-        league.name ||
-        "",
-
-      slug:
-        slugify(
-          league.name
-        ),
-
-      country:
-        league.country?.name ||
-        "",
-
-      image:
-        league.image_path ||
-        "",
-
-      season: {
-
-        id:
-          seasonId,
-
-        name:
-          season?.name ||
-          ""
-
-      }
-
+    competition: {
+      key: competition.key,
+      code: competition.code,
+      name: competition.name,
+      shortName: competition.shortName,
+      country: competition.country,
+      emblem: competition.emblem || null
     },
 
-    updatedAt:
-      new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
 
     live: {
-
-      count:
-        live.length,
-
-      matches:
-        live
-
+      count: live.length,
+      matches: live
     },
 
     results: {
-
-      count:
-        results.length,
-
-      matches:
-        results
-
+      count: results.length,
+      matches: results.slice(0, 20)
     },
 
     upcoming: {
-
-      count:
-        upcoming.length,
-
-      matches:
-        upcoming
-
+      count: upcoming.length,
+      matches: upcoming.slice(0, 20)
     },
 
-    standings: {
-
-      TOTAL:
-        total,
-
-      HOME:
-        total,
-
-      AWAY:
-        total
-
-    }
-
-  };
-
-}
-
-
-/* =========================================================
-   LEAGUE DATA ENDPOINT
-   ========================================================= */
-
-async function handleLeagueData(
-  env,
-  leagueId
-) {
-
-  if (
-    !leagueId
-  ) {
-
-    return jsonResponse(
-      {
-        error:
-          "League ID is required."
-      },
-      400
-    );
-
-  }
-
-
-  const key =
-    String(
-      leagueId
-    );
-
-
-  if (
-    inFlight.has(
-      `league-${key}`
+    standings: simplifyStandings(
+      standingsData
     )
-  ) {
+  };
+}
 
-    try {
+async function getLeagueDataCached(env, league) {
+  const key = `league-data:${normaliseKey(
+    league
+  )}`;
 
-      return jsonResponse(
-        await inFlight.get(
-          `league-${key}`
-        )
-      );
-
-    } catch {
-
-      /*
-        The original request will handle
-        the error.
-      */
-
-    }
-
+  if (inFlight.has(key)) {
+    return inFlight.get(key);
   }
 
+  const promise = getLeagueData(env, league)
+    .finally(() => {
+      inFlight.delete(key);
+    });
 
-  const promise =
-    getLeagueData(
+  inFlight.set(key, promise);
+
+  return promise;
+}
+
+/*
+  ------------------------------------------------------------
+  ENDPOINTS
+  ------------------------------------------------------------
+*/
+
+async function handleCompetitions(env) {
+  const competitions =
+    await getAvailableCompetitions(env);
+
+  return jsonResponse({
+    count: competitions.length,
+    featured: Object.keys(
+      FEATURED_COMPETITIONS
+    ),
+    competitions
+  });
+}
+
+async function handleLeagueData(env, request) {
+  const url = new URL(request.url);
+  const league =
+    url.searchParams.get("league");
+
+  if (!league) {
+    return jsonResponse(
+      {
+        error:
+          "Missing league parameter."
+      },
+      400
+    );
+  }
+
+  const data =
+    await getLeagueDataCached(
       env,
-      key
+      league
     );
 
-
-  inFlight.set(
-    `league-${key}`,
-    promise
-  );
-
-
-  try {
-
-    const data =
-      await promise;
-
-
-    return jsonResponse(
-      data,
-      200,
-      {
-        "Cache-Control":
-          `public, max-age=${CACHE_TTL.leagueData}, stale-while-revalidate=30`
-      }
-    );
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "league-data error:",
-      error
-    );
-
-
-    return jsonResponse(
-      {
-
-        error:
-          "Unable to load league data.",
-
-        message:
-          error?.message ||
-          String(error)
-
-      },
-
-      502
-
-    );
-
-  }
-
-  finally {
-
-    inFlight.delete(
-      `league-${key}`
-    );
-
-  }
-
+  return jsonResponse(data);
 }
 
+async function handleStandings(env, request) {
+  const url = new URL(request.url);
+  const league =
+    url.searchParams.get("league");
 
-/* =========================================================
-   STANDINGS ENDPOINT
-   ========================================================= */
-
-async function handleStandings(
-  env,
-  leagueId
-) {
-
-  try {
-
-    const league =
-      await getLeague(
-        env,
-        leagueId
-      );
-
-
-    const season =
-      league?.currentSeason ||
-      league?.currentseason ||
-      null;
-
-
-    const rows =
-      await getStandings(
-        env,
-        season?.id
-      );
-
-
-    return jsonResponse({
-
-      league:
-        league?.id ??
-        Number(
-          leagueId
-        ),
-
-      season:
-        season?.id ??
-        null,
-
-      standings: {
-
-        TOTAL:
-          rows,
-
-        HOME:
-          rows,
-
-        AWAY:
-          rows
-
-      }
-
-    });
-
-  }
-
-  catch (error) {
-
-    return jsonResponse(
-      {
-
-        error:
-          "Unable to load standings.",
-
-        message:
-          error?.message ||
-          String(error)
-
-      },
-
-      502
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   LIVE SCORES
-   ========================================================= */
-
-async function handleLiveScores(
-  env,
-  leagueId
-) {
-
-  try {
-
-    const data =
-      await sportmonksJson(
-
-        env,
-
-        `/livescores/inplay` +
-        `?filters=fixtureLeagues:${encodeURIComponent(
-          leagueId
-        )}` +
-        `&include=participants;scores;state;league;round;events`,
-
-        30
-
-      );
-
-
-    const matches =
-      Array.isArray(
-        data?.data
-      )
-        ? data.data.map(
-            simplifyFixture
-          )
-        : [];
-
-
-    return jsonResponse({
-
-      league:
-        Number(
-          leagueId
-        ),
-
-      count:
-        matches.length,
-
-      matches
-
-    });
-
-  }
-
-  catch (error) {
-
-    return jsonResponse(
-      {
-
-        error:
-          "Unable to load live scores.",
-
-        message:
-          error?.message ||
-          String(error)
-
-      },
-
-      502
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   MATCH
-   ========================================================= */
-
-async function handleMatch(
-  env,
-  matchId
-) {
-
-  if (
-    !matchId
-  ) {
-
+  if (!league) {
     return jsonResponse(
       {
         error:
-          "Match ID is required."
+          "Missing league parameter."
       },
       400
     );
-
   }
 
-
-  try {
-
-    const data =
-      await sportmonksJson(
-
-        env,
-
-        `/fixtures/${encodeURIComponent(
-          matchId
-        )}` +
-        `?include=participants;scores;state;league;round;events;events.type;events.player;events.relatedPlayer`,
-
-        CACHE_TTL.match
-
-      );
-
-
-    const fixture =
-      data?.data;
-
-
-    if (
-      !fixture
-    ) {
-
-      throw new Error(
-        "Match was not found."
-      );
-
-    }
-
-
-    const simplified =
-      simplifyFixture(
-        fixture
-      );
-
-
-    const eventData =
-      simplifyEvents(
-        fixture.events
-      );
-
-
-    return jsonResponse({
-
-      ...simplified,
-
-      goals:
-        eventData.goals,
-
-      bookings:
-        eventData.bookings
-
-    });
-
-  }
-
-  catch (error) {
-
-    return jsonResponse(
-      {
-
-        error:
-          "Unable to load match.",
-
-        message:
-          error?.message ||
-          String(error)
-
-      },
-
-      502
+  const competition =
+    await resolveCompetition(
+      env,
+      league
     );
 
-  }
+  const data =
+    await footballDataJson(
+      env,
+      `/competitions/${encodeURIComponent(
+        competition.code
+      )}/standings`,
+      CACHE_TTL.standings
+    );
 
+  return jsonResponse({
+    league: competition.key,
+    code: competition.code,
+    competition: {
+      key: competition.key,
+      code: competition.code,
+      name: competition.name
+    },
+    standings:
+      simplifyStandings(data)
+  });
 }
 
+async function handleTeams(env, request) {
+  const url = new URL(request.url);
 
-/* =========================================================
-   TEAM
-   ========================================================= */
+  const league =
+    url.searchParams.get("league");
 
-async function handleTeam(
-  env,
-  teamId
-) {
-
-  if (
-    !teamId
-  ) {
-
+  if (!league) {
     return jsonResponse(
       {
         error:
-          "Team ID is required."
+          "Missing league parameter."
       },
       400
     );
-
   }
 
-
-  try {
-
-    const data =
-      await sportmonksJson(
-
-        env,
-
-        `/teams/${encodeURIComponent(
-          teamId
-        )}?include=venue;country`,
-
-        CACHE_TTL.team
-
-      );
-
-
-    const team =
-      data?.data;
-
-
-    if (
-      !team
-    ) {
-
-      throw new Error(
-        "Team was not found."
-      );
-
-    }
-
-
-    return jsonResponse({
-
-      id:
-        team.id ??
-        null,
-
-      name:
-        team.name ??
-        "",
-
-      shortName:
-        team.short_code ??
-        team.name ??
-        "",
-
-      tla:
-        team.short_code ??
-        "",
-
-      crest:
-        team.image_path ??
-        "",
-
-      venue:
-        team.venue?.name ??
-        "",
-
-      founded:
-        team.founded ??
-        null,
-
-      address:
-        team.venue?.address ??
-        "",
-
-      website:
-        "",
-
-      area:
-        team.country ??
-        null
-
-    });
-
-  }
-
-  catch (error) {
-
-    return jsonResponse(
-      {
-
-        error:
-          "Unable to load team.",
-
-        message:
-          error?.message ||
-          String(error)
-
-      },
-
-      502
-
+  const competition =
+    await resolveCompetition(
+      env,
+      league
     );
 
-  }
-
-}
-
-
-/* =========================================================
-   TEAM SEARCH
-   ========================================================= */
-
-async function handleTeamSearch(
-  env,
-  query
-) {
-
-  const q =
-    String(
-      query ||
-      ""
-    ).trim();
-
-
-  if (
-    q.length < 2
-  ) {
-
-    return jsonResponse({
-
-      query:
-        q,
-
-      teams:
-        []
-
-    });
-
-  }
-
-
-  try {
-
-    const data =
-      await sportmonksJson(
-
-        env,
-
-        `/teams/search/${encodeURIComponent(
-          q
-        )}` +
-        `?per_page=20`,
-
-        CACHE_TTL.teamSearch
-
-      );
-
-
-    const teams =
-      Array.isArray(
-        data?.data
-      )
-
-        ? data.data
-            .map(
-              simplifyTeam
-            )
-            .filter(
-              Boolean
-            )
-
-        : [];
-
-
-    return jsonResponse({
-
-      query:
-        q,
-
-      teams
-
-    });
-
-  }
-
-  catch (error) {
-
-    return jsonResponse(
-      {
-
-        error:
-          "Unable to search teams.",
-
-        message:
-          error?.message ||
-          String(error)
-
-      },
-
-      502
-
+  const data =
+    await footballDataJson(
+      env,
+      `/competitions/${encodeURIComponent(
+        competition.code
+      )}/teams`,
+      CACHE_TTL.team
     );
 
-  }
+  const teams = Array.isArray(data?.teams)
+    ? data.teams.map(simplifyTeam)
+    : [];
 
+  return jsonResponse({
+    league: competition.key,
+    code: competition.code,
+    competition: {
+      key: competition.key,
+      code: competition.code,
+      name: competition.name
+    },
+    teams
+  });
 }
 
+async function handleTeam(env, request) {
+  const url = new URL(request.url);
 
-/* =========================================================
-   TEAM MATCHES
-   ========================================================= */
+  const teamId =
+    url.searchParams.get("teamId");
+
+  if (!teamId) {
+    return jsonResponse(
+      {
+        error:
+          "Missing teamId parameter."
+      },
+      400
+    );
+  }
+
+  const data =
+    await footballDataJson(
+      env,
+      `/teams/${encodeURIComponent(
+        teamId
+      )}`,
+      CACHE_TTL.team
+    );
+
+  return jsonResponse({
+    team: simplifyTeam(data)
+  });
+}
 
 async function handleTeamMatches(
   env,
-  teamId,
-  leagueId
+  request
 ) {
+  const url = new URL(request.url);
 
-  if (
-    !teamId
-  ) {
+  const teamId =
+    url.searchParams.get("teamId");
 
+  const league =
+    url.searchParams.get("league");
+
+  if (!teamId) {
     return jsonResponse(
       {
         error:
-          "Team ID is required."
+          "Missing teamId parameter."
       },
       400
     );
-
   }
 
-
-  const today =
-    getTodayString();
-
-
-  const dateFrom =
-    addDays(
-      today,
-      -120
-    );
-
-
-  const dateTo =
-    addDays(
-      today,
-      60
-    );
-
-
-  /*
-    Sportmonks allows a maximum date range
-    of 100 days on this endpoint.
-
-    Therefore split the request into two
-    smaller windows.
-  */
-
-  const firstFrom =
-    addDays(
-      today,
-      -100
-    );
-
-
-  const firstTo =
-    addDays(
-      today,
-      0
-    );
-
-
-  const secondFrom =
-    addDays(
-      today,
-      1
-    );
-
-
-  const secondTo =
-    addDays(
-      today,
-      60
-    );
-
-
-  try {
-
-    const paths = [
-
-      `/fixtures/between/${firstFrom}/${firstTo}/${encodeURIComponent(
-        teamId
-      )}` +
-      `?include=participants;scores;state;league;round` +
-      `&per_page=50`,
-
-      `/fixtures/between/${secondFrom}/${secondTo}/${encodeURIComponent(
-        teamId
-      )}` +
-      `?include=participants;scores;state;league;round` +
-      `&per_page=50`
-
-    ];
-
-
-    const [
-      first,
-      second
-    ] =
-      await Promise.all([
-
-        sportmonksPaginated(
+  const competition =
+    league
+      ? await resolveCompetition(
           env,
-          paths[0],
-          CACHE_TTL.teamMatches,
-          10
-        ),
-
-        sportmonksPaginated(
-          env,
-          paths[1],
-          CACHE_TTL.teamMatches,
-          10
+          league
         )
+      : null;
 
-      ]);
+  const today = getTodayString();
 
+  const dateFrom = addDays(
+    today,
+    -90
+  );
 
-    let matches =
-      [
-        ...first,
-        ...second
-      ];
+  const dateTo = addDays(
+    today,
+    90
+  );
 
+  let path =
+    `/teams/${encodeURIComponent(
+      teamId
+    )}/matches?dateFrom=${dateFrom}&dateTo=${dateTo}&limit=100`;
 
-    /*
-      Remove duplicates.
-    */
-
-    const unique =
-      new Map();
-
-
-    for (
-      const fixture of
-        matches
-    ) {
-
-      unique.set(
-        String(
-          fixture.id
-        ),
-        fixture
-      );
-
-    }
-
-
-    matches =
-      Array.from(
-        unique.values()
-      );
-
-
-    if (
-      leagueId
-    ) {
-
-      matches =
-        matches.filter(
-          fixture =>
-            String(
-              fixture?.league_id
-            ) ===
-            String(
-              leagueId
-            )
-        );
-
-    }
-
-
-    const simplified =
-      matches
-
-        .map(
-          simplifyFixture
-        )
-
-        .sort(
-          (a,b) =>
-            new Date(
-              b.utcDate
-            ) -
-            new Date(
-              a.utcDate
-            )
-        );
-
-
-    return jsonResponse({
-
-      teamId:
-        String(
-          teamId
-        ),
-
-      league:
-        leagueId
-          ? String(
-              leagueId
-            )
-          : null,
-
-      count:
-        simplified.length,
-
-      matches:
-        simplified
-
-    });
-
+  if (competition) {
+    path += `&competitions=${encodeURIComponent(
+      competition.code
+    )}`;
   }
 
-  catch (error) {
-
-    return jsonResponse(
-      {
-
-        error:
-          "Unable to load team matches.",
-
-        message:
-          error?.message ||
-          String(error)
-
-      },
-
-      502
+  const data =
+    await footballDataJson(
+      env,
+      path,
+      CACHE_TTL.teamMatches
     );
 
-  }
+  const matches = Array.isArray(
+    data?.matches
+  )
+    ? data.matches.map(simplifyMatch)
+    : [];
 
+  return jsonResponse({
+    teamId: Number(teamId),
+    league:
+      competition?.key || null,
+    code:
+      competition?.code || null,
+    matches
+  });
 }
-
-
-/* =========================================================
-   TEAM SCORERS
-   ========================================================= */
 
 async function handleTeamScorers(
   env,
-  teamId,
-  leagueId
+  request
 ) {
+  const url = new URL(request.url);
 
-  if (
-    !teamId
-  ) {
+  const teamId =
+    url.searchParams.get("teamId");
 
+  const league =
+    url.searchParams.get("league");
+
+  if (!teamId) {
     return jsonResponse(
       {
         error:
-          "Team ID is required."
+          "Missing teamId parameter."
       },
       400
     );
-
   }
 
+  if (!league) {
+    return jsonResponse({
+      teamId: Number(teamId),
+      scorers: []
+    });
+  }
 
-  try {
+  const competition =
+    await resolveCompetition(
+      env,
+      league
+    );
 
-    const team =
-      await handleTeam(
-        env,
-        teamId
-      );
+  const data =
+    await footballDataJson(
+      env,
+      `/competitions/${encodeURIComponent(
+        competition.code
+      )}/scorers?limit=100`,
+      CACHE_TTL.teamScorers
+    );
 
-
-    /*
-      We need the current league season
-      to obtain topscorers.
-    */
-
-    let seasonId =
-      null;
-
-
-    if (
-      leagueId
-    ) {
-
-      const league =
-        await getLeague(
-          env,
-          leagueId
-        );
-
-
-      const season =
-        league?.currentSeason ||
-        league?.currentseason ||
-        null;
-
-
-      seasonId =
-        season?.id ??
-        null;
-
-    }
-
-
-    if (
-      !seasonId
-    ) {
-
-      return jsonResponse({
-
-        teamId:
-          String(
-            teamId
-          ),
-
-        league:
-          leagueId
-            ? String(
-                leagueId
-              )
-            : null,
-
-        count:
-          0,
-
-        scorers:
-          []
-
-      });
-
-    }
-
-
-    const data =
-      await sportmonksJson(
-
-        env,
-
-        `/topscorers/seasons/${encodeURIComponent(
-          seasonId
-        )}` +
-        `?include=player;participant;type` +
-        `&per_page=50`,
-
-        CACHE_TTL.teamScorers
-
-      );
-
-
-    const rows =
-      Array.isArray(
-        data?.data
-      )
-        ? data.data
-        : [];
-
-
-    const scorers =
-      rows
-
-        .filter(
-          row =>
-            String(
-              row?.participant_id
-            ) ===
-            String(
-              teamId
-            )
-        )
-
-        .map(
-          row => ({
-
-            player:
-              row?.player
-                ? {
-
-                    id:
-                      row.player.id ??
-                      null,
-
-                    name:
-                      row.player.name ??
-                      ""
-
-                  }
-
-                : null,
-
-            team:
-              row?.participant
-                ? simplifyTeam(
-                    row.participant
-                  )
-
-                : null,
-
-            goals:
+  const scorers =
+    Array.isArray(data?.scorers)
+      ? data.scorers
+          .filter(
+            (item) =>
               Number(
-                row?.total ??
-                0
-              ),
-
+                item.team?.id
+              ) === Number(teamId)
+          )
+          .map((item) => ({
+            player: {
+              id:
+                item.player?.id ||
+                null,
+              name:
+                item.player?.name ||
+                "Unknown player"
+            },
+            team: simplifyTeam(
+              item.team
+            ),
+            goals:
+              item.goals ?? 0,
             assists:
-              0,
-
+              item.assists ?? 0,
             penalties:
-              0
+              item.penalties ?? 0
+          }))
+      : [];
 
-          })
-        );
-
-
-    return jsonResponse({
-
-      teamId:
-        String(
-          teamId
-        ),
-
-      league:
-        leagueId
-          ? String(
-              leagueId
-            )
-          : null,
-
-      count:
-        scorers.length,
-
-      scorers
-
-    });
-
-  }
-
-  catch (error) {
-
-    return jsonResponse(
-      {
-
-        error:
-          "Unable to load team scorers.",
-
-        message:
-          error?.message ||
-          String(error)
-
-      },
-
-      502
-
-    );
-
-  }
-
+  return jsonResponse({
+    teamId: Number(teamId),
+    league: competition.key,
+    code: competition.code,
+    scorers
+  });
 }
 
+async function handleMatch(env, request) {
+  const url = new URL(request.url);
 
-/* =========================================================
-   TEST
-   ========================================================= */
+  const matchId =
+    url.searchParams.get("matchId");
 
-async function handleTest(
-  env
-) {
+  if (!matchId) {
+    return jsonResponse(
+      {
+        error:
+          "Missing matchId parameter."
+      },
+      400
+    );
+  }
 
-  try {
-
-    const data =
-      await sportmonksJson(
-        env,
-        `/leagues/8`,
-        CACHE_TTL.competition
-      );
-
-
-    return jsonResponse({
-
-      success:
-        true,
-
-      competition: {
-
-        id:
-          data?.data?.id ??
-          null,
-
-        name:
-          data?.data?.name ??
-          null,
-
-        country:
-          data?.data?.country_id ??
-          null
-
+  const data =
+    await footballDataJson(
+      env,
+      `/matches/${encodeURIComponent(
+        matchId
+      )}`,
+      CACHE_TTL.match,
+      {
+        "X-Unfold-Goals": "true",
+        "X-Unfold-Bookings": "true"
       }
-
-    });
-
-  }
-
-  catch (error) {
-
-    return jsonResponse(
-      {
-
-        success:
-          false,
-
-        error:
-          error?.message ||
-          String(error)
-
-      },
-
-      502
-
     );
 
-  }
-
+  return jsonResponse({
+    match: simplifyMatch(data)
+  });
 }
 
+async function handleTest(env) {
+  const data =
+    await footballDataJson(
+      env,
+      "/competitions/PL",
+      300
+    );
 
-/* =========================================================
-   STATIC ASSETS
-   ========================================================= */
+  return jsonResponse({
+    ok: true,
+    message:
+      "football-data.org connection is working.",
+    competition: {
+      id: data.id,
+      name: data.name,
+      code: data.code,
+      area: data.area?.name || ""
+    }
+  });
+}
 
-async function serveAsset(
-  request,
-  env
-) {
+/*
+  ------------------------------------------------------------
+  ERROR HANDLING
+  ------------------------------------------------------------
+*/
+
+function friendlyError(error) {
+  const message =
+    error?.message ||
+    "Unknown error";
 
   if (
-    !env.ASSETS
+    message.includes(
+      "403"
+    )
   ) {
-
-    return new Response(
-      "Asset binding not configured.",
-      {
-        status:
-          500
-      }
-    );
-
+    return {
+      message:
+        "This competition or resource is not available on the current football-data.org plan."
+    };
   }
 
+  if (
+    message.includes(
+      "429"
+    )
+  ) {
+    return {
+      message:
+        "football-data.org rate limit reached. Please wait a moment and try again."
+    };
+  }
 
-  return env.ASSETS.fetch(
-    request
-  );
-
+  return {
+    message
+  };
 }
 
+/*
+  ------------------------------------------------------------
+  STATIC ASSETS
+  ------------------------------------------------------------
+*/
 
-/* =========================================================
-   MAIN WORKER
-   ========================================================= */
+async function serveAsset(
+  env,
+  request
+) {
+  return env.ASSETS.fetch(request);
+}
+
+/*
+  ------------------------------------------------------------
+  MAIN WORKER
+  ------------------------------------------------------------
+*/
 
 export default {
-
-  async fetch(
-    request,
-    env,
-    ctx
-  ) {
+  async fetch(request, env) {
+    const url = new URL(request.url);
 
     try {
-
-      const url =
-        new URL(
-          request.url
-        );
-
-
-      const pathname =
-        url.pathname;
-
-
-      const league =
-        url.searchParams.get(
-          "league"
-        );
-
-
       if (
-        pathname.startsWith(
-          "/api/"
-        )
+        url.pathname ===
+        "/api/test-football-data"
       ) {
-
-
-        if (
-          pathname ===
-          "/api/competitions"
-        ) {
-
-          return await
-            handleCompetitions(
-              env
-            );
-
-        }
-
-
-        if (
-          pathname ===
-          "/api/league-data"
-        ) {
-
-          return await
-            handleLeagueData(
-              env,
-              league
-            );
-
-        }
-
-
-        if (
-          pathname ===
-          "/api/standings"
-        ) {
-
-          return await
-            handleStandings(
-              env,
-              league
-            );
-
-        }
-
-
-        if (
-          pathname ===
-          "/api/live-scores"
-        ) {
-
-          return await
-            handleLiveScores(
-              env,
-              league
-            );
-
-        }
-
-
-        if (
-          pathname ===
-          "/api/match"
-        ) {
-
-          const matchId =
-            url.searchParams.get(
-              "matchId"
-            ) ||
-            url.searchParams.get(
-              "id"
-            );
-
-
-          return await
-            handleMatch(
-              env,
-              matchId
-            );
-
-        }
-
-
-        if (
-          pathname ===
-          "/api/team"
-        ) {
-
-          const teamId =
-            url.searchParams.get(
-              "teamId"
-            ) ||
-            url.searchParams.get(
-              "id"
-            );
-
-
-          return await
-            handleTeam(
-              env,
-              teamId
-            );
-
-        }
-
-
-        if (
-          pathname ===
-          "/api/team-search"
-        ) {
-
-          const query =
-            url.searchParams.get(
-              "q"
-            ) ||
-            url.searchParams.get(
-              "query"
-            ) ||
-            "";
-
-
-          return await
-            handleTeamSearch(
-              env,
-              query
-            );
-
-        }
-
-
-        if (
-          pathname ===
-          "/api/team-matches"
-        ) {
-
-          const teamId =
-            url.searchParams.get(
-              "teamId"
-            ) ||
-            url.searchParams.get(
-              "id"
-            );
-
-
-          return await
-            handleTeamMatches(
-              env,
-              teamId,
-              league
-            );
-
-        }
-
-
-        if (
-          pathname ===
-          "/api/team-scorers"
-        ) {
-
-          const teamId =
-            url.searchParams.get(
-              "teamId"
-            ) ||
-            url.searchParams.get(
-              "id"
-            );
-
-
-          return await
-            handleTeamScorers(
-              env,
-              teamId,
-              league
-            );
-
-        }
-
-
-        if (
-          pathname ===
-          "/api/test-sportmonks"
-        ) {
-
-          return await
-            handleTest(
-              env
-            );
-
-        }
-
-
-        return jsonResponse(
-
-          {
-
-            error:
-              "API route not found.",
-
-            path:
-              pathname
-
-          },
-
-          404
-
-        );
-
+        return await handleTest(env);
       }
 
-
-      return await
-        serveAsset(
-          request,
+      if (
+        url.pathname ===
+        "/api/competitions"
+      ) {
+        return await handleCompetitions(
           env
         );
+      }
 
-    }
+      if (
+        url.pathname ===
+        "/api/league-data"
+      ) {
+        return await handleLeagueData(
+          env,
+          request
+        );
+      }
 
-    catch (error) {
+      if (
+        url.pathname ===
+        "/api/standings"
+      ) {
+        return await handleStandings(
+          env,
+          request
+        );
+      }
 
-      console.error(
-        "Worker error:",
-        error
+      if (
+        url.pathname ===
+        "/api/teams"
+      ) {
+        return await handleTeams(
+          env,
+          request
+        );
+      }
+
+      if (
+        url.pathname ===
+        "/api/team"
+      ) {
+        return await handleTeam(
+          env,
+          request
+        );
+      }
+
+      if (
+        url.pathname ===
+        "/api/team-matches"
+      ) {
+        return await handleTeamMatches(
+          env,
+          request
+        );
+      }
+
+      if (
+        url.pathname ===
+        "/api/team-scorers"
+      ) {
+        return await handleTeamScorers(
+          env,
+          request
+        );
+      }
+
+      if (
+        url.pathname ===
+        "/api/match"
+      ) {
+        return await handleMatch(
+          env,
+          request
+        );
+      }
+
+      /*
+        Keep these compatibility endpoints because
+        older versions of the frontend used them.
+      */
+
+      if (
+        url.pathname ===
+        "/api/live-scores"
+      ) {
+        return await handleLeagueData(
+          env,
+          request
+        );
+      }
+
+      if (
+        url.pathname ===
+        "/api/results"
+      ) {
+        return await handleLeagueData(
+          env,
+          request
+        );
+      }
+
+      if (
+        url.pathname ===
+        "/api/upcoming"
+      ) {
+        return await handleLeagueData(
+          env,
+          request
+        );
+      }
+
+      return await serveAsset(
+        env,
+        request
       );
+    } catch (error) {
+      console.error(error);
 
+      const friendly =
+        friendlyError(error);
 
       return jsonResponse(
-
         {
-
           error:
-            "Worker error.",
-
-          message:
-            error?.message ||
-            String(error)
-
+            friendly.message
         },
-
-        500
-
+        error?.status >= 400 &&
+        error?.status < 600
+          ? error.status
+          : 500
       );
-
     }
-
   }
-
 };
