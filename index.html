@@ -68,10 +68,17 @@
       margin-bottom: 24px;
     }
 
+    .brand-link {
+      display: inline-block;
+      text-decoration: none;
+      color: inherit;
+    }
+
     .brand {
       font-size: 28px;
       font-weight: 900;
       letter-spacing: -1px;
+      cursor: pointer;
     }
 
     .brand b {
@@ -121,6 +128,8 @@
       overflow: hidden;
       z-index: 100;
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+      max-height: 420px;
+      overflow-y: auto;
     }
 
     .search-result {
@@ -143,6 +152,7 @@
       width: 26px;
       height: 26px;
       object-fit: contain;
+      flex: 0 0 26px;
     }
 
     .search-result-name {
@@ -154,6 +164,13 @@
       color: var(--muted);
       font-size: 11px;
       margin-top: 2px;
+    }
+
+    .search-loading {
+      padding: 13px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
     }
 
     /* LEAGUE SELECTOR */
@@ -640,6 +657,15 @@
       color: var(--accent);
     }
 
+    /* FOOTER */
+
+    .footer {
+      color: var(--muted);
+      font-size: 10px;
+      text-align: center;
+      padding-top: 8px;
+    }
+
     /* RESPONSIVE */
 
     @media (max-width: 1250px) {
@@ -694,10 +720,13 @@
     }
 
     @media (max-width: 650px) {
-
       .app {
         width: calc(100% - 20px);
         padding-top: 15px;
+      }
+
+      .brand {
+        font-size: 25px;
       }
 
       .league-selector {
@@ -789,8 +818,17 @@
     <header class="header">
 
       <div>
-        <div class="brand">SCORE<b>DASH</b></div>
-        <div class="tagline">Football scores & fixtures</div>
+        <a
+          class="brand-link"
+          href="index.html"
+          aria-label="SCOREDASH home"
+        >
+          <div class="brand">SCORE<b>DASH</b></div>
+        </a>
+
+        <div class="tagline">
+          Football scores & fixtures
+        </div>
       </div>
 
       <div class="header-right">
@@ -802,7 +840,8 @@
             class="search"
             type="text"
             autocomplete="off"
-            placeholder="Search for a team..."
+            placeholder="Search for any team..."
+            aria-label="Search for any team"
           />
 
           <div
@@ -1087,9 +1126,11 @@
 
     let tableExpanded = false;
 
-    let teamsForSearch = [];
-
     let expandedMatchId = null;
+
+    let searchTimer = null;
+
+    let searchRequestNumber = 0;
 
 
     function escapeHtml(value) {
@@ -1168,23 +1209,6 @@
     }
 
 
-    function formatMatchDate(dateString) {
-
-      const date =
-        formatDate(dateString);
-
-      const time =
-        formatTime(dateString);
-
-      if (!date && !time) {
-        return "";
-      }
-
-      return `${date} ${time}`;
-
-    }
-
-
     function crest(team) {
 
       if (!team?.crest) {
@@ -1214,7 +1238,7 @@
         return "#";
       }
 
-      return `team.html?teamId=${encodeURIComponent(team.id)}&league=${encodeURIComponent(leagueKey)}`;
+      return `team.html?teamId=${encodeURIComponent(team.id)}&league=${encodeURIComponent(leagueKey || "")}`;
 
     }
 
@@ -1321,7 +1345,8 @@
 
 
       if (
-        status === "PAUSED"
+        status ===
+        "PAUSED"
       ) {
 
         return "HT";
@@ -1330,7 +1355,8 @@
 
 
       if (
-        status === "FINISHED"
+        status ===
+        "FINISHED"
       ) {
 
         return "FT";
@@ -1363,7 +1389,8 @@
 
 
       if (
-        status === "FINISHED"
+        status ===
+        "FINISHED"
       ) {
 
         return "status-finished";
@@ -2105,10 +2132,7 @@
             league
           );
 
-
           loadScorers();
-
-          loadTeamsForSearch();
 
         }
       );
@@ -2222,41 +2246,50 @@
     }
 
 
-    async function loadTeamsForSearch() {
+    /*
+      GLOBAL TEAM SEARCH
 
-      try {
+      The search is deliberately independent
+      of the selected league.
 
-        const data =
-          await fetchApi(
-            `/api/teams?league=${encodeURIComponent(currentLeague)}`
-          );
+      The worker searches the competitions
+      available to the football-data.org account.
+    */
+
+    async function searchTeams(
+      query
+    ) {
+
+      const cleanQuery =
+        query.trim();
 
 
-        teamsForSearch =
-          Array.isArray(
-            data.teams
-          )
-            ? data.teams
-            : [];
+      if (
+        cleanQuery.length < 2
+      ) {
 
-      } catch (error) {
+        return [];
 
-        console.error(
-          "Could not load teams:",
-          error
+      }
+
+
+      const data =
+        await fetchApi(
+          `/api/team-search?q=${encodeURIComponent(cleanQuery)}`
         );
 
 
-        teamsForSearch =
-          [];
-
-      }
+      return Array.isArray(
+        data.teams
+      )
+        ? data.teams
+        : [];
 
     }
 
 
-    function showSearchResults(
-      query
+    function renderSearchResults(
+      teams
     ) {
 
       const container =
@@ -2265,55 +2298,7 @@
         );
 
 
-      const cleanQuery =
-        query
-          .trim()
-          .toLowerCase();
-
-
-      if (!cleanQuery) {
-
-        container.style.display =
-          "none";
-
-        container.innerHTML =
-          "";
-
-        return;
-
-      }
-
-
-      const matches =
-        teamsForSearch
-          .filter(team => {
-
-            const name =
-              teamName(team)
-                .toLowerCase();
-
-
-            const full =
-              String(
-                team.name || ""
-              )
-                .toLowerCase();
-
-
-            return (
-              name.includes(
-                cleanQuery
-              ) ||
-              full.includes(
-                cleanQuery
-              )
-            );
-
-          })
-          .slice(0, 8);
-
-
-      if (!matches.length) {
+      if (!teams.length) {
 
         container.innerHTML =
           `<div class="empty">No teams found.</div>`;
@@ -2327,8 +2312,27 @@
 
 
       container.innerHTML =
-        matches
+        teams
+          .slice(0, 10)
           .map(team => {
+
+            const league =
+              team.competition ||
+              {};
+
+
+            const leagueText =
+              league.name
+                ? (
+                    league.country
+                      ? `${league.name} — ${league.country}`
+                      : league.name
+                  )
+                : (
+                    team.area?.name ||
+                    ""
+                  );
+
 
             return `
 
@@ -2336,6 +2340,11 @@
                 class="search-result"
                 type="button"
                 data-team-id="${escapeHtml(team.id)}"
+                data-team-league="${escapeHtml(
+                  league.key ||
+                  league.code ||
+                  ""
+                )}"
               >
 
                 ${crest(team)}
@@ -2352,8 +2361,7 @@
 
                   <div class="search-result-country">
                     ${escapeHtml(
-                      team.area?.name ||
-                      ""
+                      leagueText
                     )}
                   </div>
 
@@ -2381,9 +2389,101 @@
         "input",
         event => {
 
-          showSearchResults(
-            event.target.value
+          const query =
+            event.target.value;
+
+
+          clearTimeout(
+            searchTimer
           );
+
+
+          const requestNumber =
+            ++searchRequestNumber;
+
+
+          if (
+            query.trim().length < 2
+          ) {
+
+            const container =
+              document.getElementById(
+                "searchResults"
+              );
+
+            container.style.display =
+              "none";
+
+            container.innerHTML =
+              "";
+
+            return;
+
+          }
+
+
+          const container =
+            document.getElementById(
+              "searchResults"
+            );
+
+
+          container.innerHTML =
+            `<div class="search-loading">Searching teams...</div>`;
+
+          container.style.display =
+            "block";
+
+
+          searchTimer =
+            setTimeout(
+              async () => {
+
+                try {
+
+                  const teams =
+                    await searchTeams(
+                      query
+                    );
+
+
+                  if (
+                    requestNumber !==
+                    searchRequestNumber
+                  ) {
+
+                    return;
+
+                  }
+
+
+                  renderSearchResults(
+                    teams
+                  );
+
+                } catch (error) {
+
+                  if (
+                    requestNumber !==
+                    searchRequestNumber
+                  ) {
+
+                    return;
+
+                  }
+
+
+                  container.innerHTML =
+                    `<div class="empty">${escapeHtml(error.message || "Could not search teams.")}</div>`;
+
+                  container.style.display =
+                    "block";
+
+                }
+
+              },
+              300
+            );
 
         }
       );
@@ -2403,18 +2503,27 @@
             );
 
 
-          if (!button) return;
+          if (!button) {
+            return;
+          }
 
 
           const teamId =
             button.dataset.teamId;
 
 
-          if (!teamId) return;
+          const teamLeague =
+            button.dataset.teamLeague ||
+            currentLeague;
+
+
+          if (!teamId) {
+            return;
+          }
 
 
           window.location.href =
-            `team.html?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(currentLeague)}`;
+            `team.html?teamId=${encodeURIComponent(teamId)}&league=${encodeURIComponent(teamLeague)}`;
 
         }
       );
@@ -2813,31 +2922,6 @@
     }
 
 
-    function eventIcon(
-      type
-    ) {
-
-      if (type === "goal") {
-        return "⚽";
-      }
-
-      if (type === "sub") {
-        return "🔄";
-      }
-
-      if (type === "yellow") {
-        return "🟨";
-      }
-
-      if (type === "red") {
-        return "🟥";
-      }
-
-      return "•";
-
-    }
-
-
     function renderEvent(
       event,
       match,
@@ -3143,8 +3227,6 @@
 
       loadScorers();
 
-      loadTeamsForSearch();
-
     }
 
 
@@ -3154,4 +3236,3 @@
 
 </body>
 </html>
-```
