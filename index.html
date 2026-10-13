@@ -385,6 +385,11 @@
       overflow: hidden;
     }
 
+    .table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -439,6 +444,24 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .team-link {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .team-link:hover .team-name,
+    .team-link:hover .table-team-name,
+    .team-link:focus-visible .team-name,
+    .team-link:focus-visible .table-team-name {
+      color: var(--accent);
+    }
+
+    .team-link:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      border-radius: 4px;
     }
 
     .top-scorer {
@@ -812,6 +835,12 @@ let expandedMatchId = null;
 
 let searchTimer = null;
 
+let leagueRequestNumber = 0;
+
+let scorerRequestNumber = 0;
+
+let searchRequestNumber = 0;
+
 const q = selector =>
   document.querySelector(selector);
 
@@ -878,6 +907,16 @@ function crest(team) {
       onerror="this.style.display='none'"
     >
   `;
+
+}
+
+function teamUrl(team, leagueKey) {
+
+  if (!team?.id) {
+    return "#";
+  }
+
+  return `team.html?teamId=${encodeURIComponent(team.id)}&league=${encodeURIComponent(leagueKey)}`;
 
 }
 
@@ -1028,7 +1067,11 @@ function renderMatches(
 
               <div class="match-grid">
 
-                <div class="team">
+                <a
+                  class="team team-link"
+                  href="${teamUrl(match.homeTeam, currentLeague)}"
+                  aria-label="View ${escapeHtml(teamName(match.homeTeam))}"
+                >
 
                   ${crest(match.homeTeam)}
 
@@ -1038,7 +1081,7 @@ function renderMatches(
                     )}
                   </span>
 
-                </div>
+                </a>
 
                 <div class="score-area">
 
@@ -1054,7 +1097,11 @@ function renderMatches(
 
                 </div>
 
-                <div class="team away">
+                <a
+                  class="team away team-link"
+                  href="${teamUrl(match.awayTeam, currentLeague)}"
+                  aria-label="View ${escapeHtml(teamName(match.awayTeam))}"
+                >
 
                   <span class="team-name">
                     ${escapeHtml(
@@ -1064,7 +1111,7 @@ function renderMatches(
 
                   ${crest(match.awayTeam)}
 
-                </div>
+                </a>
 
               </div>
 
@@ -1096,7 +1143,11 @@ function renderMatches(
 
       element.addEventListener(
         "click",
-        () => {
+        event => {
+
+          if (event.target.closest("a")) {
+            return;
+          }
 
           const matchId =
             element.dataset.matchToggle;
@@ -1336,7 +1387,9 @@ function renderStandings(
 
   container.innerHTML = `
 
-    <table>
+    <div class="table-scroll">
+
+    <table aria-label="League table">
 
       <thead>
 
@@ -1366,7 +1419,11 @@ function renderStandings(
 
               <td>
 
-                <div class="table-team">
+                <a
+                  class="table-team team-link"
+                  href="${teamUrl(row.team, currentLeague)}"
+                  aria-label="View ${escapeHtml(teamName(row.team))}"
+                >
 
                   ${crest(row.team)}
 
@@ -1376,7 +1433,7 @@ function renderStandings(
                     )}
                   </span>
 
-                </div>
+                </a>
 
               </td>
 
@@ -1426,6 +1483,8 @@ function renderStandings(
       </tbody>
 
     </table>
+
+    </div>
 
   `;
 
@@ -1571,6 +1630,9 @@ async function loadLeague(
   currentLeague =
     leagueKey;
 
+  const requestNumber =
+    ++leagueRequestNumber;
+
   q("#liveMatches").innerHTML = `
     <div class="message">
       Loading...
@@ -1601,6 +1663,13 @@ async function loadLeague(
       await fetchApi(
         `/api/league-data?league=${encodeURIComponent(leagueKey)}`
       );
+
+    if (
+      requestNumber !==
+      leagueRequestNumber
+    ) {
+      return;
+    }
 
     renderLeagueHeading(
       data.competition
@@ -1650,6 +1719,13 @@ async function loadLeague(
     }
 
   } catch (error) {
+
+    if (
+      requestNumber !==
+      leagueRequestNumber
+    ) {
+      return;
+    }
 
     const message = `
       <div class="message error">
@@ -1751,20 +1827,39 @@ async function loadCompetitions() {
 
 }
 
-async function loadScorers() {
+async function loadScorers(
+  leagueKey = currentLeague
+) {
+
+  const requestNumber =
+    ++scorerRequestNumber;
 
   try {
 
     const data =
       await fetchApi(
-        `/api/scorers?league=${encodeURIComponent(currentLeague)}`
+        `/api/scorers?league=${encodeURIComponent(leagueKey)}`
       );
+
+    if (
+      requestNumber !==
+      scorerRequestNumber
+    ) {
+      return;
+    }
 
     renderScorers(
       data.scorers || []
     );
 
   } catch (error) {
+
+    if (
+      requestNumber !==
+      scorerRequestNumber
+    ) {
+      return;
+    }
 
     q("#scorers").innerHTML = `
       <div class="message">
@@ -1888,6 +1983,9 @@ async function searchTeams(
   const cleanQuery =
     query.trim();
 
+  const requestNumber =
+    ++searchRequestNumber;
+
   if (
     cleanQuery.length < 2
   ) {
@@ -1908,11 +2006,25 @@ async function searchTeams(
         `/api/team-search?q=${encodeURIComponent(cleanQuery)}`
       );
 
+    if (
+      requestNumber !==
+      searchRequestNumber
+    ) {
+      return;
+    }
+
     renderSearchResults(
       data.teams || []
     );
 
   } catch (error) {
+
+    if (
+      requestNumber !==
+      searchRequestNumber
+    ) {
+      return;
+    }
 
     q("#searchResults").innerHTML = `
       <div class="search-message">
@@ -1937,11 +2049,10 @@ q("#leagueSelect")
       const league =
         event.target.value;
 
-      await loadLeague(
-        league
-      );
-
-      await loadScorers();
+      await Promise.all([
+        loadLeague(league),
+        loadScorers(league)
+      ]);
 
     }
   );
@@ -1961,6 +2072,8 @@ q("#teamSearch")
       if (
         value.trim().length < 2
       ) {
+
+        searchRequestNumber++;
 
         q("#searchResults")
           .classList.remove(
@@ -2034,17 +2147,16 @@ async function start() {
     Load the main league first.
   */
 
-  await loadLeague(
-    "premier"
-  );
+  await Promise.all([
+    loadLeague("premier"),
+    loadScorers("premier")
+  ]);
 
   /*
     These can load afterwards.
   */
 
   loadCompetitions();
-
-  loadScorers();
 
 }
 

@@ -775,13 +775,13 @@ async function getLeagueData(
   const dateFrom =
     addDays(
       today,
-      -30
+      -90
     );
 
   const dateTo =
     addDays(
       today,
-      30
+      90
     );
 
   const matchesPath =
