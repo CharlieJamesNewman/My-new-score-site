@@ -20,14 +20,14 @@
 <style>
 
 :root {
-  --bg: #080a0d;
-  --panel: #11151a;
-  --panel-2: #171c22;
-  --border: #252c34;
-  --text: #f4f6f8;
-  --muted: #89929d;
-  --accent: #c9ff4a;
-  --danger: #ff5c5c;
+  --bg: #F6F5F2;
+  --panel: #FFFFFF;
+  --panel-2: #F0EBFA;
+  --border: #E4DEEB;
+  --text: #221B35;
+  --muted: #70677D;
+  --accent: #7045D6;
+  --danger: #B42345;
 }
 
 * {
@@ -260,7 +260,7 @@ td:nth-child(2) {
 }
 
 .error {
-  color: #ff9b9b;
+  color: #B42345;
 }
 
 @media (max-width: 700px) {
@@ -296,6 +296,14 @@ td:nth-child(2) {
     font-size: 11px;
   }
 }
+
+ 
+/* ScoreDash editorial light theme. */
+header { background: #FFFFFF; }
+.hero, .stat, .match, .table-panel { box-shadow: 0 3px 16px rgba(34, 27, 53, 0.035); }
+.stat-number, .score { color: #3E286C; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+::selection { background: #EAE2FF; color: #221B35; }
 
 </style>
 
