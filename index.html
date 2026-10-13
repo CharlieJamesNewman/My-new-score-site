@@ -20,14 +20,14 @@
   <style>
 
     :root {
-      --bg: #F6F5F2;
-      --panel: #FFFFFF;
-      --panel-2: #F0EBFA;
-      --border: #E4DEEB;
-      --text: #221B35;
-      --muted: #70677D;
-      --accent: #7045D6;
-      --danger: #B42345;
+      --bg: #171322;
+      --panel: #251D36;
+      --panel-2: #302642;
+      --border: #45385D;
+      --text: #F7F4FF;
+      --muted: #B9ACCC;
+      --accent: #B99AFF;
+      --danger: #FF747D;
     }
 
     * {
@@ -261,7 +261,7 @@
     }
 
     .error {
-      color: #B42345;
+      color: #FF969D;
     }
 
     .match {
@@ -341,7 +341,7 @@
     .match-details {
       display: none;
       border-top: 1px solid var(--border);
-      background: #F8F5FD;
+      background: #1D172A;
       padding: 12px 15px 15px;
     }
 
@@ -597,17 +597,18 @@
     }
 
   
-    /* ScoreDash editorial light theme: accessible focus and distinctive purple accents. */
-    .header { background: #FFFFFF; }
-    .panel, .table-panel, .search-results { box-shadow: 0 3px 16px rgba(34, 27, 53, 0.035); }
-    .brand b, .logo b { color: var(--accent); }
-    .score { color: #3E286C; }
-    .match.live .score { color: var(--accent); }
-    .search:focus-visible, .league-select:focus-visible, button:focus-visible, a:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-    ::selection { background: #EAE2FF; color: #221B35; }
+    /* ScoreDash dark plum identity and Matchday Centre. */
+    .header { background: #1D172A; }
+    .panel, .table-panel, .search-results { box-shadow: 0 8px 26px rgba(7, 4, 15, .22); }
+    .match.live .score, .brand b { color: var(--accent); }
+    .search:focus-visible, .league-select:focus-visible, a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .matchday-intro { padding: 19px 20px; margin-bottom: 22px; border: 1px solid #574474; border-radius: 15px; background: linear-gradient(110deg, #302145, #21192F); }
+    .matchday-eyebrow { color: #CBB9FF; font-size: 11px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    .matchday-title { font-size: clamp(23px, 3vw, 32px); font-weight: 900; letter-spacing: -.04em; margin: 6px 0; }
+    .matchday-description { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .matchday-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
+    .matchday-links a { background: #44325F; color: #F7F4FF; border: 1px solid #6B518D; border-radius: 8px; padding: 9px 12px; font-size: 12px; font-weight: 750; }
+    .matchday-links a:hover { background: #604780; }
 
 </style>
 
@@ -662,6 +663,17 @@
 </header>
 
 <main>
+<section class="matchday-intro" aria-labelledby="matchdayTitle">
+  <div class="matchday-eyebrow">The football hub</div>
+  <h1 class="matchday-title" id="matchdayTitle">Matchday Centre</h1>
+  <div class="matchday-description">Follow live scores, recent results, upcoming fixtures and league standings in one place.</div>
+  <nav class="matchday-links" aria-label="Matchday Centre sections">
+    <a href="#liveMatches">Live matches</a>
+    <a href="#recentMatches">Results</a>
+    <a href="#upcomingMatches">Fixtures</a>
+    <a href="#standings">League table</a>
+  </nav>
+</section>
 
   <div class="league-bar">
 
