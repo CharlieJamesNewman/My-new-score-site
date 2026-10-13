@@ -1931,7 +1931,7 @@ function renderSearchResults(
           class="search-result"
           type="button"
           data-team-id="${escapeHtml(
-            team.team?.id
+            team.id
           )}"
           data-team-league="${escapeHtml(
             team.competition?.key ||
@@ -1939,13 +1939,13 @@ function renderSearchResults(
           )}"
         >
 
-          ${crest(team.team)}
+          ${crest(team)}
 
           <div>
 
             <div class="search-result-name">
               ${escapeHtml(
-                teamName(team.team)
+                teamName(team)
               )}
             </div>
 
