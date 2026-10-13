@@ -511,6 +511,54 @@
       font-weight: 900;
     }
 
+    .following {
+      display: flex;
+      gap: 10px;
+      margin: 0 0 22px;
+      overflow-x: auto;
+      padding-bottom: 3px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .following-card {
+      align-items: center;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      color: inherit;
+      display: flex;
+      flex: 0 0 auto;
+      gap: 9px;
+      min-width: 170px;
+      padding: 10px 12px;
+      text-decoration: none;
+    }
+
+    .following-card:hover,
+    .following-card:focus-visible {
+      border-color: var(--accent);
+    }
+
+    .following-card img {
+      height: 28px;
+      object-fit: contain;
+      width: 28px;
+    }
+
+    .following-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .following-name {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
     .small-note {
       color: var(--muted);
       font-size: 10px;
@@ -669,6 +717,22 @@
     class="league-heading"
   ></div>
 
+  <section
+    id="followingSection"
+    hidden
+  >
+
+    <div class="section-title">
+      Following
+    </div>
+
+    <div
+      id="following"
+      class="following"
+    ></div>
+
+  </section>
+
   <div class="layout">
 
     <div class="left-column">
@@ -794,6 +858,9 @@
 
 const API_BASE = "";
 
+const FAVOURITES_KEY =
+  "scoredash:favourite-teams:v1";
+
 const FEATURED_LEAGUES = [
   {
     key: "premier",
@@ -885,11 +952,19 @@ async function fetchApi(endpoint) {
 
 function teamName(team) {
 
-  return (
-    team?.name ||
+  return cleanTeamName(
     team?.shortName ||
+    team?.name ||
     "Unknown team"
   );
+
+}
+
+function cleanTeamName(name) {
+
+  return String(name || "")
+    .replace(/\s+F\.?C\.?$/i, "")
+    .trim() || "Unknown team";
 
 }
 
@@ -917,6 +992,58 @@ function teamUrl(team, leagueKey) {
   }
 
   return `team.html?teamId=${encodeURIComponent(team.id)}&league=${encodeURIComponent(leagueKey)}`;
+
+}
+
+function getFavouriteTeams() {
+
+  try {
+    const favourites =
+      JSON.parse(
+        localStorage.getItem(FAVOURITES_KEY) || "[]"
+      );
+
+    return Array.isArray(favourites)
+      ? favourites.filter(team => team?.id)
+      : [];
+  } catch (_) {
+    return [];
+  }
+
+}
+
+function renderFollowing() {
+
+  const section =
+    q("#followingSection");
+
+  const container =
+    q("#following");
+
+  const favourites =
+    getFavouriteTeams();
+
+  if (!favourites.length) {
+    section.hidden = true;
+    container.innerHTML = "";
+    return;
+  }
+
+  section.hidden = false;
+
+  container.innerHTML =
+    favourites.slice(0, 8).map(team => `
+      <a
+        class="following-card"
+        href="${teamUrl(team, team.league || "premier")}"
+      >
+        ${team.crest ? `<img src="${escapeHtml(team.crest)}" alt="">` : ""}
+        <div>
+          <div class="following-label">Following</div>
+          <div class="following-name">${escapeHtml(teamName(team))}</div>
+        </div>
+      </a>
+    `).join("");
 
 }
 
@@ -2133,6 +2260,8 @@ document.addEventListener(
 
 async function start() {
 
+  renderFollowing();
+
   populateLeagueSelector();
 
   /*
@@ -2159,6 +2288,15 @@ async function start() {
   loadCompetitions();
 
 }
+
+window.addEventListener(
+  "storage",
+  event => {
+    if (event.key === FAVOURITES_KEY) {
+      renderFollowing();
+    }
+  }
+);
 
 start();
 

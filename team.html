@@ -114,10 +114,32 @@ main {
   font-weight: 900;
 }
 
+.hero-details {
+  min-width: 0;
+}
+
 .hero-meta {
   color: var(--muted);
   margin-top: 6px;
   font-size: 13px;
+}
+
+.follow-team {
+  background: var(--accent);
+  border: 0;
+  border-radius: 7px;
+  color: #11151a;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+  margin-top: 13px;
+  padding: 9px 12px;
+}
+
+.follow-team.is-following {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
 }
 
 .stats {
@@ -402,6 +424,9 @@ td:nth-child(2) {
 
 const API_BASE = "";
 
+const FAVOURITES_KEY =
+  "scoredash:favourite-teams:v1";
+
 const params =
   new URLSearchParams(
     window.location.search
@@ -413,6 +438,8 @@ const teamId =
 const league =
   params.get("league") ||
   "premier";
+
+let currentTeam = null;
 
 const q =
   selector =>
@@ -479,11 +506,114 @@ function crest(team) {
 
 function teamName(team) {
 
-  return (
-    team?.name ||
+  return cleanTeamName(
     team?.shortName ||
+    team?.name ||
     "Unknown team"
   );
+
+}
+
+function cleanTeamName(name) {
+
+  return String(name || "")
+    .replace(/\s+F\.?C\.?$/i, "")
+    .trim() || "Unknown team";
+}
+
+function getFavouriteTeams() {
+
+  try {
+    const favourites =
+      JSON.parse(
+        localStorage.getItem(FAVOURITES_KEY) || "[]"
+      );
+
+    return Array.isArray(favourites)
+      ? favourites.filter(team => team?.id)
+      : [];
+  } catch (_) {
+    return [];
+  }
+
+}
+
+function isFollowing(team) {
+
+  return getFavouriteTeams().some(
+    favourite =>
+      String(favourite.id) === String(team?.id) &&
+      favourite.league === league
+  );
+
+}
+
+function updateFollowButton() {
+
+  const button =
+    q("#followTeam");
+
+  if (!button || !currentTeam) {
+    return;
+  }
+
+  const following =
+    isFollowing(currentTeam);
+
+  button.classList.toggle(
+    "is-following",
+    following
+  );
+
+  button.textContent =
+    following
+      ? "Following"
+      : "Follow team";
+
+  button.setAttribute(
+    "aria-pressed",
+    String(following)
+  );
+
+}
+
+function toggleFollowTeam() {
+
+  if (!currentTeam?.id) {
+    return;
+  }
+
+  const favourites =
+    getFavouriteTeams();
+
+  const existingIndex =
+    favourites.findIndex(
+      favourite =>
+        String(favourite.id) === String(currentTeam.id) &&
+        favourite.league === league
+    );
+
+  if (existingIndex >= 0) {
+    favourites.splice(existingIndex, 1);
+  } else {
+    favourites.unshift({
+      id: currentTeam.id,
+      league,
+      name: teamName(currentTeam),
+      shortName: teamName(currentTeam),
+      crest: currentTeam.crest || null
+    });
+  }
+
+  try {
+    localStorage.setItem(
+      FAVOURITES_KEY,
+      JSON.stringify(favourites.slice(0, 8))
+    );
+  } catch (_) {}
+
+  updateFollowButton();
+
 }
 
 function formatDate(
@@ -554,6 +684,8 @@ async function loadTeam() {
   const team =
     data.team;
 
+  currentTeam = team;
+
   document.title =
     `SCOREdash — ${teamName(team)}`;
 
@@ -562,7 +694,7 @@ async function loadTeam() {
 
       ${crest(team)}
 
-      <div>
+      <div class="hero-details">
 
         <div class="hero-name">
           ${escapeHtml(
@@ -590,9 +722,24 @@ async function loadTeam() {
 
         </div>
 
+        <button
+          id="followTeam"
+          class="follow-team"
+          type="button"
+          aria-pressed="false"
+        ></button>
+
       </div>
 
     `;
+
+  q("#followTeam")
+    .addEventListener(
+      "click",
+      toggleFollowTeam
+    );
+
+  updateFollowButton();
 }
 
 /*
