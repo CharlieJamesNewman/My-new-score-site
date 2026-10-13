@@ -1,1 +1,8 @@
+.git
+.git/**
+README.md
+redesign-options.html
+badges.js
+wrangler.jsonc
 _worker.js
+.assetsignore

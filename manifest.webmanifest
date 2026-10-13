@@ -1,0 +1,17 @@
+{
+  "name": "SCOREdash — Football scores",
+  "short_name": "SCOREdash",
+  "description": "Live football scores, fixtures, tables and player stats for fans.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080a0d",
+  "theme_color": "#080a0d",
+  "icons": [
+    {
+      "src": "scoredash-icon.png",
+      "sizes": "385x360",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

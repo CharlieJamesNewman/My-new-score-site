@@ -9,9 +9,29 @@
   content="width=device-width, initial-scale=1.0"
 >
 
+<meta
+  name="theme-color"
+  content="#080a0d"
+>
+
+<meta
+  name="description"
+  content="Team fixtures, recent results and player stats on SCOREdash."
+>
+
 <link
   rel="icon"
   type="image/png"
+  href="scoredash-icon.png"
+>
+
+<link
+  rel="manifest"
+  href="manifest.webmanifest"
+>
+
+<link
+  rel="apple-touch-icon"
   href="scoredash-icon.png"
 >
 
@@ -1184,6 +1204,13 @@ async function start() {
         </div>
       `;
   }
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener(
+    "load",
+    () => navigator.serviceWorker.register("sw.js")
+  );
 }
 
 start();

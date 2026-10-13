@@ -13,10 +13,24 @@ same-origin Worker API, so the provider token is never sent to a browser.
   football-data.org.
 - `wrangler.jsonc` — Worker and static-assets configuration.
 - `scoredash-icon.png` — site icon.
+- `manifest.webmanifest` and `sw.js` — installable web-app metadata and an
+  offline app shell.
 
 `redesign-options.html` is a standalone design exploration and is not linked
 from the production site. `badges.js` is also not loaded by the current
 production pages; team crest URLs now come from the football-data.org response.
+
+## Installable app experience
+
+SCOREdash is a progressive web app. Supported browsers expose an **Install app**
+button on the home page; after installation it launches in its own window and
+keeps the basic app shell available offline. Live `/api/*` calls intentionally
+remain network-only, so a score is never presented as current when it is not.
+
+The current personalisation layer is local to a visitor's device: following a
+team requires no sign-in and never sends preference data to a third party.
+Cross-device accounts, notifications, and durable user preferences should only
+be added with a real identity provider and a Cloudflare D1 data model.
 
 ## Data flow
 

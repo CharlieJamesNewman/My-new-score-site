@@ -15,6 +15,26 @@
     content="width=device-width, initial-scale=1.0"
   />
 
+  <meta
+    name="theme-color"
+    content="#080a0d"
+  />
+
+  <meta
+    name="description"
+    content="Live football scores, fixtures, tables and player stats — built for fans."
+  />
+
+  <link
+    rel="manifest"
+    href="manifest.webmanifest"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="scoredash-icon.png"
+  >
+
   <title>SCOREDASH</title>
 
   <style>
@@ -94,6 +114,44 @@
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    .primary-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .primary-nav a,
+    .install-button {
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 9px 10px;
+    }
+
+    .primary-nav a:hover,
+    .primary-nav a:focus-visible {
+      color: var(--text);
+      background: var(--panel);
+      outline: none;
+    }
+
+    .install-button {
+      background: var(--accent);
+      color: #11151a;
+      cursor: pointer;
+      display: none;
+      white-space: nowrap;
+    }
+
+    .install-button:hover,
+    .install-button:focus-visible {
+      background: #d8ff76;
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
     }
 
     .search-wrap {
@@ -182,6 +240,57 @@
       max-width: 1240px;
       margin: auto;
       padding: 22px 20px 60px;
+    }
+
+    .matchday-bar {
+      align-items: center;
+      background:
+        linear-gradient(100deg, rgba(201, 255, 74, 0.12), transparent 48%),
+        var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex;
+      gap: 16px;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      overflow: hidden;
+      padding: 14px 16px;
+    }
+
+    .matchday-kicker {
+      align-items: center;
+      color: var(--accent);
+      display: flex;
+      font-size: 10px;
+      font-weight: 900;
+      gap: 7px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .live-pulse {
+      animation: pulse 1.7s ease-in-out infinite;
+      background: var(--accent);
+      border-radius: 50%;
+      height: 7px;
+      width: 7px;
+    }
+
+    .matchday-title {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-top: 3px;
+    }
+
+    .matchday-meta {
+      color: var(--muted);
+      font-size: 11px;
+      text-align: right;
+    }
+
+    @keyframes pulse {
+      50% { opacity: 0.35; transform: scale(0.78); }
     }
 
     .league-bar {
@@ -559,6 +668,70 @@
       font-weight: 800;
     }
 
+    .personalise-card {
+      align-items: center;
+      background: linear-gradient(125deg, #151d28, #101418 70%);
+      border: 1px dashed #44515f;
+      border-radius: 12px;
+      display: flex;
+      gap: 12px;
+      margin: 0 0 22px;
+      padding: 14px;
+    }
+
+    .personalise-icon {
+      align-items: center;
+      background: rgba(201, 255, 74, 0.12);
+      border-radius: 10px;
+      color: var(--accent);
+      display: flex;
+      font-size: 18px;
+      height: 38px;
+      justify-content: center;
+      width: 38px;
+    }
+
+    .personalise-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .personalise-copy strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .personalise-copy span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      line-height: 1.4;
+      margin-top: 3px;
+    }
+
+    .personalise-card button {
+      background: transparent;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 8px 10px;
+      white-space: nowrap;
+    }
+
+    .personalise-card button:hover,
+    .personalise-card button:focus-visible {
+      background: var(--accent);
+      color: #11151a;
+      outline: none;
+    }
+
+    .bottom-nav {
+      display: none;
+    }
+
     .small-note {
       color: var(--muted);
       font-size: 10px;
@@ -582,6 +755,7 @@
 
       .header-right {
         width: 100%;
+        flex-wrap: wrap;
       }
 
       .search-wrap {
@@ -590,6 +764,10 @@
 
       .layout {
         grid-template-columns: 1fr;
+      }
+
+      .primary-nav {
+        order: 3;
       }
 
     }
@@ -612,6 +790,67 @@
         align-items: flex-start;
         flex-direction: column;
         gap: 7px;
+      }
+
+      .header-right {
+        gap: 8px;
+      }
+
+      .primary-nav,
+      .install-button {
+        display: none;
+      }
+
+      .matchday-bar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+      }
+
+      .matchday-meta {
+        text-align: left;
+      }
+
+      .personalise-card {
+        align-items: flex-start;
+      }
+
+      .personalise-card button {
+        display: none;
+      }
+
+      .bottom-nav {
+        align-items: center;
+        backdrop-filter: blur(14px);
+        background: rgba(8, 10, 13, 0.94);
+        border-top: 1px solid var(--border);
+        bottom: 0;
+        display: flex;
+        justify-content: space-around;
+        left: 0;
+        padding: 9px 8px calc(9px + env(safe-area-inset-bottom));
+        position: fixed;
+        right: 0;
+        z-index: 50;
+      }
+
+      .bottom-nav a,
+      .bottom-nav button {
+        background: none;
+        border: 0;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 6px 8px;
+      }
+
+      .bottom-nav a:first-child {
+        color: var(--accent);
+      }
+
+      main {
+        padding-bottom: 78px;
       }
 
       .league-select {
@@ -674,6 +913,15 @@
 
   <div class="header-right">
 
+    <nav
+      class="primary-nav"
+      aria-label="Primary navigation"
+    >
+      <a href="#live">Live</a>
+      <a href="#fixtures">Fixtures</a>
+      <a href="#table">Table</a>
+    </nav>
+
     <div class="search-wrap">
 
       <input
@@ -692,11 +940,44 @@
 
     </div>
 
+    <button
+      id="installApp"
+      class="install-button"
+      type="button"
+      aria-label="Install SCOREdash app"
+    >
+      Install app
+    </button>
+
   </div>
 
 </header>
 
 <main>
+
+  <section
+    class="matchday-bar"
+    aria-label="Matchday status"
+  >
+    <div>
+      <div class="matchday-kicker">
+        <span class="live-pulse" aria-hidden="true"></span>
+        Matchday centre
+      </div>
+      <div
+        id="matchdayTitle"
+        class="matchday-title"
+      >
+        Football, right now.
+      </div>
+    </div>
+    <div
+      id="matchdayMeta"
+      class="matchday-meta"
+    >
+      Scores refresh as the game changes · Times shown in your device timezone
+    </div>
+  </section>
 
   <div class="league-bar">
 
@@ -733,11 +1014,36 @@
 
   </section>
 
+  <section
+    id="personaliseSection"
+    class="personalise-card"
+  >
+    <div
+      class="personalise-icon"
+      aria-hidden="true"
+    >
+      ★
+    </div>
+    <div class="personalise-copy">
+      <strong>Make SCOREdash yours</strong>
+      <span>Follow teams to keep their fixtures and results one tap away. No account needed.</span>
+    </div>
+    <button
+      id="personaliseButton"
+      type="button"
+    >
+      Find a team
+    </button>
+  </section>
+
   <div class="layout">
 
     <div class="left-column">
 
-      <section class="section">
+      <section
+        id="live"
+        class="section"
+      >
 
         <div class="section-title">
           Live matches
@@ -756,7 +1062,10 @@
 
       </section>
 
-      <section class="section">
+      <section
+        id="fixtures"
+        class="section"
+      >
 
         <div class="section-title">
           Recent results
@@ -806,7 +1115,10 @@
 
     <div class="right-column">
 
-      <section class="section">
+      <section
+        id="table"
+        class="section"
+      >
 
         <div class="section-title">
           League table
@@ -851,8 +1163,23 @@
 </main>
 
 <footer>
-  Data provided by football-data.org
+  SCOREdash · Live football intelligence for fans · Data provided by football-data.org
 </footer>
+
+<nav
+  class="bottom-nav"
+  aria-label="Mobile navigation"
+>
+  <a href="#live">Live</a>
+  <a href="#fixtures">Fixtures</a>
+  <a href="#table">Table</a>
+  <button
+    id="mobileSearch"
+    type="button"
+  >
+    Search
+  </button>
+</nav>
 
 <script>
 
@@ -907,6 +1234,8 @@ let leagueRequestNumber = 0;
 let scorerRequestNumber = 0;
 
 let searchRequestNumber = 0;
+
+let installPrompt = null;
 
 const q = selector =>
   document.querySelector(selector);
@@ -1023,6 +1352,9 @@ function renderFollowing() {
   const favourites =
     getFavouriteTeams();
 
+  q("#personaliseSection").hidden =
+    favourites.length > 0;
+
   if (!favourites.length) {
     section.hidden = true;
     container.innerHTML = "";
@@ -1044,6 +1376,58 @@ function renderFollowing() {
         </div>
       </a>
     `).join("");
+
+}
+
+function updateMatchdayStatus(data) {
+
+  const competitionName =
+    data?.competition?.name ||
+    "Football";
+
+  const liveCount =
+    Array.isArray(data?.live?.matches)
+      ? data.live.matches.length
+      : 0;
+
+  const upcomingCount =
+    Array.isArray(data?.upcoming?.matches)
+      ? data.upcoming.matches.length
+      : 0;
+
+  q("#matchdayTitle").textContent =
+    liveCount
+      ? `${liveCount} live in ${competitionName}`
+      : `${competitionName} matchday`;
+
+  q("#matchdayMeta").textContent =
+    liveCount
+      ? "Live scores refresh every minute · Times shown in your device timezone"
+      : upcomingCount
+        ? `${upcomingCount} upcoming fixtures · Updated just now`
+        : "Scores, fixtures and form — all in one calm match centre";
+
+}
+
+function focusTeamSearch() {
+
+  q("#teamSearch").focus();
+
+  if (window.innerWidth <= 600) {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+}
+
+function setInstallAvailability() {
+
+  q("#installApp").style.display =
+    installPrompt
+      ? "inline-flex"
+      : "none";
 
 }
 
@@ -1802,6 +2186,11 @@ async function loadLeague(
       data.competition
     );
 
+    document.title =
+      `SCOREdash — ${data.competition?.name || "Football scores"}`;
+
+    updateMatchdayStatus(data);
+
     renderMatches(
       data.live?.matches || [],
       "#liveMatches"
@@ -2296,6 +2685,69 @@ window.addEventListener(
       renderFollowing();
     }
   }
+);
+
+q("#personaliseButton")
+  .addEventListener(
+    "click",
+    focusTeamSearch
+  );
+
+q("#mobileSearch")
+  .addEventListener(
+    "click",
+    focusTeamSearch
+  );
+
+window.addEventListener(
+  "beforeinstallprompt",
+  event => {
+    event.preventDefault();
+    installPrompt = event;
+    setInstallAvailability();
+  }
+);
+
+q("#installApp")
+  .addEventListener(
+    "click",
+    async () => {
+      if (!installPrompt) {
+        return;
+      }
+
+      installPrompt.prompt();
+      await installPrompt.userChoice;
+      installPrompt = null;
+      setInstallAvailability();
+    }
+  );
+
+window.addEventListener(
+  "appinstalled",
+  () => {
+    installPrompt = null;
+    setInstallAvailability();
+  }
+);
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener(
+    "load",
+    () => navigator.serviceWorker.register("sw.js")
+  );
+}
+
+window.setInterval(
+  () => {
+    if (!document.hidden) {
+      Promise.all([
+        loadLeague(currentLeague),
+        loadScorers(currentLeague)
+      ]);
+    }
+  },
+  60_000
 );
 
 start();
