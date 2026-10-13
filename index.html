@@ -20,14 +20,14 @@
   <style>
 
     :root {
-      --bg: #080a0d;
-      --panel: #11151a;
-      --panel-2: #171c22;
-      --border: #252c34;
-      --text: #f4f6f8;
-      --muted: #89929d;
-      --accent: #c9ff4a;
-      --danger: #ff5c5c;
+      --bg: #F6F5F2;
+      --panel: #FFFFFF;
+      --panel-2: #F0EBFA;
+      --border: #E4DEEB;
+      --text: #221B35;
+      --muted: #70677D;
+      --accent: #7045D6;
+      --danger: #B42345;
     }
 
     * {
@@ -261,7 +261,7 @@
     }
 
     .error {
-      color: #ff9b9b;
+      color: #B42345;
     }
 
     .match {
@@ -341,7 +341,7 @@
     .match-details {
       display: none;
       border-top: 1px solid var(--border);
-      background: #0d1115;
+      background: #F8F5FD;
       padding: 12px 15px 15px;
     }
 
@@ -596,7 +596,20 @@
 
     }
 
-  </style>
+  
+    /* ScoreDash editorial light theme: accessible focus and distinctive purple accents. */
+    .header { background: #FFFFFF; }
+    .panel, .table-panel, .search-results { box-shadow: 0 3px 16px rgba(34, 27, 53, 0.035); }
+    .brand b, .logo b { color: var(--accent); }
+    .score { color: #3E286C; }
+    .match.live .score { color: var(--accent); }
+    .search:focus-visible, .league-select:focus-visible, button:focus-visible, a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    ::selection { background: #EAE2FF; color: #221B35; }
+
+</style>
 
 </head>
 
