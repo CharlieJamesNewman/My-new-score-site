@@ -4,8 +4,8 @@
   "description": "Live football scores, fixtures, tables and player stats for fans.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#080a0d",
-  "theme_color": "#080a0d",
+  "background_color": "#f4f3ef",
+  "theme_color": "#093c30",
   "icons": [
     {
       "src": "scoredash-icon.png",
