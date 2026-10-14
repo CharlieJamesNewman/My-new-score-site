@@ -11,6 +11,14 @@
 
 <meta name="theme-color" content="#14235c">
 
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    });
+  }
+</script>
+
 <link
   rel="icon"
   type="image/png"
